@@ -1,7 +1,6 @@
-import React from "react";
 import { RouterProvider } from "react-router-dom";
 import { Router } from "./Routes";
-import { ThemeProvider, createTheme } from "@mui/material";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 
 const defaultTheme = createTheme({
   palette: {
@@ -12,13 +11,17 @@ const defaultTheme = createTheme({
     secondary: {
       main: "#283593",
     },
+    navBarColor: {
+      main: "#ffffff",
+    },
   },
 });
 
 export default function App() {
   return (
     <ThemeProvider theme={defaultTheme}>
-        <RouterProvider router={Router} />
+      <CssBaseline />
+      <RouterProvider router={Router} />
     </ThemeProvider>
   );
 }
