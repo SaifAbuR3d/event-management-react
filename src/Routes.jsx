@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 import SignUpAttendee from "./shared/auth/register/SignUpAttendee";
 import SignUpOrganizer from "./shared/auth/register/SignUpOrganizer";
 import RegisterContextProvider from "./shared/auth/context/Register";
+import OrganizerProfile from "./eventOrganizer/organizerProfile/OrganizerProfile";
 
 export const Router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const Router = createBrowserRouter([
           </RegisterContextProvider>
         ),
       },
+      {
+        path: "organizerprofile",
+        element: <OrganizerProfile />
+      }
     ],
   },
 ]);
