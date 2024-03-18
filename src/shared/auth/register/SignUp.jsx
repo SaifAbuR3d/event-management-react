@@ -15,11 +15,11 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { RegisterContext } from "../context/Register";
 import { useContext } from "react";
-import Sideimage from "../../../../public/Sideimage.jpg";
-import Sideimage1 from "../../../../public/Sideimage1.jpg";
-import Sideimage2 from "../../../../public/Sideimage2.jpg";
-import Sideimage3 from "../../../../public/Sideimage3.jpg";
-import Sideimage4 from "../../../../public/Sideimage4.jpg";
+import Sideimage from "../../../assets/images/registerImges/Sideimage.jpg";
+import Sideimage1 from "../../../assets/images/registerImges/Sideimage1.jpg";
+import Sideimage2 from "../../../assets/images/registerImges/Sideimage2.jpg";
+import Sideimage3 from "../../../assets/images/registerImges/Sideimage3.jpg";
+import Sideimage4 from "../../../assets/images/registerImges/Sideimage4.jpg";
 import { useEffect } from "react";
 
 const validationSchema = yup.object().shape({
