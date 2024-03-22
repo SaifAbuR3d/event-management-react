@@ -7,6 +7,7 @@ import Home from "./components/pages/HomePage";
 import AdminLayout from "./components/layouts/AdminLayout";
 import MainLayout from "./components/layouts/MainLayout";
 import NotFoundPage from "./components/pages/NotFoundPage";
+import EventPage from "./components/pages/EventPage";
 export const Router = createBrowserRouter([
   {
     path: "/",
@@ -15,6 +16,10 @@ export const Router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "event", // event/id
+        element: <EventPage />,
       },
     ],
   },
