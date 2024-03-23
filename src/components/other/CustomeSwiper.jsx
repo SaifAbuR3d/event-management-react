@@ -1,10 +1,11 @@
 import React from "react";
-import { Swiper } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
 import { IconButton } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import EventCard from "../cards/EventCard";
 
 export default function CustomeSwiper({ slides }) {
   return (
@@ -26,9 +27,21 @@ export default function CustomeSwiper({ slides }) {
         prevEl: ".swiper-button-prev",
       }}
       modules={[EffectCoverflow, Pagination, Navigation]}
-      style={{ position: "relative" }}
+      style={{ position: "relative", paddingBottom: "2%" }}
     >
-      {slides}
+
+      {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
 
       <IconButton
         className="swiper-button-next"

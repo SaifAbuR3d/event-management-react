@@ -25,7 +25,6 @@ import {
 import LinkIcon from "@mui/icons-material/Link";
 import "swiper/css";
 import "swiper/css/pagination";
-import profilePhoto from "../../assets/images/registerImges/profilePhoto.jpg";
 import { useState } from "react";
 import CustomeSwiper from "../other/CustomeSwiper";
 import axios from "axios";
@@ -35,6 +34,7 @@ import SocialMediaLinkDialog from "../other/SocialMediaLinkDialog";
 import ChangeViewProfileImage from "../other/ChangeViewProfileImage";
 import { useParams, Link } from "react-router-dom";
 import SocialMediaLinkButton from "../buttons/SocialMediaLinkButton";
+import EventCard from "../cards/EventCard";
 
 const fun = async (userName) => {
   const { data: ownerData } = await axios.get(
@@ -43,12 +43,19 @@ const fun = async (userName) => {
   const { data: followers } = await axios.get(
     `https://localhost:8080/api/Organizers/${ownerData.id}/followers`
   );
-  const data = { ...ownerData, followers };
+  const { data: previousEvents } = await axios.get(
+    `https://localhost:8080/api/events?OrganizerId=${ownerData.id}&PreviousEvents=true`
+  );
+  const { data: upcomingEvents } = await axios.get(
+    `https://localhost:8080/api/events?OrganizerId=${ownerData.id}&UpcomingEvents=true`
+  );
+  console.log(previousEvents);
+  const data = { ...ownerData, followers, previousEvents, upcomingEvents };
   return data;
 };
 
 export default function OrganizerProfile() {
-  const [alignment, setAlignment] = useState("web");
+  const [alignment, setAlignment] = useState("upcoming");
   const [layout, setLayout] = useState("slide");
   const [openBioDialog, setOpenBioDialog] = useState(false);
   const [openSMLDialog, setOpenSMLDialog] = useState(false);
@@ -94,8 +101,16 @@ export default function OrganizerProfile() {
     return <div>Loading...</div>;
   }
 
-  const { id, displayName, isVerified, profile, imageUrl, followers } =
-    profileOwnerData;
+  const {
+    id,
+    displayName,
+    isVerified,
+    profile,
+    imageUrl,
+    followers,
+    previousEvents,
+    upcomingEvents,
+  } = profileOwnerData;
   const { bio, website, twitter, facebook, linkedIn, instagram } = profile;
 
   const renderSocialMedia = [
@@ -107,25 +122,39 @@ export default function OrganizerProfile() {
   ]
     .filter((item) => item.link.trim() !== "")
     .map((item, index) => {
-      return <SocialMediaLinkButton index={index} path={item.link} title={item.platform} />;
+      return (
+        <SocialMediaLinkButton
+          index={index}
+          path={item.link}
+          title={item.platform}
+        />
+      );
     });
 
   /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
 
-  /*const renderEvents = events?.map((event, index) => {
-    return (
-      <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+  const renderEvents = (events) => {
+    return events.map((event, index) => {
+      return (
         <EventCard
+          key={index}
           name={event.name}
           isOnline={event.isOnline}
           startDate={event.startDate}
           startTime={event.startTime}
         />
-      </SwiperSlide>
-    );
-  });
-*/
-
+      );
+    });
+  };
+  const noEventsStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+    color: "red",
+    padding: "10%"
+  };
   return (
     <Grid container>
       <CssBaseline />
@@ -138,7 +167,7 @@ export default function OrganizerProfile() {
             alignItems="center"
             flexDirection="column"
             sx={{
-              top: { xs: "360px", sm: "360px", md: "45%" },
+              top: { xs: "135%", md: "35%", xl: "45%" },
               width: {
                 xs: "100%",
                 md: "50%",
@@ -159,7 +188,7 @@ export default function OrganizerProfile() {
                 component="h1"
                 variant="h4"
                 mr={1}
-                sx={{ fontSize: "2rem" }}
+                sx={{ fontSize: "2.4rem" }}
               >
                 {displayName}
               </Typography>
@@ -182,19 +211,20 @@ export default function OrganizerProfile() {
         ml={"auto"}
         mr={"auto"}
         width={"90%"}
+        height={"fit-content"}
         justifyContent={"space-between"}
       >
         {/*Left Side*/}
         <Grid
-          container
+          item
           xs={12}
           md={2.6}
           display="flex"
           justifyContent="center"
           sx={{
             height: {
-              xs: "37vh",
-              sm: "30vh",
+              xs: "45vh",
+              sm: "37vh",
               md: "90vh",
             },
           }}
@@ -206,21 +236,21 @@ export default function OrganizerProfile() {
             onClick={handleProfileImageOpen}
             elevation={1}
             sx={{
-              backgroundImage: `url(${profilePhoto})`,
+              backgroundImage: `url(${imageUrl})`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
               backgroundPosition: "center",
               width: {
                 xs: "150px",
                 sm: "180px",
-                md: "190px",
+                md: "200px",
                 lg: "220px",
                 xl: "240px",
               },
               height: {
                 xs: "150px",
                 sm: "180px",
-                md: "190px",
+                md: "200px",
                 lg: "220px",
                 xl: "240px",
               },
@@ -233,7 +263,7 @@ export default function OrganizerProfile() {
           />
           <ChangeViewProfileImage
             ownerData={profileOwnerData}
-            image={profilePhoto}
+            image={imageUrl}
             open={openProfileImage}
             handleClose={handleProfileImageClose}
           />
@@ -408,16 +438,20 @@ export default function OrganizerProfile() {
 
         {/*Right Side*/}
         <Grid
-          container
+          item
           xs={12}
           md={9}
           display="flex"
+          flexDirection="column"
           height={"fit-content"}
           gap="3vh"
         >
           {/*About Section*/}
-          <Grid container xs={12} mt={2} height={"fit-content"}>
-            <Paper elevation={1} sx={{ position: "relative", width: "100%" }}>
+          <Grid item xs={12} mt={2} height={"fit-content"}>
+            <Paper
+              elevation={1}
+              sx={{ position: "relative", width: "100%", p: 1 }}
+            >
               {/*Title (About)*/}
               <Typography color="#283593" component="h1" variant="h4" p={2}>
                 About
@@ -490,7 +524,45 @@ export default function OrganizerProfile() {
             </Box>
 
             {layout === "slide" ? (
-              <CustomeSwiper />
+              alignment === "upcoming" ? (
+                upcomingEvents.length === 0 ? (
+                  <Typography sx={{...noEventsStyle}}>
+                    No Events 
+                  </Typography>
+                ) : (
+                  <CustomeSwiper slides={upcomingEvents} />
+                )
+              ) : previousEvents.length === 0 ? (
+                <Typography sx={{...noEventsStyle}}>
+                  No Events 
+                </Typography>
+              ) : (
+                <CustomeSwiper slides={previousEvents} />
+              )
+            ) : alignment === "upcoming" ? (
+              upcomingEvents.length === 0 ? (
+                <Typography sx={{...noEventsStyle}}>
+                  No Events 
+                </Typography>
+              ) : (
+                <Box
+                  component="div"
+                  display="flex"
+                  justifyContent="center"
+                  flexDirection="row"
+                  flexWrap="wrap"
+                  mb={3}
+                  sx={{
+                    gap: 2,
+                  }}
+                >
+                  {renderEvents(upcomingEvents)}
+                </Box>
+              )
+            ) : previousEvents.length === 0 ? (
+              <Typography sx={{...noEventsStyle}}>
+                No Events 
+              </Typography>
             ) : (
               <Box
                 component="div"
@@ -502,7 +574,9 @@ export default function OrganizerProfile() {
                 sx={{
                   gap: 2,
                 }}
-              ></Box>
+              >
+                {renderEvents(previousEvents)}
+              </Box>
             )}
           </Grid>
         </Grid>
