@@ -34,6 +34,7 @@ import DescriptionDialog from "../other/DescriptionDialog";
 import SocialMediaLinkDialog from "../other/SocialMediaLinkDialog";
 import ChangeViewProfileImage from "../other/ChangeViewProfileImage";
 import { useParams, Link } from "react-router-dom";
+import SocialMediaLinkButton from "../buttons/SocialMediaLinkButton";
 
 const fun = async (userName) => {
   const { data: ownerData } = await axios.get(
@@ -106,67 +107,7 @@ export default function OrganizerProfile() {
   ]
     .filter((item) => item.link.trim() !== "")
     .map((item, index) => {
-      let Icon;
-      switch (item.platform) {
-        case "LinkedIn":
-          Icon = LinkedIn;
-          break;
-        case "Facebook":
-          Icon = Facebook;
-          break;
-        case "Twitter":
-          Icon = Twitter;
-          break;
-        case "Instagram":
-          Icon = Instagram;
-          break;
-        case "Web Site":
-          Icon = LanguageOutlined;
-          break;
-        default:
-          Icon = null;
-      }
-
-      return (
-        <Box
-          key={index}
-          component={Link}
-          to={item.link}
-          target="_blank"
-          display="flex"
-          justifyContent="space-around"
-          alignContent="center"
-          color="#283593"
-          sx={{
-            textDecoration: "none",
-          }}
-        >
-          <Box
-            width="100%"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Icon fontSize="large" />
-          </Box>
-
-          <Box
-            width="100%"
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Typography
-              display={{
-                xs: "none",
-                md: "flex",
-              }}
-            >
-              {item.platform}
-            </Typography>
-          </Box>
-        </Box>
-      );
+      return <SocialMediaLinkButton index={index} path={item.link} title={item.platform} />;
     });
 
   /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
@@ -291,7 +232,7 @@ export default function OrganizerProfile() {
             }}
           />
           <ChangeViewProfileImage
-          ownerData={profileOwnerData}
+            ownerData={profileOwnerData}
             image={profilePhoto}
             open={openProfileImage}
             handleClose={handleProfileImageClose}
