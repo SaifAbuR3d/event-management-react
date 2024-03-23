@@ -9,7 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { queryClient } from "../../main"
+import { queryClient } from "../../main";
 
 export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
   const initialValues = {
@@ -26,11 +26,11 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
         `https://localhost:8080/api/Organizers/my/profile`,
         {
           ...profile,
-          linkedIn: LinkedIn.value,
-          facebook: Facebook.value,
-          twitter: Twitter.value,
-          instagram: Instagram.value,
-          website: Website.value,
+          linkedIn: formik.values.LinkedIn,
+          facebook: formik.values.Facebook,
+          twitter: formik.values.Twitter,
+          instagram: formik.values.Instagram,
+          website: formik.values.Website,
         },
         {
           headers: {
@@ -41,7 +41,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["profileOwnerData"] });
+      queryClient.invalidateQueries(["profileOwnerData"]);
       handleClose();
     },
   });
@@ -60,7 +60,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
     { platform: "Website", link: website },
   ].map((item, index) => {
     return (
-      <React.Fragment key={index}>
+      <React.Fragment key={item.platform}>
         <DialogContentText pt={3}>
           Please update your {item.platform} Link here
         </DialogContentText>
@@ -78,6 +78,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
       </React.Fragment>
     );
   });
+
   return (
     <Dialog
       open={open}

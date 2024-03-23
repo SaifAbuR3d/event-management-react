@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function SocialMediaLinkButton({ index, path, title }) {
+export default function SocialMediaLinkButton({ path, title }) {
   let Icon;
   switch (title) {
     case "LinkedIn":
@@ -27,7 +27,7 @@ export default function SocialMediaLinkButton({ index, path, title }) {
 
   return (
     <Box
-      key={index}
+      key={title}
       component={Link}
       to={path}
       target="_blank"

@@ -87,7 +87,7 @@ export default function OrganizerProfile() {
 
   const { userName } = useParams();
   const { data: profileOwnerData, isLoading: getOwnerDataLoading } = useQuery({
-    queryKey: "profileOwnerData",
+    queryKey: ["profileOwnerData"],
     queryFn: () => getProfileOwnerData(userName),
   });
 
@@ -112,7 +112,7 @@ export default function OrganizerProfile() {
   };
 
   /*------------------------------------------------ Render Functions -----------------------------------------------*/
-  
+
   const {
     id,
     displayName,
@@ -134,10 +134,10 @@ export default function OrganizerProfile() {
     { platform: "Web Site", link: website },
   ]
     .filter((item) => item.link.trim() !== "")
-    .map((item, index) => {
+    .map((item) => {
       return (
         <SocialMediaLinkButton
-          index={index}
+          key={item.platform}
           path={item.link}
           title={item.platform}
         />
@@ -314,7 +314,7 @@ export default function OrganizerProfile() {
               }}
             >
               <Typography variant="h6" color="#283593">
-                120
+                {upcomingEvents.length + previousEvents.length}
               </Typography>
               <Typography variant="body1" color="#283593">
                 events

@@ -10,6 +10,7 @@ import { Paper, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { queryClient } from "../../main";
 
 function ViewImage({ open, handleClose, image }) {
   return (
@@ -70,7 +71,7 @@ function ChangeImage({ open, handleClose, ownerData }) {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["profileOwnerData"] });
+      queryClient.invalidateQueries(["profileOwnerData"]);
       handleClose();
     },
   });
