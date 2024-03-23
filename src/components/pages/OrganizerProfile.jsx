@@ -12,15 +12,10 @@ import {
 } from "@mui/material";
 import {
   Edit,
-  Facebook,
-  LanguageOutlined,
   PersonAddAltOutlined,
   TableRows,
-  Twitter,
   ViewCarousel,
   Verified,
-  LinkedIn,
-  Instagram,
 } from "@mui/icons-material";
 import LinkIcon from "@mui/icons-material/Link";
 import "swiper/css";
@@ -36,7 +31,7 @@ import { useParams, Link } from "react-router-dom";
 import SocialMediaLinkButton from "../buttons/SocialMediaLinkButton";
 import EventCard from "../cards/EventCard";
 
-const fun = async (userName) => {
+const getProfileOwnerData = async (userName) => {
   const { data: ownerData } = await axios.get(
     `https://localhost:8080/api/Organizers/${userName}`
   );
@@ -49,7 +44,6 @@ const fun = async (userName) => {
   const { data: upcomingEvents } = await axios.get(
     `https://localhost:8080/api/events?OrganizerId=${ownerData.id}&UpcomingEvents=true`
   );
-  console.log(previousEvents);
   const data = { ...ownerData, followers, previousEvents, upcomingEvents };
   return data;
 };
@@ -94,13 +88,31 @@ export default function OrganizerProfile() {
   const { userName } = useParams();
   const { data: profileOwnerData, isLoading: getOwnerDataLoading } = useQuery({
     queryKey: "profileOwnerData",
-    queryFn: () => fun(userName),
+    queryFn: () => getProfileOwnerData(userName),
   });
 
   if (getOwnerDataLoading) {
     return <div>Loading...</div>;
   }
 
+  /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
+
+  const renderEvents = (events) => {
+    return events.map((event, index) => {
+      return (
+        <EventCard
+          key={index}
+          name={event.name}
+          isOnline={event.isOnline}
+          startDate={event.startDate}
+          startTime={event.startTime}
+        />
+      );
+    });
+  };
+
+  /*------------------------------------------------ Render Functions -----------------------------------------------*/
+  
   const {
     id,
     displayName,
@@ -111,6 +123,7 @@ export default function OrganizerProfile() {
     previousEvents,
     upcomingEvents,
   } = profileOwnerData;
+
   const { bio, website, twitter, facebook, linkedIn, instagram } = profile;
 
   const renderSocialMedia = [
@@ -131,21 +144,6 @@ export default function OrganizerProfile() {
       );
     });
 
-  /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
-
-  const renderEvents = (events) => {
-    return events.map((event, index) => {
-      return (
-        <EventCard
-          key={index}
-          name={event.name}
-          isOnline={event.isOnline}
-          startDate={event.startDate}
-          startTime={event.startTime}
-        />
-      );
-    });
-  };
   const noEventsStyle = {
     display: "flex",
     justifyContent: "center",
@@ -153,8 +151,9 @@ export default function OrganizerProfile() {
     height: "100%",
     width: "100%",
     color: "red",
-    padding: "10%"
+    padding: "10%",
   };
+
   return (
     <Grid container>
       <CssBaseline />
@@ -526,24 +525,18 @@ export default function OrganizerProfile() {
             {layout === "slide" ? (
               alignment === "upcoming" ? (
                 upcomingEvents.length === 0 ? (
-                  <Typography sx={{...noEventsStyle}}>
-                    No Events 
-                  </Typography>
+                  <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
                 ) : (
                   <CustomeSwiper slides={upcomingEvents} />
                 )
               ) : previousEvents.length === 0 ? (
-                <Typography sx={{...noEventsStyle}}>
-                  No Events 
-                </Typography>
+                <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
               ) : (
                 <CustomeSwiper slides={previousEvents} />
               )
             ) : alignment === "upcoming" ? (
               upcomingEvents.length === 0 ? (
-                <Typography sx={{...noEventsStyle}}>
-                  No Events 
-                </Typography>
+                <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
               ) : (
                 <Box
                   component="div"
@@ -560,9 +553,7 @@ export default function OrganizerProfile() {
                 </Box>
               )
             ) : previousEvents.length === 0 ? (
-              <Typography sx={{...noEventsStyle}}>
-                No Events 
-              </Typography>
+              <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
             ) : (
               <Box
                 component="div"
