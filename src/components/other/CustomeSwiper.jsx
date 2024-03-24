@@ -13,7 +13,6 @@ export default function CustomeSwiper({ slides }) {
       effect="coverflow"
       grabCursor
       centeredSlides
-      loop
       slidesPerView={"auto"}
       coverflowEffect={{
         rotate: 0,
@@ -42,6 +41,91 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+            {slides.map((slide, index) => {
+        return (
+          <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
+            <EventCard
+              name={slide.name}
+              isOnline={slide.isOnline}
+              startDate={slide.startDate}
+              startTime={slide.startTime}
+            />
+          </SwiperSlide>
+        );
+      })}
+      
 
       <IconButton
         className="swiper-button-next"

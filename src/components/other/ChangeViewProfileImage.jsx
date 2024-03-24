@@ -26,7 +26,7 @@ function ViewImage({ open, handleClose, image }) {
           component={Paper}
           elevation={1}
           sx={{
-            backgroundImage: `url(${image})`,
+            backgroundImage: `url(https://localhost:8080/${image})`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -126,7 +126,13 @@ function ChangeImage({ open, handleClose, ownerData }) {
   );
 }
 
-export default function ChangeViewProfileImage({ open, handleClose, image, ownerData }) {
+export default function ChangeViewProfileImage({
+  open,
+  handleClose,
+  image,
+  ownerData,
+  isCurrentOrganizer,
+}) {
   const [openViewImage, setOpenViewImage] = React.useState(false);
 
   const handleOpenViewImage = () => {
@@ -167,9 +173,11 @@ export default function ChangeViewProfileImage({ open, handleClose, image, owner
         <Button fullWidth onClick={handleOpenViewImage}>
           View Image
         </Button>
-        <Button fullWidth onClick={handleOpenChangeImage}>
-          Chaneg Image
-        </Button>
+        {isCurrentOrganizer && (
+          <Button fullWidth onClick={handleOpenChangeImage}>
+            Chaneg Image
+          </Button>
+        )}
       </DialogContent>
 
       <ViewImage
@@ -179,7 +187,7 @@ export default function ChangeViewProfileImage({ open, handleClose, image, owner
       />
 
       <ChangeImage
-      ownerData={ownerData}
+        ownerData={ownerData}
         open={openChangeImage}
         handleClose={handleCloseChangeImage}
       />
