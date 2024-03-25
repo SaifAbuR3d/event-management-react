@@ -9,6 +9,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  Snackbar,
 } from "@mui/material";
 import {
   Edit,
@@ -55,10 +56,11 @@ export default function OrganizerProfile() {
   const [openBioDialog, setOpenBioDialog] = useState(false);
   const [openSMLDialog, setOpenSMLDialog] = useState(false);
   const [openProfileImage, setOpenProfileImage] = useState(false);
-  const [isAttendee, setIsAttendee] = useState(true);
-  const [isOrganizer, setIsOrganizer] = useState(false);
-  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(false);
+  const [isAttendee, setIsAttendee] = useState(false);
+  const [isOrganizer, setIsOrganizer] = useState(true);
+  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleProfileImageOpen = () => {
     setOpenProfileImage(true);
@@ -95,7 +97,7 @@ export default function OrganizerProfile() {
     queryKey: ["profileOwnerData"],
     queryFn: () => getProfileOwnerData(userName),
   });
-  
+
   /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
 
   const renderEvents = (events) => {
@@ -114,17 +116,17 @@ export default function OrganizerProfile() {
 
   /*--------------------------------------------  Follow Organizer Request ------------------------------------------*/
   const fakeAttendee = {
-    organizerId: 6,
+    organizerId: profileOwnerData?.id,
   };
 
   const { mutateAsync, isPending: followOrganizerPending } = useMutation({
-    mutationFn: async () =>{
+    mutationFn: async () => {
       const { data } = await axios.post(
         `https://localhost:8080/api/Attendees/my/follows`,
         fakeAttendee,
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImFobWFkQW5pbmkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhaG1hZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTMzODMwOCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.zPW2aMiD4IPlV34mFecf9wME0M4fvzjSmBowTVIMLFI`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InlhemVlZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InlhemVlZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTQ0MTEwMCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.nK_MZlfOTw4Fyic7K414WBg02Pk5sJh4BSwzqbUl4OE`,
           },
         }
       );
@@ -183,86 +185,118 @@ export default function OrganizerProfile() {
     padding: "10%",
   };
 
+  /*--------------------- handle share link button -------------------*/
+  const handleShareClick = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard
+      .writeText(currentUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+        //console.log("URL copied to clipboard:", currentUrl);
+      })
+      .catch((error) => {
+        //console.error("Failed to copy URL:", error);
+      });
+  };
+
   return (
-    <Grid container>
+    <Grid container position="relative">
       <CssBaseline />
-
-      <Grid item xs={12} height={"35vh"}>
-        <Box bgcolor="#c5cae9" height="100%" position="relative">
-          <Box
-            position="absolute"
-            display="flex"
-            alignItems="center"
-            flexDirection="column"
-            sx={{
-              top: { xs: "125%", md: "48%" },
-              width: {
-                xs: "100%",
-                md: "50%",
-              },
-              left: { md: "27.4%" },
-              alignItems: {
-                xs: "center",
-                md: "start",
-              },
-              gap: {
-                xs: 1,
-                md: 6,
-              },
-            }}
+      <Box
+        position="absolute"
+        display="flex"
+        alignItems="center"
+        flexDirection="column"
+        sx={{
+          top: { xs: "28%", sm: "30%", md: "13%" },
+          width: {
+            xs: "100%",
+            md: "50%",
+          },
+          left: { md: "27.4%" },
+          alignItems: {
+            xs: "center",
+            md: "start",
+          },
+          gap: {
+            xs: 1,
+            md: 6,
+          },
+        }}
+      >
+        <Box display="flex">
+          <Typography
+            component="h1"
+            variant="h4"
+            mr={1}
+            sx={{ fontSize: "2.3rem" }}
           >
-            <Box display="flex">
-              <Typography
-                component="h1"
-                variant="h4"
-                mr={1}
-                sx={{ fontSize: "2.3rem" }}
-              >
-                {displayName}
-              </Typography>
+            {displayName}
+          </Typography>
 
-              {isVerified && <Verified color="secondary" />}
-            </Box>
-            {isAttendee ? (
-              <Box display="flex" gap={1} alignItems="center">
-                {isFollowing ? (
-                  <Button
-                    variant="contained"
-                    sx={{ width: { xs: "90%", sm: "110%", lg: "110%" } }}
-                    startIcon={<PersonRemoveOutlined />}
-                  >
-                    Unfollow
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={mutateAsync}
-                    variant="contained"
-                    sx={{ width: { xs: "90%", sm: "110%", lg: "110%" } }}
-                    startIcon={<PersonAddAltOutlined />}
-                  >
-                    Follow
-                  </Button>
-                )}
-
-                <Button
-                  variant="contained"
-                  sx={{ width: { xs: "60%", sm: "70%", lg: "70%" } }}
-                  startIcon={<IosShareOutlined />}
-                >
-                  Share
-                </Button>
-              </Box>
-            ) : (
+          {isVerified && <Verified color="secondary" />}
+        </Box>
+        {isAttendee ? (
+          <Box display="flex" gap={1} alignItems="center">
+            {isFollowing ? (
               <Button
                 variant="contained"
-                sx={{ width: { xs: "30%", sm: "30%", lg: "25%" } }}
-                startIcon={<IosShareOutlined />}
+                sx={{ width: { xs: "90%", sm: "110%" } }}
+                startIcon={<PersonRemoveOutlined />}
               >
-                Share
+                Unfollow
+              </Button>
+            ) : (
+              <Button
+                onClick={mutateAsync}
+                variant="contained"
+                sx={{ width: { xs: "90%", sm: "110%" } }}
+                startIcon={<PersonAddAltOutlined />}
+              >
+                Follow
               </Button>
             )}
+
+            <Button
+              variant="contained"
+              sx={{ width: { xs: "60%", sm: "70%", lg: "70%" } }}
+              startIcon={<IosShareOutlined />}
+              onClick={handleShareClick}
+            >
+              Share
+            </Button>
+            <Snackbar
+              open={copied}
+              message="Copied!"
+              autoHideDuration={2000} // Automatically hide after 2 seconds
+              onClose={() => setCopied(false)}
+            />
           </Box>
-        </Box>
+        ) : (
+          <>
+            <Button
+              variant="contained"
+              sx={{ width: { xs: "30%", sm: "25%", lg: "25%" } }}
+              startIcon={<IosShareOutlined />}
+              onClick={handleShareClick}
+            >
+              Share
+            </Button>
+            <Snackbar
+              open={copied}
+              message="Copied!"
+              autoHideDuration={2000} // Automatically hide after 2 seconds
+              onClose={() => setCopied(false)}
+            />
+          </>
+        )}
+      </Box>
+
+      <Grid item xs={12} height={"35vh"}>
+        <Box bgcolor="#c5cae9" height="100%"></Box>
       </Grid>
 
       <Grid
@@ -506,6 +540,7 @@ export default function OrganizerProfile() {
             </Paper>
           </Grid>
 
+          {/*Events Section*/}
           <Grid item component={Paper} xs={12} elevation={1}>
             {/*Events Section Title */}
             <Typography
