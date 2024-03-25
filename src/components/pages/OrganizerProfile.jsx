@@ -16,14 +16,15 @@ import {
   TableRows,
   ViewCarousel,
   Verified,
+  IosShareOutlined,
+  PersonRemoveOutlined,
 } from "@mui/icons-material";
-import LinkIcon from "@mui/icons-material/Link";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useState } from "react";
 import CustomeSwiper from "../other/CustomeSwiper";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import DescriptionDialog from "../other/DescriptionDialog";
 import SocialMediaLinkDialog from "../other/SocialMediaLinkDialog";
 import ChangeViewProfileImage from "../other/ChangeViewProfileImage";
@@ -54,6 +55,10 @@ export default function OrganizerProfile() {
   const [openBioDialog, setOpenBioDialog] = useState(false);
   const [openSMLDialog, setOpenSMLDialog] = useState(false);
   const [openProfileImage, setOpenProfileImage] = useState(false);
+  const [isAttendee, setIsAttendee] = useState(true);
+  const [isOrganizer, setIsOrganizer] = useState(false);
+  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const handleProfileImageOpen = () => {
     setOpenProfileImage(true);
@@ -90,11 +95,7 @@ export default function OrganizerProfile() {
     queryKey: ["profileOwnerData"],
     queryFn: () => getProfileOwnerData(userName),
   });
-
-  if (getOwnerDataLoading) {
-    return <div>Loading...</div>;
-  }
-
+  
   /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
 
   const renderEvents = (events) => {
@@ -111,6 +112,34 @@ export default function OrganizerProfile() {
     });
   };
 
+  /*--------------------------------------------  Follow Organizer Request ------------------------------------------*/
+  const fakeAttendee = {
+    organizerId: 6,
+  };
+
+  const { mutateAsync, isPending: followOrganizerPending } = useMutation({
+    mutationFn: async () =>{
+      const { data } = await axios.post(
+        `https://localhost:8080/api/Attendees/my/follows`,
+        fakeAttendee,
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImFobWFkQW5pbmkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhaG1hZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTMzODMwOCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.zPW2aMiD4IPlV34mFecf9wME0M4fvzjSmBowTVIMLFI`,
+          },
+        }
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      //queryClient.invalidateQueries(["profileOwnerData"]);
+      setIsFollowing(true);
+    },
+  });
+
+  if (getOwnerDataLoading || followOrganizerPending) {
+    return <div>Loading...</div>;
+  }
+
   /*------------------------------------------------ Render Functions -----------------------------------------------*/
 
   const {
@@ -126,23 +155,23 @@ export default function OrganizerProfile() {
 
   const { bio, website, twitter, facebook, linkedIn, instagram } = profile;
 
-  const renderSocialMedia = [
+  const socialMedia = [
     { platform: "LinkedIn", link: linkedIn },
     { platform: "Facebook", link: facebook },
     { platform: "Twitter", link: twitter },
     { platform: "Instagram", link: instagram },
     { platform: "Web Site", link: website },
-  ]
-    .filter((item) => item.link.trim() !== "")
-    .map((item) => {
-      return (
-        <SocialMediaLinkButton
-          key={item.platform}
-          path={item.link}
-          title={item.platform}
-        />
-      );
-    });
+  ].filter((item) => item.link.trim() !== "");
+
+  const renderSocialMedia = socialMedia.map((item) => {
+    return (
+      <SocialMediaLinkButton
+        key={item.platform}
+        path={item.link}
+        title={item.platform}
+      />
+    );
+  });
 
   const noEventsStyle = {
     display: "flex",
@@ -166,7 +195,7 @@ export default function OrganizerProfile() {
             alignItems="center"
             flexDirection="column"
             sx={{
-              top: { xs: "135%", md: "35%", xl: "45%" },
+              top: { xs: "125%", md: "48%" },
               width: {
                 xs: "100%",
                 md: "50%",
@@ -187,20 +216,51 @@ export default function OrganizerProfile() {
                 component="h1"
                 variant="h4"
                 mr={1}
-                sx={{ fontSize: "2.4rem" }}
+                sx={{ fontSize: "2.3rem" }}
               >
                 {displayName}
               </Typography>
 
               {isVerified && <Verified color="secondary" />}
             </Box>
-            <Button
-              variant="contained"
-              sx={{ width: { xs: "30%", sm: "30%", lg: "25%" } }}
-              startIcon={<PersonAddAltOutlined />}
-            >
-              Follow
-            </Button>
+            {isAttendee ? (
+              <Box display="flex" gap={1} alignItems="center">
+                {isFollowing ? (
+                  <Button
+                    variant="contained"
+                    sx={{ width: { xs: "90%", sm: "110%", lg: "110%" } }}
+                    startIcon={<PersonRemoveOutlined />}
+                  >
+                    Unfollow
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={mutateAsync}
+                    variant="contained"
+                    sx={{ width: { xs: "90%", sm: "110%", lg: "110%" } }}
+                    startIcon={<PersonAddAltOutlined />}
+                  >
+                    Follow
+                  </Button>
+                )}
+
+                <Button
+                  variant="contained"
+                  sx={{ width: { xs: "60%", sm: "70%", lg: "70%" } }}
+                  startIcon={<IosShareOutlined />}
+                >
+                  Share
+                </Button>
+              </Box>
+            ) : (
+              <Button
+                variant="contained"
+                sx={{ width: { xs: "30%", sm: "30%", lg: "25%" } }}
+                startIcon={<IosShareOutlined />}
+              >
+                Share
+              </Button>
+            )}
           </Box>
         </Box>
       </Grid>
@@ -222,8 +282,8 @@ export default function OrganizerProfile() {
           justifyContent="center"
           sx={{
             height: {
-              xs: "45vh",
-              sm: "37vh",
+              xs: "37vh",
+              sm: "30vh",
               md: "90vh",
             },
           }}
@@ -235,7 +295,7 @@ export default function OrganizerProfile() {
             onClick={handleProfileImageOpen}
             elevation={1}
             sx={{
-              backgroundImage: `url(${imageUrl})`,
+              backgroundImage: `url(https://localhost:8080/${imageUrl})`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -261,12 +321,12 @@ export default function OrganizerProfile() {
             }}
           />
           <ChangeViewProfileImage
+            isCurrentOrganizer={isCurrentOrganizer}
             ownerData={profileOwnerData}
             image={imageUrl}
             open={openProfileImage}
             handleClose={handleProfileImageClose}
           />
-
           {/*# of Followers and posts*/}
           <Paper
             elevation={1}
@@ -323,116 +383,82 @@ export default function OrganizerProfile() {
           </Paper>
 
           {/*Social Media Link*/}
-          <Paper
-            elevation={1}
-            sx={{
-              width: {
-                xs: "100%",
-                sm: "69%",
-                md: "200px",
-                lg: "220px",
-                xl: "240px",
-              },
-              height: {
-                xs: "56px",
-                md: "auto",
-              },
-              position: "absolute",
-              top: {
-                xs: "245px",
-                sm: "185px",
-                md: "200px",
-              },
-              left: { sm: "31%", md: "auto" },
-            }}
-          >
-            <Box
-              display="flex"
+          {(socialMedia.length !== 0 || isCurrentOrganizer) && (
+            <Paper
+              elevation={1}
               sx={{
-                flexDirection: {
-                  xs: "row",
-                  md: "column",
+                width: {
+                  xs: "100%",
+                  sm: "69%",
+                  md: "200px",
+                  lg: "220px",
+                  xl: "240px",
                 },
-                gap: {
-                  sm: 0,
-                  md: 6,
+                height: {
+                  xs: "56px",
+                  md: "auto",
                 },
-                pb: {
-                  sm: 0,
-                  md: 2,
+                position: "absolute",
+                top: {
+                  xs: "245px",
+                  sm: "185px",
+                  md: "200px",
                 },
-              }}
-              width="100%"
-              height="100%"
-              justifyContent="space-around"
-              position="relative"
-              pt={{
-                xs: 0,
-                md: 5,
+                left: { sm: "31%", md: "auto" },
               }}
             >
-              {/*Edit Icon*/}
-              <IconButton
-                onClick={handleSMLClickOpen}
-                sx={{
-                  position: "absolute",
-                  top: { xs: "1px", md: "3px" },
-                  right: { xs: "1px", md: "10px" },
-                }}
-              >
-                <Edit fontSize="small" color="secondary" />
-              </IconButton>
-              <SocialMediaLinkDialog
-                profile={profile}
-                open={openSMLDialog}
-                handleClose={handleSMLClose}
-              />
-
-              {renderSocialMedia}
-
               <Box
-                component={Link}
-                to={linkedIn}
-                target="_blank"
                 display="flex"
-                justifyContent="space-around"
-                alignContent="center"
-                color="#283593"
                 sx={{
-                  textDecoration: "none",
+                  flexDirection: {
+                    xs: "row",
+                    md: "column",
+                  },
+                  gap: {
+                    sm: 0,
+                    md: 6,
+                  },
+                  pb: {
+                    sm: 0,
+                    md: 2,
+                  },
                 }}
-                mr={{
-                  xs: 3,
+                width="100%"
+                height="100%"
+                justifyContent="space-around"
+                position="relative"
+                pt={{
+                  xs: 0,
+                  md: 5,
+                }}
+                pr={{
+                  xs: 1,
                   md: 0,
                 }}
               >
-                <Box
-                  width="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <LinkIcon fontSize="large" />
-                </Box>
-
-                <Box
-                  width="100%"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Typography
-                    display={{
-                      xs: "none",
-                      md: "flex",
+                {/*Edit Icon*/}
+                {isCurrentOrganizer && (
+                  <IconButton
+                    onClick={handleSMLClickOpen}
+                    sx={{
+                      position: "absolute",
+                      top: { xs: 0, md: "3px" },
+                      right: { xs: 0, md: "10px" },
                     }}
                   >
-                    Copy Link
-                  </Typography>
-                </Box>
+                    <Edit fontSize="small" color="secondary" />
+                  </IconButton>
+                )}
+                <SocialMediaLinkDialog
+                  profile={profile}
+                  open={openSMLDialog}
+                  handleClose={handleSMLClose}
+                />
+
+                {renderSocialMedia}
               </Box>
-            </Box>
-          </Paper>
+            </Paper>
+          )}
         </Grid>
 
         {/*Right Side*/}
@@ -460,14 +486,16 @@ export default function OrganizerProfile() {
               <Typography p={1}>{bio}</Typography>
 
               {/*Edit Icon Button*/}
-              <IconButton
-                aria-label="edit"
-                color="secondary"
-                onClick={handleBioClickOpen}
-                sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
-              >
-                <Edit />
-              </IconButton>
+              {isCurrentOrganizer && (
+                <IconButton
+                  aria-label="edit"
+                  color="secondary"
+                  onClick={handleBioClickOpen}
+                  sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
+                >
+                  <Edit />
+                </IconButton>
+              )}
 
               {/*Description Dialog Component*/}
               <DescriptionDialog
