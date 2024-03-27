@@ -8,9 +8,7 @@ export default function MainLayout() {
   return (
     <>
       <Navbar />
-      {/*<Container90>*/}
       <Outlet />
-      {/*</Container90>*/}
       <Footer />
     </>
   );

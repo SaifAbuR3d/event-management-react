@@ -7,7 +7,9 @@ import Home from "./components/pages/HomePage";
 import AdminLayout from "./components/layouts/AdminLayout";
 import MainLayout from "./components/layouts/MainLayout";
 import NotFoundPage from "./components/pages/NotFoundPage";
+import EventPage from "./components/pages/EventPage";
 import OrganizerProfile from "./components/pages/OrganizerProfile"
+
 export const Router = createBrowserRouter([
   {
     path: "/",
@@ -18,6 +20,9 @@ export const Router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "event/:eventId", // event/id
+        element: <EventPage />,
+      },
         path: "profile/:userName",
         element: <OrganizerProfile />
       }
