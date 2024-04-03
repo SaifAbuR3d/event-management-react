@@ -23,6 +23,7 @@ export const Router = createBrowserRouter([
         path: "event/:eventId", // event/id
         element: <EventPage />,
       },
+      {
         path: "profile/:userName",
         element: <OrganizerProfile />
       }
