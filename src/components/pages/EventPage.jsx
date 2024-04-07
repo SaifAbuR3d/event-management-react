@@ -290,7 +290,7 @@ export default function EventPage() {
               display: { xs: "none", md: "flex" },
             }}
           >
-            {isAtndee && <GetTicketsCard ticketsData={data.tickets} />}
+            {isAtndee && <GetTicketsCard ticketsData={data.tickets} data={data} />}
           </Grid>
 
           {/* other event you may like */}
@@ -481,7 +481,7 @@ export default function EventPage() {
           zIndex: "1000",
         }}
       >
-        <GetTicketsCard ticketsData={data.tickets} />
+        <GetTicketsCard ticketsData={data.tickets} data={data} />
       </Box>
     </>
   );
