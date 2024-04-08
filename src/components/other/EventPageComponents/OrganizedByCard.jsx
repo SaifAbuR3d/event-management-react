@@ -2,19 +2,15 @@ import { Avatar, Box, Button, Paper, Typography, Link } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/FacebookRounded";
 import LanguageIcon from "@mui/icons-material/LanguageRounded";
 import TwitterIcon from "@mui/icons-material/Twitter";
-
 import { useState } from "react";
-import { Instagram, LinkedIn, Troubleshoot } from "@mui/icons-material";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { queryClient } from "../../main";
-import { useAddFollow } from "../../API/eventPageApi";
+import { Instagram, LinkedIn } from "@mui/icons-material";
+import { useAddFollow } from "../../../API/eventPageApi";
 
 export default function OrganizedByCard({ organizer, followersCount }) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isAtndee, setIsAtndee] = useState(true);
 
-  const { displayName, imageUrl, id, profile } = organizer;
+  const { displayName, id, profile, imageUrl } = organizer;
 
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWhtYWQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhaG1hZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTU5MDk5NCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.HnCOwN1trD005EZYRzOB6Ebg3Y9R-vP6gDhYaOeqlco";
@@ -30,7 +26,7 @@ export default function OrganizedByCard({ organizer, followersCount }) {
           minHeight: "100px",
           mt: 1,
           mb: "20px",
-          ml: 2,
+          ml: 1,
           p: 2,
           bgcolor: "#f8f7fa",
         }}
@@ -57,7 +53,7 @@ export default function OrganizedByCard({ organizer, followersCount }) {
             <Avatar
               sx={{ width: "47px", height: "47px" }}
               alt={displayName}
-              src={imageUrl}
+              src={`${import.meta.env.VITE_API_URL}/${imageUrl}`}
             />
             <Box>
               <Typography variant="h6" color="initial">

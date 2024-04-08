@@ -1,4 +1,3 @@
-import React from "react";
 import Grid from "@mui/material/Grid";
 import CssBaseline from "@mui/material/CssBaseline";
 import {
@@ -23,14 +22,14 @@ import {
 import "swiper/css";
 import "swiper/css/pagination";
 import { useState } from "react";
-import CustomeSwiper from "../other/CustomeSwiper";
+import CustomeSwiper from "../other/organizerProfileComponents/CustomeSwiper";
 import axios from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import DescriptionDialog from "../other/DescriptionDialog";
-import SocialMediaLinkDialog from "../other/SocialMediaLinkDialog";
-import ChangeViewProfileImage from "../other/ChangeViewProfileImage";
+import DescriptionDialog from "../other/organizerProfileComponents/DescriptionDialog";
+import SocialMediaLinkDialog from "../other/organizerProfileComponents/SocialMediaLinkDialog";
+import ChangeViewProfileImage from "../other/organizerProfileComponents/ChangeViewProfileImage";
 import { useParams, Link } from "react-router-dom";
-import SocialMediaLinkButton from "../buttons/SocialMediaLinkButton";
+import SocialMediaLinkButton from "../other/organizerProfileComponents/SocialMediaLinkButton";
 import EventCard from "../cards/EventCard";
 
 const getProfileOwnerData = async (userName) => {
