@@ -1,7 +1,18 @@
 import { Paper, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
+import GetTicketDialog from "../GetTicketComponent/GetTicketDialog";
+import { useState } from "react";
 
-export default function GetTicketsCard({ ticketsData }) {
+export default function GetTicketsCard({ ticketsData, data }) {
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpenDialog(true);
+  };
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
   const handelTicketPrice = () => {
     const TicketPrice = ticketsData.map((ticket) => ticket.price);
     const minPrice = Math.min(...TicketPrice);
@@ -44,9 +55,20 @@ export default function GetTicketsCard({ ticketsData }) {
       }}
     >
       {handelTicketPrice()}
-      <Button variant="contained" color="primary" sx={{ width: "90%" }}>
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ width: "90%" }}
+        onClick={handleClickOpen}
+      >
         Buy Ticket
       </Button>
+
+      <GetTicketDialog
+        open={openDialog}
+        handleClose={handleClose}
+        data={data}
+      />
     </Paper>
   );
 }
