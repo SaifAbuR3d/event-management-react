@@ -34,7 +34,7 @@ export default function GetTicketsCard({ ticketsData, data }) {
         color="initial"
         sx={{ fontWeight: "700", fontSize: "20px" }}
       >
-        From ${minPrice} - ${maxPrice}
+        From ${minPrice}
       </Typography>
     );
   };

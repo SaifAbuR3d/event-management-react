@@ -9,7 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "../../main";
+import { queryClient } from "../../../main";
 
 export default function DescriptionDialog({ open, handleClose, profile }) {
   const initialValues = {

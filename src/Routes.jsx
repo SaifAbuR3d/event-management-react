@@ -8,7 +8,8 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import MainLayout from "./components/layouts/MainLayout";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import EventPage from "./components/pages/EventPage";
-import OrganizerProfile from "./components/pages/OrganizerProfile"
+import OrganizerProfile from "./components/pages/OrganizerProfile";
+import CreateEvetnPage from "./components/pages/CreateEvetnPage";
 
 export const Router = createBrowserRouter([
   {
@@ -25,8 +26,12 @@ export const Router = createBrowserRouter([
       },
       {
         path: "profile/:userName",
-        element: <OrganizerProfile />
-      }
+        element: <OrganizerProfile />,
+      },
+      {
+        path: "events/create",
+        element: <CreateEvetnPage />,
+      },
     ],
   },
   {
