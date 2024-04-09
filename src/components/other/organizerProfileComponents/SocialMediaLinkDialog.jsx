@@ -9,7 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { queryClient } from "../../main";
+import { queryClient } from "../../../main";
 
 export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
   const initialValues = {

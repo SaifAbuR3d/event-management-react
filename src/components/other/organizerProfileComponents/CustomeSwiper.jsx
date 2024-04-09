@@ -5,7 +5,7 @@ import "swiper/css/pagination";
 import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
 import { IconButton } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import EventCard from "../cards/EventCard";
+import EventCard from "../../cards/EventCard";
 
 export default function CustomeSwiper({ slides }) {
   return (
@@ -28,7 +28,6 @@ export default function CustomeSwiper({ slides }) {
       modules={[EffectCoverflow, Pagination, Navigation]}
       style={{ position: "relative", paddingBottom: "2%" }}
     >
-
       {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
@@ -41,7 +40,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -53,7 +52,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -65,7 +64,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -77,7 +76,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -89,7 +88,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -101,7 +100,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -113,7 +112,7 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-            {slides.map((slide, index) => {
+      {slides.map((slide, index) => {
         return (
           <SwiperSlide key={index} style={{ width: "auto", height: "auto" }}>
             <EventCard
@@ -125,7 +124,6 @@ export default function CustomeSwiper({ slides }) {
           </SwiperSlide>
         );
       })}
-      
 
       <IconButton
         className="swiper-button-next"

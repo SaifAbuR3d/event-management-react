@@ -1,7 +1,7 @@
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import { Box } from "@mui/system";
-import React from "react";
+
 import { useSwiper } from "swiper/react";
 
 export default function SwiperButton() {

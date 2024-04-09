@@ -12,11 +12,11 @@ import { Flag } from "@mui/icons-material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IosShareIcon from "@mui/icons-material/IosShare";
 //----------------------------------------------------------------
-import GetTicketsCard from "../cards/GetTicketsCard.jsx";
-import TitleAndSubtitleCard from "../cards/TitleAndSubtitleCard.jsx";
-import OrganizedByCard from "../cards/OrganizedByCard.jsx";
+import GetTicketsCard from "../other/EventPageComponents/GetTicketsCard.jsx";
+import TitleAndSubtitleCard from "../other/EventPageComponents/TitleAndSubtitleCard.jsx";
+import OrganizedByCard from "../other/EventPageComponents/OrganizedByCard.jsx";
+import SwiperButton from "../other/EventPageComponents/SwiperButton.jsx";
 import EventCard from "../cards/EventCard.jsx";
-import SwiperButton from "../buttons/SwiperButton.jsx";
 //----------------------------------------------------------------
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -104,7 +104,7 @@ export default function EventPage() {
 
   return (
     <>
-      <Container maxWidth="lg">
+      <Container maxWidth="xl">
         <Grid container spacing={1}>
           {/* main image */}
 
