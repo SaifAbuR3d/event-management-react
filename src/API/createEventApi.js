@@ -16,13 +16,18 @@ export function useGetCategories() {
 
 export function useCreateEvent(token) {
   return useMutation({
-    mutationFn: (eventData) =>
-      axios.post(`${import.meta.env.VITE_API_URL}/api/events`, eventData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+    mutationFn: async (eventData) => {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/events`,
+        eventData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(["event"]);
     },

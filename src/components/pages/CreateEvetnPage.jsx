@@ -1,6 +1,5 @@
 import Container from "@mui/material/Container";
-import { Box, Typography, Grid, Paper } from "@mui/material";
-
+import { Box, Typography, Grid } from "@mui/material";
 import InputField, {
   ControlledOpenSelect,
   DateField,
@@ -19,13 +18,41 @@ import {
 } from "../other/CreateEventCpmponents/validationSchemas";
 import utc from "dayjs/plugin/utc";
 
+import { styled } from "@mui/system";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+
+const MainBox = styled("div")(({ theme }) =>
+  theme.unstable_sx({
+    mt: 4,
+    p: 4,
+    width: "100%",
+    height: "fit-contents",
+    borderRadius: "10px",
+    outline: "#eeedf2 2px solid",
+    "&:hover": { outline: "#3659e3 2px solid" },
+  })
+);
+
+const MainTitle = styled(Typography)(({ theme }) =>
+  theme.unstable_sx({
+    fontWeight: "600",
+    mb: 5,
+  })
+);
+
 export default function CreateEvetnPage() {
   const { data, isLoading } = useGetCategories();
 
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTI1NjIxNDEsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.I7FSYfKpJXncOcEksjb0-2uPopvG1gNggqgf_sknKMk";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTI3MTc0NjcsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.752qhRBA8gUJzQK9cJiSe5Cdmu_FWftpHh8z_Lk-ras";
 
-  const { mutateAsync, isPending } = useCreateEvent(token);
+  const { mutateAsync, isPending, error, isError, isSuccess } =
+    useCreateEvent(token);
 
   const handelValues = (values) => {
     dayjs.extend(utc); // extend dayjs with utc plugin
@@ -58,19 +85,37 @@ export default function CreateEvetnPage() {
       };
     });
 
-    console.log(formattedTickets);
+    const startDateUtc = new Date(
+      `${dayjs(values.startDate).format("YYYY-MM-DD")}T${dayjs(
+        values.startTime
+      ).format("HH:mm:ss")}`
+    ).toISOString();
+
+    const endDateUtc = new Date(
+      `${dayjs(values.endDate).format("YYYY-MM-DD")}T${dayjs(
+        values.endTime
+      ).format("HH:mm:ss")}`
+    ).toISOString();
+
+    console.log(startDateUtc.substring(0, 10));
+    console.log(startDateUtc.substring(11, startDateUtc.length - 1));
+    console.log(endDateUtc.substring(0, 10));
+    console.log(endDateUtc.substring(11, startDateUtc.length - 1));
 
     // Step 1
     formData.append("name", values.name);
     formData.append("description", values.description);
     formData.append("thumbnail", values.Thumbnail);
-    formData.append("startDate", dayjs(values.startDate).format("YYYY-MM-DD"));
-    formData.append("endDate", dayjs(values.endDate).format("YYYY-MM-DD"));
+    formData.append("startDate", startDateUtc.substring(0, 10));
+    formData.append("endDate", endDateUtc.substring(0, 10));
     formData.append(
       "startTime",
-      dayjs.utc(values.startTime).format("HH:mm:ss")
+      startDateUtc.substring(11, startDateUtc.length - 1) + "1"
     );
-    formData.append("endTime", dayjs.utc(values.endTime).format("HH:mm:ss"));
+    formData.append(
+      "endTime",
+      endDateUtc.substring(11, startDateUtc.length - 1) + "1"
+    );
 
     formData.append("lat", values.lat);
     formData.append("lon", values.lon);
@@ -89,9 +134,33 @@ export default function CreateEvetnPage() {
 
     return formData;
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Event Created successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+  }, [isSuccess]);
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="primary" size={"70px"} />
+      </Backdrop>
+    );
   }
+
   return (
     <>
       <Container maxWidth="md" sx={{ p: 2 }}>
@@ -99,6 +168,8 @@ export default function CreateEvetnPage() {
           <Typography variant="h4" sx={{ fontWeight: "600", mb: 1 }}>
             Build your event page
           </Typography>
+          <p>sakhags</p>
+
           <Typography
             variant="h6"
             color="initial"
@@ -106,8 +177,12 @@ export default function CreateEvetnPage() {
           >
             Add all of your event details and let attendees know what to expect
           </Typography>
+          {isError && (
+            <Alert variant="standard" severity="error" sx={{ mb: 2 }}>
+              {error.response.data.detail}
+            </Alert>
+          )}
           <MultiStepForm
-            withStepper
             initialValues={{
               name: "",
               description: "",
@@ -145,56 +220,24 @@ export default function CreateEvetnPage() {
             }}
           >
             <FormStep
-              stepName={"Event"}
+              stepName={"Event Overview"}
               onSubmit={() => console.log("step 1 is submit")}
               validationSchema={validationSchemaStepOne}
             >
               <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
-                  <Paper
-                    sx={{
-                      height: "38vh",
-                      borderRadius: "10px",
-                      outline: "#eeedf2 2px solid",
-                      "&:hover": { outline: "#3659e3 2px solid" },
-                    }}
-                  >
-                    <ImageField name="image" />
-                  </Paper>
+                  <ImageField name="image" />
                 </Grid>
-
-                <Box
-                  sx={{
-                    mt: 4,
-                    p: 4,
-                    width: "100%",
-                    MinHeight: "60vh",
-                    height: "fit-contents",
-                    borderRadius: "10px",
-                    outline: "#eeedf2 2px solid",
-                    "&:hover": { outline: "#3659e3 2px solid" },
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    color="initial"
-                    sx={{ fontWeight: "600", mb: 5 }}
-                  >
+                {/* Event Overview section */}
+                <MainBox>
+                  <MainTitle variant="h5" color="initial">
                     Event Overview
-                  </Typography>
+                  </MainTitle>
 
                   <Grid container rowSpacing={1}>
                     <Grid item xs={12}>
                       <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
                         Event title
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="#585163"
-                        sx={{ mb: 2 }}
-                      >
-                        Be clear and descriptive with a title that tells people
-                        what your event is about.
                       </Typography>
                       <InputField name="name" label="Title" />
                     </Grid>
@@ -203,14 +246,7 @@ export default function CreateEvetnPage() {
                       <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
                         Event Details
                       </Typography>
-                      <Typography
-                        variant="body2"
-                        color="#585163"
-                        sx={{ mb: 2 }}
-                      >
-                        Add more details about your event and include what
-                        people can expect if they attend.
-                      </Typography>
+
                       <InputField name="description" label="Description" />
                     </Grid>
                     <Grid item xs={12}>
@@ -225,27 +261,12 @@ export default function CreateEvetnPage() {
                       />
                     </Grid>
                   </Grid>
-                </Box>
-
-                <Box
-                  sx={{
-                    mt: 4,
-                    p: 4,
-                    width: "100%",
-                    MinHeight: "45vh",
-                    height: "fit-contents",
-                    borderRadius: "10px",
-                    outline: "#eeedf2 2px solid",
-                    "&:hover": { outline: "#3659e3 2px solid" },
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    color="initial"
-                    sx={{ fontWeight: "600", mb: 5 }}
-                  >
+                </MainBox>
+                {/* Event Date and Time section */}
+                <MainBox>
+                  <MainTitle variant="h5" color="initial">
                     Event Date and Time
-                  </Typography>
+                  </MainTitle>
 
                   <Grid
                     container
@@ -284,26 +305,12 @@ export default function CreateEvetnPage() {
                       <TimeField name="endTime" label={"End Time"} />
                     </Grid>
                   </Grid>
-                </Box>
-                <Box
-                  sx={{
-                    mt: 4,
-                    p: 4,
-                    width: "100%",
-                    minHeight: "30vh",
-                    height: "fit-content",
-                    borderRadius: "10px",
-                    outline: "#eeedf2 2px solid",
-                    "&:hover": { outline: "#3659e3 2px solid" },
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    color="initial"
-                    sx={{ fontWeight: "600", mb: 5 }}
-                  >
+                </MainBox>
+                {/* Event Loacation section */}
+                <MainBox>
+                  <MainTitle variant="h5" color="initial">
                     Event Loacation
-                  </Typography>
+                  </MainTitle>
 
                   <Grid
                     container
@@ -315,50 +322,27 @@ export default function CreateEvetnPage() {
                       <MyTabs />
                     </Grid>
                   </Grid>
-                </Box>
+                </MainBox>
               </Grid>
             </FormStep>
 
             <FormStep
-              stepName={"tikits"}
+              stepName={"Event Tikits"}
               onSubmit={() => console.log("step 2 is submit")}
               validationSchema={validationSchemaStepTwo}
             >
-              <Box>
-                <Typography
-                  variant="h5"
-                  color="initial"
-                  sx={{ fontWeight: "600", mb: 5 }}
-                >
-                  Event Tikits
-                </Typography>
-
-                <TicketsFieldArray name="tickets" />
-              </Box>
+              <TicketsFieldArray name="tickets" />
             </FormStep>
+
             <FormStep
-              stepName={"restriction"}
+              stepName={"Event restrictions"}
               onSubmit={() => console.log("step 3 is submit")}
               validationSchema={validationSchemaStepThree}
             >
-              <Box
-                sx={{
-                  mt: 4,
-                  p: 4,
-                  width: "100%",
-                  height: "50vh",
-                  borderRadius: "10px",
-                  outline: "#eeedf2 2px solid",
-                  "&:hover": { outline: "#3659e3 2px solid" },
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  color="initial"
-                  sx={{ fontWeight: "600", mb: 5 }}
-                >
+              <MainBox>
+                <MainTitle variant="h5" color="initial">
                   Restrictions
-                </Typography>
+                </MainTitle>
 
                 <Grid
                   container
@@ -399,11 +383,12 @@ export default function CreateEvetnPage() {
                     />
                   </Grid>
                 </Grid>
-              </Box>
+              </MainBox>
             </FormStep>
           </MultiStepForm>
         </Box>
       </Container>
+      <ToastContainer />
     </>
   );
 }

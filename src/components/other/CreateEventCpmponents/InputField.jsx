@@ -23,7 +23,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { Add, Delete, FileUpload } from "@mui/icons-material";
 import img1 from "../../../assets/images/CreateEventImage/placeholder.webp";
-
+import { InputAdornment } from "@mui/material";
 export default function InputField({ label, numeric = false, name }) {
   const [field, meta] = useField(name);
 
@@ -40,21 +40,27 @@ export default function InputField({ label, numeric = false, name }) {
   return (
     <TextField
       fullWidth
-      label={label === "Price" ? `$ ${label} ` : label}
+      label={label}
       name={name}
       {...field}
       onKeyDown={handleKeyPress}
       error={meta.touched && !!meta.error}
       helperText={meta.touched && meta.error}
       sx={{ mb: 1 }}
+      InputProps={{
+        startAdornment:
+          label == "Price" ? (
+            <InputAdornment position="start">$</InputAdornment>
+          ) : null,
+      }}
     />
   );
 }
 
 export function ImageField() {
   const [, meta, { setValue }] = useField("Thumbnail");
-
   const [previewSrc, setPreviewSrc] = useState("");
+  const [type, setType] = useState("");
 
   return (
     <>
@@ -65,6 +71,8 @@ export function ImageField() {
           width: "100%",
           borderRadius: "10px",
           overflow: "hidden",
+          outline: "#eeedf2 2px solid",
+          "&:hover": { outline: "#3659e3 2px solid" },
         }}
       >
         <InputLabel
@@ -113,32 +121,22 @@ export function ImageField() {
                 Edit Image
               </Typography>
             )}
+
             <Typography variant="body1" color="red" sx={{ fontSize: "14px" }}>
-              {meta.error}
+              {meta.value || meta.touched ? meta.error : null}
             </Typography>
           </Button>
         </InputLabel>
-        {previewSrc ? (
-          <img
-            src={previewSrc}
-            alt="Uploaded Image Preview"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        ) : (
-          <img
-            src={img1} // Replace with your static image path
-            alt="Static Image"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-        )}
+
+        <img
+          src={previewSrc && type.startsWith("image") ? previewSrc : img1}
+          alt="Uploaded Image Preview"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
       </Box>
 
       <input
@@ -150,6 +148,7 @@ export function ImageField() {
         onChange={(event) => {
           const file = event.target.files[0];
           setValue(file);
+          setType(file.type);
 
           if (file) {
             const reader = new FileReader();
@@ -168,8 +167,6 @@ export function ImageField() {
 
 export function DateField({ name, label, minDate }) {
   const [field, meta, helpers] = useField(name);
-
-  if (name == "startDate") console.log(meta);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -214,11 +211,6 @@ export function TimeField({ name, label }) {
     </LocalizationProvider>
   );
 }
-
-// defaultValue={tomorrow}
-// disablePast
-// views={["year", "month", "day"]}
-// disableFuture
 
 export function ControlledOpenSelect({ name, options, label }) {
   const [age, setAge] = useState("");
@@ -380,8 +372,8 @@ export function TicketsFieldArray({ name }) {
                   name: "",
                   price: "",
                   quantity: "",
-                  startSale: dayjs().add(1, "day"),
-                  endSale: dayjs().add(1, "day"),
+                  startSale: "",
+                  endSale: "",
                 })
               }
             >

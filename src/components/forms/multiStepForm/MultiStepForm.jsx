@@ -49,7 +49,7 @@ If such a function exists (if condition evaluates to true),
     >
       {(formik) => (
         <Form autoComplete={"off"} encType="multipart/form-data">
-          <Stepper activeStep={stepNumber} sx={{ mb: 3 }}>
+          <Stepper activeStep={stepNumber} sx={{ mb: 3, width: "100%" }}>
             {steps.map((currentStep) => {
               const label = currentStep.props.stepName;
               return (

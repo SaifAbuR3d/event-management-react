@@ -41,12 +41,25 @@ export const validationSchemaStepOne = yup.object({
     .date()
     .typeError("Invalid date")
     .required("Start time is required"),
-
   endTime: yup
     .date()
     .typeError("Invalid date")
-    .required("End time is required"),
-
+    .required("End time is required")
+    .when("startTime", (startTime, schema) => {
+      return (
+        startTime &&
+        schema.test({
+          name: "afterStart",
+          exclusive: true,
+          test: function (endTime) {
+            const { startTime } = this.parent;
+            if (!startTime || !endTime) return true;
+            return endTime > startTime;
+          },
+          message: "End time must be after start time and not equal to it",
+        })
+      );
+    }),
   categoryId: yup.number().required(" category type is required"),
 
   isOnline: yup.boolean().required(),
@@ -63,7 +76,10 @@ export const validationSchemaStepTwo = yup.object({
     .array()
     .of(
       yup.object({
-        name: yup.string().required("Name is required"),
+        name: yup
+          .string()
+          .required("Name is required")
+          .min(3, "ticket name must be at least 3 characters"),
 
         price: yup.string().required("Price is required"),
 
@@ -111,7 +127,11 @@ export const validationSchemaStepThree = yup.object().shape(
     allowedGender: yup.string(),
     minAge: yup.number().when(["maxAge"], {
       is: (maxAge) => !!maxAge,
-      then: () => yup.number().required("Min Age is required"),
+      then: () =>
+        yup
+          .number()
+          .required("Min Age is required")
+          .min(18, "min age must be more than 18"),
     }),
     maxAge: yup.number().when(["minAge"], {
       is: (minAge) => !!minAge,
