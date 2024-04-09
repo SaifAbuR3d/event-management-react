@@ -14,13 +14,13 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import TicketCard from "../cards/TicketCard";
+import TicketCard from "../../cards/TicketCard";
 import { useState } from "react";
 import MultiStepForm, { FormStep } from "./MultiStepForm";
 import { useMutation } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { queryClient } from "../../main";
+import { queryClient } from "../../../main";
 import PayMethodAcordion from "./PayMethodAcordion";
 import { Close, ShoppingCartOutlined } from "@mui/icons-material";
 

@@ -1,6 +1,6 @@
 import { Paper, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import GetTicketDialog from "../other/GetTicketDialog";
+import GetTicketDialog from "../GetTicketComponent/GetTicketDialog";
 import { useState } from "react";
 
 export default function GetTicketsCard({ ticketsData, data }) {
