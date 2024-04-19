@@ -1,4 +1,5 @@
-import * as React from "react";
+import { useContext, useState } from "react";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,6 +14,7 @@ import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../contexts/UserContext.jsx";
 
 //--------------------- Search styles --------------------
 
@@ -60,13 +62,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 //---------------------------------------------------------
 
-const pages = ["Find Events", "Create Event", "Help Center"];
+const pages = ["Find Events", "Create Event"];
 const auth = ["Login", "Register"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 export default function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  // const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  // const [anchorElUser, setAnchorElUser] = useState(null);
   const navigate = useNavigate();
   // ----------------------------------------
   const handleOpenNavMenu = (event) => {
@@ -84,8 +86,17 @@ export default function Navbar() {
   //   setAnchorElUser(null);
   // };
 
+
+  const { isAuthenticated, removeCurrentUser } = useContext(UserContext);
+
+  const logout = () => {
+    removeCurrentUser();
+  }
+
   return (
     <AppBar position="sticky" top="0" color="navBarColor">
+
+
       <Toolbar sx={{ height: "0px" }}>
         {/*----------AdbIcon-------------*/}
         <AdbIcon sx={{ display: { xs: "flex" }, mr: 1 }} />
@@ -107,6 +118,8 @@ export default function Navbar() {
         >
           Eventbrite
         </Typography>
+
+
         {/*---------Menu just dispaly on {xs} Breakpoint ------------*/}
         <Box sx={{ order: 1, display: { xs: "flex", md: "none" } }}>
           <IconButton
@@ -163,7 +176,9 @@ export default function Navbar() {
             />
           </Search>
         </Box>
-        {/*---------pages-- "Find Events", "Create Event", "Help Center"------------*/}
+
+
+        {/*---------pages-- "Find Events", "Create Event"------------*/}
         <Box
           sx={{
             display: { xs: "none", md: "flex" },
@@ -190,32 +205,57 @@ export default function Navbar() {
             </Button>
           ))}
         </Box>
+
+        {/*Logout button */}
+        {isAuthenticated() &&
+          <Button
+            key={"Logout"}
+            onClick={() => logout()}
+            sx={{
+              my: 2,
+              color: "#39364f",
+              display: "block",
+              borderRadius: 5,
+              p: 1,
+              fontSize: "14px",
+              fontWeight: "500",
+              textTransform: "capitalize",
+              textWrap: "nowrap",
+            }}
+          >
+            Logout
+          </Button>
+        }
+
         {/*---------auth-- "Login", "Register"------------*/}
-        <Box sx={{ display: { xs: "flex" } }}>
-          {auth.map((authItem) => (
-            <Button
-              key={authItem}
-              onClick={() =>
-                authItem == "Register"
-                  ? navigate("/register")
-                  : navigate("/login")
-              }
-              sx={{
-                my: 2,
-                color: "#39364f",
-                display: "block",
-                borderRadius: 5,
-                p: 1,
-                fontSize: "14px",
-                fontWeight: "500",
-                textTransform: "capitalize",
-                textWrap: "nowrap",
-              }}
-            >
-              {authItem}
-            </Button>
-          ))}
-        </Box>
+        {!isAuthenticated() &&
+          <Box sx={{ display: { xs: "flex" } }}>
+            {auth.map((authItem) => (
+              <Button
+                key={authItem}
+                onClick={() =>
+                  authItem == "Register"
+                    ? navigate("/register")
+                    : navigate("/login")
+                }
+                sx={{
+                  my: 2,
+                  color: "#39364f",
+                  display: "block",
+                  borderRadius: 5,
+                  p: 1,
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  textTransform: "capitalize",
+                  textWrap: "nowrap",
+                }}
+              >
+                {authItem}
+              </Button>
+            ))}
+          </Box>
+        }
+
       </Toolbar>
     </AppBar>
   );
