@@ -8,64 +8,77 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
-  Snackbar,
+  Avatar,
 } from "@mui/material";
-import {
-  Edit,
-  PersonAddAltOutlined,
-  TableRows,
-  ViewCarousel,
-  Verified,
-  IosShareOutlined,
-  PersonRemoveOutlined,
-} from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useState } from "react";
-import CustomeSwiper from "../other/organizerProfileComponents/CustomeSwiper";
 import axios from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import DescriptionDialog from "../other/organizerProfileComponents/DescriptionDialog";
 import SocialMediaLinkDialog from "../other/organizerProfileComponents/SocialMediaLinkDialog";
 import ChangeViewProfileImage from "../other/organizerProfileComponents/ChangeViewProfileImage";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SocialMediaLinkButton from "../other/organizerProfileComponents/SocialMediaLinkButton";
 import EventCard from "../cards/EventCard";
+import ProfileTitleCard from "../cards/ProfileTitleCard";
 
 const getProfileOwnerData = async (userName) => {
   const { data: ownerData } = await axios.get(
-    `https://localhost:8080/api/Organizers/${userName}`
+    `${import.meta.env.VITE_API_URL}/api/Organizers/${userName}`
   );
-  const { data: followers } = await axios.get(
-    `https://localhost:8080/api/Organizers/${ownerData.id}/followers`
+  const { data: followers, headers: totalFollowers } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/Organizers/${ownerData.id}/followers`
   );
-  const { data: previousEvents } = await axios.get(
-    `https://localhost:8080/api/events?OrganizerId=${ownerData.id}&PreviousEvents=true`
-  );
-  const { data: upcomingEvents } = await axios.get(
-    `https://localhost:8080/api/events?OrganizerId=${ownerData.id}&UpcomingEvents=true`
-  );
-  const data = { ...ownerData, followers, previousEvents, upcomingEvents };
+
+  let totalFollowersCount = JSON.parse(
+    totalFollowers["x-pagination"]
+  ).TotalCount;
+
+  const data = { ...ownerData, followers, totalFollowersCount };
+
   return data;
+};
+
+const getOwnerEvents = async (alignment, pageSize, id) => {
+  const isUpcoming = alignment === "upcoming";
+  const { data: Events, headers: upEventCount } = await axios.get(
+    `${
+      import.meta.env.VITE_API_URL
+    }/api/events?pageIndex=1&pageSize=${pageSize}&sortColumn=startDate&sortOrder=asc&organizerId=${id}&upcomingEvents=${isUpcoming}&previousEvents=${!isUpcoming}`
+  );
+  const { data: temp, headers: preEventCount } = await axios.get(
+    `${
+      import.meta.env.VITE_API_URL
+    }/api/events?pageIndex=1&pageSize=${pageSize}&sortColumn=startDate&sortOrder=asc&organizerId=${id}&upcomingEvents=${!isUpcoming}&previousEvents=${isUpcoming}`
+  );
+
+  const totalEventCount =
+    JSON.parse(upEventCount["x-pagination"]).TotalCount +
+    JSON.parse(preEventCount["x-pagination"]).TotalCount;
+
+  return { Events, totalEventCount };
 };
 
 export default function OrganizerProfile() {
   const [alignment, setAlignment] = useState("upcoming");
-  const [layout, setLayout] = useState("slide");
   const [openBioDialog, setOpenBioDialog] = useState(false);
   const [openSMLDialog, setOpenSMLDialog] = useState(false);
-  const [openProfileImage, setOpenProfileImage] = useState(false);
-  const [isAttendee, setIsAttendee] = useState(false);
-  const [isOrganizer, setIsOrganizer] = useState(true);
-  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(true);
+  const [isAttendee, setIsAttendee] = useState(true);
+  const [isOrganizer, setIsOrganizer] = useState(false);
+  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [pageSize, setPageSize] = useState(6);
 
-  const handleProfileImageOpen = () => {
-    setOpenProfileImage(true);
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
   };
-  const handleProfileImageClose = () => {
-    setOpenProfileImage(false);
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleSMLClickOpen = () => {
@@ -85,29 +98,46 @@ export default function OrganizerProfile() {
   const handleEvent = (event, newAlignment) => {
     setAlignment(newAlignment);
   };
-  const handleLayout = (event, newLayout) => {
-    setLayout(newLayout);
-  };
 
   /*--------------------------------------------Get Profile Owner Data -----------------------------------------------*/
 
   const { userName } = useParams();
   const { data: profileOwnerData, isLoading: getOwnerDataLoading } = useQuery({
-    queryKey: ["profileOwnerData"],
+    queryKey: ["profileOwnerData", userName],
     queryFn: () => getProfileOwnerData(userName),
   });
 
+  const { data: ownerEvents, isLoading: eventsLoading } = useQuery({
+    queryKey: ["OnwerEvents", alignment, pageSize, profileOwnerData?.id],
+    queryFn: () => getOwnerEvents(alignment, pageSize, profileOwnerData?.id),
+    enabled: !!profileOwnerData && profileOwnerData?.id !== null,
+  });
+
   /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
+
+  const cardStyle = {
+    width: {
+      xs: "78vw",
+      sm: "40vw",
+      md: "29vw",
+      lg: "36vh",
+      xl: "44vh",
+    },
+  };
 
   const renderEvents = (events) => {
     return events.map((event, index) => {
       return (
         <EventCard
           key={index}
+          id={event.id}
+          imageUrl={event.thumbnailUrl}
           name={event.name}
           isOnline={event.isOnline}
           startDate={event.startDate}
           startTime={event.startTime}
+          customStyle={cardStyle}
+          isAttendee={isAttendee}
         />
       );
     });
@@ -137,7 +167,7 @@ export default function OrganizerProfile() {
     },
   });
 
-  if (getOwnerDataLoading || followOrganizerPending) {
+  if (getOwnerDataLoading || followOrganizerPending || eventsLoading) {
     return <div>Loading...</div>;
   }
 
@@ -150,9 +180,10 @@ export default function OrganizerProfile() {
     profile,
     imageUrl,
     followers,
-    previousEvents,
-    upcomingEvents,
+    totalFollowersCount,
   } = profileOwnerData;
+
+  const { Events, totalEventCount } = ownerEvents;
 
   const { bio, website, twitter, facebook, linkedIn, instagram } = profile;
 
@@ -184,118 +215,30 @@ export default function OrganizerProfile() {
     padding: "10%",
   };
 
-  /*--------------------- handle share link button -------------------*/
-  const handleShareClick = () => {
-    const currentUrl = window.location.href;
-    navigator.clipboard
-      .writeText(currentUrl)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => {
-          setCopied(false);
-        }, 2000);
-        //console.log("URL copied to clipboard:", currentUrl);
-      })
-      .catch((error) => {
-        //console.error("Failed to copy URL:", error);
-      });
-  };
-
   return (
     <Grid container position="relative">
       <CssBaseline />
-      <Box
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        flexDirection="column"
-        sx={{
-          top: { xs: "28%", sm: "30%", md: "13%" },
-          width: {
-            xs: "100%",
-            md: "50%",
-          },
-          left: { md: "27.4%" },
-          alignItems: {
-            xs: "center",
-            md: "start",
-          },
-          gap: {
-            xs: 1,
-            md: 6,
-          },
-        }}
-      >
-        <Box display="flex">
-          <Typography
-            component="h1"
-            variant="h4"
-            mr={1}
-            sx={{ fontSize: "2.3rem" }}
-          >
-            {displayName}
-          </Typography>
-
-          {isVerified && <Verified color="secondary" />}
-        </Box>
-        {isAttendee ? (
-          <Box display="flex" gap={1} alignItems="center">
-            {isFollowing ? (
-              <Button
-                variant="contained"
-                sx={{ width: { xs: "90%", sm: "110%" } }}
-                startIcon={<PersonRemoveOutlined />}
-              >
-                Unfollow
-              </Button>
-            ) : (
-              <Button
-                onClick={mutateAsync}
-                variant="contained"
-                sx={{ width: { xs: "90%", sm: "110%" } }}
-                startIcon={<PersonAddAltOutlined />}
-              >
-                Follow
-              </Button>
-            )}
-
-            <Button
-              variant="contained"
-              sx={{ width: { xs: "60%", sm: "70%", lg: "70%" } }}
-              startIcon={<IosShareOutlined />}
-              onClick={handleShareClick}
-            >
-              Share
-            </Button>
-            <Snackbar
-              open={copied}
-              message="Copied!"
-              autoHideDuration={2000} // Automatically hide after 2 seconds
-              onClose={() => setCopied(false)}
-            />
-          </Box>
-        ) : (
-          <>
-            <Button
-              variant="contained"
-              sx={{ width: { xs: "30%", sm: "25%", lg: "25%" } }}
-              startIcon={<IosShareOutlined />}
-              onClick={handleShareClick}
-            >
-              Share
-            </Button>
-            <Snackbar
-              open={copied}
-              message="Copied!"
-              autoHideDuration={2000} // Automatically hide after 2 seconds
-              onClose={() => setCopied(false)}
-            />
-          </>
-        )}
-      </Box>
 
       <Grid item xs={12} height={"35vh"}>
-        <Box bgcolor="#c5cae9" height="100%"></Box>
+        <Box position="relative" width="100%" bgcolor="#c5cae9" height="100%">
+          <Box
+            position="absolute"
+            left={{ xs: "27.3%", lg: "25.2%" }}
+            bottom={15}
+            width="60%"
+            display={{ xs: "none", md: "block" }}
+          >
+            <ProfileTitleCard
+              userName={userName}
+              displayName={displayName}
+              isAttendee={isAttendee}
+              isFollowing={isFollowing}
+              isVerified={isVerified}
+              setIsFollowing={setIsFollowing}
+              attendeeId={profileOwnerData?.id}
+            />
+          </Box>
+        </Box>
       </Grid>
 
       <Grid
@@ -311,187 +254,195 @@ export default function OrganizerProfile() {
           item
           xs={12}
           md={2.6}
+          lg={2.2}
           display="flex"
-          justifyContent="center"
-          sx={{
-            height: {
-              xs: "37vh",
-              sm: "30vh",
-              md: "90vh",
-            },
-          }}
+          flexDirection="column"
+          alignItems={{ xs: "center", md: "start" }}
+          gap={1}
           position="relative"
+          height="fit-content"
         >
           {/*Profile Image*/}
-          <Box
+          <Avatar
             component={Paper}
-            onClick={handleProfileImageOpen}
             elevation={1}
+            onClick={handleClickListItem}
+            alt="Profile Image"
+            src={`https://localhost:8080/${imageUrl}`}
             sx={{
-              backgroundImage: `url(https://localhost:8080/${imageUrl})`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
               width: {
-                xs: "150px",
-                sm: "180px",
-                md: "200px",
-                lg: "220px",
-                xl: "240px",
+                xs: "185px",
+                md: "12rem",
+                lg: "13rem",
+                xl: "15rem",
               },
               height: {
-                xs: "150px",
-                sm: "180px",
-                md: "200px",
-                lg: "220px",
-                xl: "240px",
+                xs: "185px",
+                md: "12rem",
+                lg: "13rem",
+                xl: "15rem",
               },
-              borderRadius: "50%",
               cursor: "pointer",
               position: "absolute",
-              top: { xs: "-90px", sm: "-110px", md: "-130px", lg: "-160px" },
-              left: { md: "auto" },
+              top: { xs: "-8rem", xl: "-10rem" },
             }}
           />
+
           <ChangeViewProfileImage
             isCurrentOrganizer={isCurrentOrganizer}
             ownerData={profileOwnerData}
+            anchorEl={anchorEl}
             image={imageUrl}
-            open={openProfileImage}
-            handleClose={handleProfileImageClose}
+            open={open}
+            handleClose={handleClose}
           />
-          {/*# of Followers and posts*/}
-          <Paper
-            elevation={1}
-            sx={{
-              width: {
-                xs: "100%",
-                sm: "30%",
-                md: "200px",
-                lg: "220px",
-                xl: "240px",
-              },
-              position: "absolute",
-              top: {
-                xs: "175px",
-                sm: "185px",
-                md: "110px",
-              },
-              left: { sm: "0", md: "auto" },
-              display: "flex",
-            }}
-          >
-            <Paper
-              elevation={0}
-              sx={{
-                width: "50%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" color="#283593">
-                {followers.length}
-              </Typography>
-              <Typography variant="body1" color="#283593">
-                followers
-              </Typography>
-            </Paper>
-            <Paper
-              elevation={0}
-              sx={{
-                width: "50%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography variant="h6" color="#283593">
-                {upcomingEvents.length + previousEvents.length}
-              </Typography>
-              <Typography variant="body1" color="#283593">
-                events
-              </Typography>
-            </Paper>
-          </Paper>
 
-          {/*Social Media Link*/}
-          {(socialMedia.length !== 0 || isCurrentOrganizer) && (
+          <Box
+            mt={7}
+            width="100%"
+            display={{
+              xs: "flex",
+              md: "none",
+            }}
+            justifyContent="center"
+          >
+            <ProfileTitleCard
+              userName={userName}
+              displayName={displayName}
+              isAttendee={isAttendee}
+              isFollowing={isFollowing}
+              isVerified={isVerified}
+              setIsFollowing={setIsFollowing}
+              attendeeId={profileOwnerData?.id}
+            />
+          </Box>
+
+          <Box
+            mt={{ xs: 1, md: 13 }}
+            display="flex"
+            width="100%"
+            gap={2}
+            flexDirection={{ xs: "column", sm: "row", md: "column" }}
+            justifyContent="space-between"
+          >
+            {/*# of Followers and posts*/}
             <Paper
               elevation={1}
               sx={{
                 width: {
                   xs: "100%",
-                  sm: "69%",
-                  md: "200px",
-                  lg: "220px",
-                  xl: "240px",
+                  sm: "30%",
+                  md: "12rem",
+                  lg: "13rem",
+                  xl: "15rem",
                 },
-                height: {
-                  xs: "56px",
-                  md: "auto",
-                },
-                position: "absolute",
-                top: {
-                  xs: "245px",
-                  sm: "185px",
-                  md: "200px",
-                },
-                left: { sm: "31%", md: "auto" },
+                display: "flex",
               }}
             >
-              <Box
-                display="flex"
+              <Paper
+                elevation={0}
                 sx={{
-                  flexDirection: {
-                    xs: "row",
-                    md: "column",
-                  },
-                  gap: {
-                    sm: 0,
-                    md: 6,
-                  },
-                  pb: {
-                    sm: 0,
-                    md: 2,
-                  },
-                }}
-                width="100%"
-                height="100%"
-                justifyContent="space-around"
-                position="relative"
-                pt={{
-                  xs: 0,
-                  md: 5,
-                }}
-                pr={{
-                  xs: 1,
-                  md: 0,
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                 }}
               >
-                {/*Edit Icon*/}
-                {isCurrentOrganizer && (
-                  <IconButton
-                    onClick={handleSMLClickOpen}
-                    sx={{
-                      position: "absolute",
-                      top: { xs: 0, md: "3px" },
-                      right: { xs: 0, md: "10px" },
-                    }}
-                  >
-                    <Edit fontSize="small" color="secondary" />
-                  </IconButton>
-                )}
-                <SocialMediaLinkDialog
-                  profile={profile}
-                  open={openSMLDialog}
-                  handleClose={handleSMLClose}
-                />
-
-                {renderSocialMedia}
-              </Box>
+                <Typography variant="h6" color="#283593">
+                  {totalFollowersCount}
+                </Typography>
+                <Typography variant="body1" color="#283593">
+                  followers
+                </Typography>
+              </Paper>
+              <Paper
+                elevation={0}
+                sx={{
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h6" color="#283593">
+                  {totalEventCount}
+                </Typography>
+                <Typography variant="body1" color="#283593">
+                  events
+                </Typography>
+              </Paper>
             </Paper>
-          )}
+            {/*Social Media Link*/}
+            {(socialMedia.length !== 0 || isCurrentOrganizer) && (
+              <Paper
+                elevation={1}
+                sx={{
+                  width: {
+                    xs: "100%",
+                    sm: "70%",
+                    md: "12rem",
+                    lg: "13rem",
+                    xl: "15rem",
+                  },
+                  height: {
+                    xs: "56px",
+                    md: "auto",
+                  },
+                }}
+              >
+                <Box
+                  display="flex"
+                  sx={{
+                    flexDirection: {
+                      xs: "row",
+                      md: "column",
+                    },
+                    gap: {
+                      sm: 0,
+                      md: 6,
+                    },
+                    pb: {
+                      sm: 0,
+                      md: 2,
+                    },
+                  }}
+                  width="100%"
+                  height="100%"
+                  justifyContent="space-around"
+                  position="relative"
+                  pt={{
+                    xs: 0,
+                    md: 5,
+                  }}
+                  pr={{
+                    xs: 1,
+                    md: 0,
+                  }}
+                >
+                  {/*Edit Icon*/}
+                  {isCurrentOrganizer && (
+                    <IconButton
+                      onClick={handleSMLClickOpen}
+                      sx={{
+                        position: "absolute",
+                        top: { xs: 0, md: "3px" },
+                        right: { xs: 0, md: "10px" },
+                      }}
+                    >
+                      <Edit fontSize="small" color="secondary" />
+                    </IconButton>
+                  )}
+                  <SocialMediaLinkDialog
+                    profile={profile}
+                    open={openSMLDialog}
+                    handleClose={handleSMLClose}
+                  />
+
+                  {renderSocialMedia}
+                </Box>
+              </Paper>
+            )}
+          </Box>
         </Grid>
 
         {/*Right Side*/}
@@ -499,6 +450,7 @@ export default function OrganizerProfile() {
           item
           xs={12}
           md={9}
+          lg={9.3}
           display="flex"
           flexDirection="column"
           height={"fit-content"}
@@ -567,39 +519,12 @@ export default function OrganizerProfile() {
                 <ToggleButton value="previous">Previous</ToggleButton>
               </ToggleButtonGroup>
               {/*Slider or Grid View Toggle*/}
-              <ToggleButtonGroup
-                sx={{ p: "2%" }}
-                color="primary"
-                value={layout}
-                exclusive
-                onChange={handleLayout}
-                aria-label="Platform"
-              >
-                <ToggleButton value="slide">
-                  <ViewCarousel />
-                </ToggleButton>
-                <ToggleButton value="grid">
-                  <TableRows />
-                </ToggleButton>
-              </ToggleButtonGroup>
             </Box>
 
-            {layout === "slide" ? (
-              alignment === "upcoming" ? (
-                upcomingEvents.length === 0 ? (
-                  <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
-                ) : (
-                  <CustomeSwiper slides={upcomingEvents} />
-                )
-              ) : previousEvents.length === 0 ? (
-                <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
-              ) : (
-                <CustomeSwiper slides={previousEvents} />
-              )
-            ) : alignment === "upcoming" ? (
-              upcomingEvents.length === 0 ? (
-                <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
-              ) : (
+            {Events.length === 0 ? (
+              <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
+            ) : (
+              <>
                 <Box
                   component="div"
                   display="flex"
@@ -611,25 +536,29 @@ export default function OrganizerProfile() {
                     gap: 2,
                   }}
                 >
-                  {renderEvents(upcomingEvents)}
+                  {renderEvents(Events)}
                 </Box>
-              )
-            ) : previousEvents.length === 0 ? (
-              <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
-            ) : (
-              <Box
-                component="div"
-                display="flex"
-                justifyContent="center"
-                flexDirection="row"
-                flexWrap="wrap"
-                mb={4}
-                sx={{
-                  gap: 2,
-                }}
-              >
-                {renderEvents(previousEvents)}
-              </Box>
+
+                {pageSize < totalEventCount && (
+                  <Box
+                    width="100%"
+                    display="flex"
+                    justifyContent="center"
+                    mb={2}
+                  >
+                    <Button
+                      sx={{ ml: "auto", mr: "auto" }}
+                      variant="outlined"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setPageSize(pageSize + 6);
+                      }}
+                    >
+                      Show More
+                    </Button>
+                  </Box>
+                )}
+              </>
             )}
           </Grid>
         </Grid>
