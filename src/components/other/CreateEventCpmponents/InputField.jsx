@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   FormHelperText,
   Grid,
   IconButton,
@@ -268,6 +270,28 @@ export function ControlledOpenSelect({ name, options, label }) {
         {error && <FormHelperText>{meta.error}</FormHelperText>}
       </FormControl>
     </div>
+  );
+}
+
+export function CheckboxField({ name, label, setIsManged, isManged }) {
+  const [, , { setValue }] = useField(name);
+
+  const handleChange = (event) => {
+    setIsManged(event.target.checked);
+    setValue(event.target.checked);
+  };
+
+  return (
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={isManged}
+          onChange={handleChange}
+          inputProps={{ "aria-label": "controlled" }}
+        />
+      }
+      label={label}
+    />
   );
 }
 

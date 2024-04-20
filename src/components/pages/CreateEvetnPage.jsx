@@ -1,6 +1,7 @@
 import Container from "@mui/material/Container";
 import { Box, Typography, Grid } from "@mui/material";
 import InputField, {
+  CheckboxField,
   ControlledOpenSelect,
   DateField,
   ImageField,
@@ -24,7 +25,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const MainBox = styled("div")(({ theme }) =>
   theme.unstable_sx({
@@ -48,8 +49,10 @@ const MainTitle = styled(Typography)(({ theme }) =>
 export default function CreateEvetnPage() {
   const { data, isLoading } = useGetCategories();
 
+  const [isManged, setIsManged] = useState(false);
+
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTI3MTc0NjcsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.752qhRBA8gUJzQK9cJiSe5Cdmu_FWftpHh8z_Lk-ras";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTM1OTQ0MTQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.1Xdv07SiVFijAgVweqPjCqf_sMn-ggNtHmy1WSkFJxY";
 
   const { mutateAsync, isPending, error, isError, isSuccess } =
     useCreateEvent(token);
@@ -57,9 +60,6 @@ export default function CreateEvetnPage() {
   const handelValues = (values) => {
     dayjs.extend(utc); // extend dayjs with utc plugin
     const formData = new FormData();
-    if (values.allowedGender || values.maxAge || values.minAge) {
-      values.isManaged = true;
-    }
 
     const formattedTickets = values.tickets.map((ticket) => {
       const { startSale, endSale, startSaleTime, endSaleTime, ...rest } =
@@ -81,7 +81,7 @@ export default function CreateEvetnPage() {
         startSale: formattedStartSale,
         endSale: formattedEndSale,
         price: Number(rest.price),
-        quantity: Number(rest.quantity),
+        Totalquantity: Number(rest.quantity),
       };
     });
 
@@ -139,7 +139,7 @@ export default function CreateEvetnPage() {
     if (isSuccess) {
       toast.success("Event Created successfully", {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 1500,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -168,7 +168,6 @@ export default function CreateEvetnPage() {
           <Typography variant="h4" sx={{ fontWeight: "600", mb: 1 }}>
             Build your event page
           </Typography>
-          <p>sakhags</p>
 
           <Typography
             variant="h6"
@@ -283,14 +282,14 @@ export default function CreateEvetnPage() {
                       <DateField
                         name="startDate"
                         label={"Start Date"}
-                        minDate={dayjs().add(1, "day")}
+                        minDate={dayjs().add(2, "day")}
                       />
                     </Grid>
                     <Grid item xs={11.8} sm={5.8}>
                       <DateField
                         name="endDate"
                         label={"End Date"}
-                        minDate={dayjs().add(1, "day")}
+                        minDate={dayjs().add(2, "day")}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -333,7 +332,6 @@ export default function CreateEvetnPage() {
             >
               <TicketsFieldArray name="tickets" />
             </FormStep>
-
             <FormStep
               stepName={"Event restrictions"}
               onSubmit={() => console.log("step 3 is submit")}
@@ -343,46 +341,75 @@ export default function CreateEvetnPage() {
                 <MainTitle variant="h5" color="initial">
                   Restrictions
                 </MainTitle>
-
-                <Grid
-                  container
-                  rowSpacing={1}
-                  columnSpacing={2}
-                  justifyContent={"space-between"}
-                >
-                  <Grid item xs={12}>
-                    <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
-                      Age
-                    </Typography>
-                    <Typography variant="body2" color="#585163" sx={{ mb: 2 }}>
-                      You can specify the age of the attendee
-                    </Typography>
+                <Typography variant="body1" color="initial" sx={{ mb: 1 }}>
+                  When you select &apos;Event is Managed&apos;, you&apos;ll need
+                  to approve attendance manually.Additionally, you can specify
+                  the age and gender of attendees if you wish. For unmanaged
+                  events, you may leave &apos;Event is Managed&apos; unchecked.
+                </Typography>
+                <CheckboxField
+                  label="Event is Managed"
+                  name="isManaged"
+                  setIsManged={setIsManged}
+                  isManged={isManged}
+                />
+                {isManged && (
+                  <Grid
+                    container
+                    rowSpacing={1}
+                    columnSpacing={2}
+                    justifyContent={"space-between"}
+                  >
+                    <Grid item xs={12}>
+                      <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
+                        Age
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="#585163"
+                        sx={{ mb: 2 }}
+                      >
+                        You can specify the age of the attendee
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={5.8}>
+                      <InputField
+                        name="minAge"
+                        label="Min Age"
+                        numeric={true}
+                      />
+                    </Grid>
+                    <Grid item xs={5.8}>
+                      <InputField
+                        name="maxAge"
+                        label="Max Age"
+                        numeric={true}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
+                        Gender
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="#585163"
+                        sx={{ mb: 2 }}
+                      >
+                        You can specify the Gender of the attendee
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <ControlledOpenSelect
+                        name="allowedGender"
+                        label="Gender"
+                        options={[
+                          { id: 1, value: "Male" },
+                          { id: 2, value: "Female" },
+                        ]}
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={5.8}>
-                    <InputField name="minAge" label="Min Age" numeric={true} />
-                  </Grid>
-                  <Grid item xs={5.8}>
-                    <InputField name="maxAge" label="Max Age" numeric={true} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
-                      Gender
-                    </Typography>
-                    <Typography variant="body2" color="#585163" sx={{ mb: 2 }}>
-                      You can specify the age of the attendee
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={3}>
-                    <ControlledOpenSelect
-                      name="allowedGender"
-                      label="Gender"
-                      options={[
-                        { id: 1, value: "Male" },
-                        { id: 2, value: "Female" },
-                      ]}
-                    />
-                  </Grid>
-                </Grid>
+                )}
               </MainBox>
             </FormStep>
           </MultiStepForm>
