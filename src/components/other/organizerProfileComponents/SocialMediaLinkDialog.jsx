@@ -89,9 +89,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
         component: "form",
         style: {
           position: "absolute",
-          top: "40%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          top: "1%",
         },
       }}
     >
