@@ -9,13 +9,12 @@ import {
   ToggleButtonGroup,
   Typography,
   Avatar,
+  Skeleton,
 } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useState } from "react";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
 import DescriptionDialog from "../other/organizerProfileComponents/DescriptionDialog";
 import SocialMediaLinkDialog from "../other/organizerProfileComponents/SocialMediaLinkDialog";
 import ChangeViewProfileImage from "../other/organizerProfileComponents/ChangeViewProfileImage";
@@ -65,7 +64,9 @@ export default function OrganizerProfile() {
   };
 
   const handleEvent = (event, newAlignment) => {
-    setAlignment(newAlignment);
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
   };
 
   /*--------------------------------------------Get Profile Owner Data -----------------------------------------------*/
@@ -139,9 +140,9 @@ export default function OrganizerProfile() {
     width: {
       xs: "78vw",
       sm: "40vw",
-      md: "29vw",
-      lg: "36vh",
-      xl: "44vh",
+      md: "31vw",
+      lg: "35vh",
+      xl: "44.5vh",
     },
   };
 
@@ -398,49 +399,54 @@ export default function OrganizerProfile() {
           item
           xs={12}
           md={9}
+          mt={3}
           lg={9.3}
           display="flex"
           flexDirection="column"
           height={"fit-content"}
-          gap="3vh"
+          gap={3}
         >
           {/*About Section*/}
-          <Grid item xs={12} mt={2} height={"fit-content"}>
-            <Paper
-              elevation={1}
-              sx={{ position: "relative", width: "100%", p: 1 }}
-            >
-              {/*Title (About)*/}
-              <Typography color="#283593" component="h1" variant="h4" p={2}>
-                About
-              </Typography>
+          <Grid
+            item
+            component={Paper}
+            elevation={1}
+            position="relative"
+            width="100%"
+            height={"fit-content"}
+          >
+            {/*Title (About)*/}
+            <Typography color="#283593" component="h1" variant="h4" p={2}>
+              About
+            </Typography>
 
-              {/*About Section Content*/}
-              <Typography p={1}>{bio}</Typography>
+            {/*About Section Content*/}
+            <Typography pl={2} pb={2}>
+              {bio}
+            </Typography>
 
-              {/*Edit Icon Button*/}
-              {isCurrentOrganizer && (
-                <IconButton
-                  aria-label="edit"
-                  color="secondary"
-                  onClick={handleBioClickOpen}
-                  sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
-                >
-                  <Edit />
-                </IconButton>
-              )}
+            {/*Edit Icon Button*/}
+            {isCurrentOrganizer && (
+              <IconButton
+                aria-label="edit"
+                color="secondary"
+                onClick={handleBioClickOpen}
+                sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
+              >
+                <Edit />
+              </IconButton>
+            )}
 
-              {/*Description Dialog Component*/}
-              <DescriptionDialog
-                profile={profile}
-                open={openBioDialog}
-                handleClose={handleBioClose}
-              />
-            </Paper>
+            {/*Description Dialog Component*/}
+            <DescriptionDialog
+              profile={profile}
+              open={openBioDialog}
+              handleClose={handleBioClose}
+            />
           </Grid>
 
           {/*Events Section*/}
-          <Grid item component={Paper} xs={12} elevation={1}>
+          <Grid item component={Paper} elevation={1}>
             {/*Events Section Title */}
             <Typography
               pl={2}
@@ -453,19 +459,17 @@ export default function OrganizerProfile() {
               Events
             </Typography>
 
-            <Box p={2} sx={{ width: "100%" }} display={"flex"}>
-              {/*Ub coming || Previous Events Toggle*/}
-              <ToggleButtonGroup
-                sx={{ p: "2%" }}
-                color="primary"
-                value={alignment}
-                exclusive
-                onChange={handleEvent}
-              >
-                <ToggleButton value="upcoming">Up Coming</ToggleButton>
-                <ToggleButton value="previous">Previous</ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
+            {/*Ub coming || Previous Events Toggle*/}
+            <ToggleButtonGroup
+              sx={{ p: 2, pb: 3 }}
+              color="primary"
+              value={alignment}
+              exclusive
+              onChange={handleEvent}
+            >
+              <ToggleButton value="upcoming">Up Coming</ToggleButton>
+              <ToggleButton value="previous">Previous</ToggleButton>
+            </ToggleButtonGroup>
 
             {(alignment === "upcoming" ? upcomingList : previousList)
               ?.length === 0 ? (
@@ -488,24 +492,56 @@ export default function OrganizerProfile() {
                   )}
                 </Box>
 
-                {6 * page < currentEventCount && (
+                {eventsLoading ? (
                   <Box
-                    width="100%"
+                    component="div"
                     display="flex"
                     justifyContent="center"
-                    mb={2}
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    mb={3}
+                    sx={{
+                      gap: 2,
+                    }}
                   >
-                    <Button
-                      sx={{ ml: "auto", mr: "auto" }}
-                      variant="outlined"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setPage(page + 1);
-                      }}
-                    >
-                      Show More
-                    </Button>
+                    {Array.from(new Array(6)).map((_, index) => (
+                      <Skeleton
+                        key={index}
+                        variant="rectangular"
+                        height={300}
+                        sx={{
+                          borderRadius: "5%",
+                          width: {
+                            xs: "78vw",
+                            sm: "40vw",
+                            md: "31vw",
+                            lg: "35vh",
+                            xl: "44.5vh",
+                          },
+                        }}
+                      />
+                    ))}
                   </Box>
+                ) : (
+                  6 * page < currentEventCount && (
+                    <Box
+                      width="100%"
+                      display="flex"
+                      justifyContent="center"
+                      mb={2}
+                    >
+                      <Button
+                        sx={{ ml: "auto", mr: "auto" }}
+                        variant="outlined"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setPage(page + 1);
+                        }}
+                      >
+                        Show More
+                      </Button>
+                    </Box>
+                  )
                 )}
               </>
             )}
