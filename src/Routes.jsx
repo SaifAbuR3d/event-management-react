@@ -10,6 +10,8 @@ import NotFoundPage from "./components/pages/NotFoundPage";
 import EventPage from "./components/pages/EventPage";
 import OrganizerProfile from "./components/pages/OrganizerProfile";
 import CreateEvetnPage from "./components/pages/CreateEvetnPage";
+import Login from "./shared/auth/login/Login.jsx";
+import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ export const Router = createBrowserRouter([
       <RegisterContextProvider>
         <SignUp />
       </RegisterContextProvider>
+    ),
+  },
+  {
+    path: "login",
+    element: (
+      <ProtectedLogin>
+        <Login />
+      </ProtectedLogin>
     ),
   },
   {
