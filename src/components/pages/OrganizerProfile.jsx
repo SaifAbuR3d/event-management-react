@@ -15,7 +15,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useState } from "react";
 import axios from "axios";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import DescriptionDialog from "../other/organizerProfileComponents/DescriptionDialog";
 import SocialMediaLinkDialog from "../other/organizerProfileComponents/SocialMediaLinkDialog";
 import ChangeViewProfileImage from "../other/organizerProfileComponents/ChangeViewProfileImage";
@@ -23,55 +23,24 @@ import { useParams } from "react-router-dom";
 import SocialMediaLinkButton from "../other/organizerProfileComponents/SocialMediaLinkButton";
 import EventCard from "../cards/EventCard";
 import ProfileTitleCard from "../cards/ProfileTitleCard";
-
-const getProfileOwnerData = async (userName) => {
-  const { data: ownerData } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/Organizers/${userName}`
-  );
-  const { data: followers, headers: totalFollowers } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/Organizers/${ownerData.id}/followers`
-  );
-
-  let totalFollowersCount = JSON.parse(
-    totalFollowers["x-pagination"]
-  ).TotalCount;
-
-  const data = { ...ownerData, followers, totalFollowersCount };
-
-  return data;
-};
-
-const getOwnerEvents = async (alignment, pageSize, id) => {
-  const isUpcoming = alignment === "upcoming";
-  const { data: Events, headers: upEventCount } = await axios.get(
-    `${
-      import.meta.env.VITE_API_URL
-    }/api/events?pageIndex=1&pageSize=${pageSize}&sortColumn=startDate&sortOrder=asc&organizerId=${id}&upcomingEvents=${isUpcoming}&previousEvents=${!isUpcoming}`
-  );
-  const { data: temp, headers: preEventCount } = await axios.get(
-    `${
-      import.meta.env.VITE_API_URL
-    }/api/events?pageIndex=1&pageSize=${pageSize}&sortColumn=startDate&sortOrder=asc&organizerId=${id}&upcomingEvents=${!isUpcoming}&previousEvents=${isUpcoming}`
-  );
-
-  const totalEventCount =
-    JSON.parse(upEventCount["x-pagination"]).TotalCount +
-    JSON.parse(preEventCount["x-pagination"]).TotalCount;
-
-  return { Events, totalEventCount };
-};
+import {
+  getOwnerEvents,
+  getProfileOwnerData,
+} from "../../API/organizerProfileApi";
 
 export default function OrganizerProfile() {
   const [alignment, setAlignment] = useState("upcoming");
   const [openBioDialog, setOpenBioDialog] = useState(false);
   const [openSMLDialog, setOpenSMLDialog] = useState(false);
-  const [isAttendee, setIsAttendee] = useState(true);
+  const [isAttendee, setIsAttendee] = useState(false);
   const [isOrganizer, setIsOrganizer] = useState(false);
-  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(false);
+  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [pageSize, setPageSize] = useState(6);
+  const [page, setPage] = useState(1);
+  const [upcomingList, setUpcomingList] = useState([]);
+  const [previousList, setPreviousList] = useState([]);
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
@@ -102,76 +71,25 @@ export default function OrganizerProfile() {
   /*--------------------------------------------Get Profile Owner Data -----------------------------------------------*/
 
   const { userName } = useParams();
-  const { data: profileOwnerData, isLoading: getOwnerDataLoading } = useQuery({
-    queryKey: ["profileOwnerData", userName],
-    queryFn: () => getProfileOwnerData(userName),
-  });
 
-  const { data: ownerEvents, isLoading: eventsLoading } = useQuery({
-    queryKey: ["OnwerEvents", alignment, pageSize, profileOwnerData?.id],
-    queryFn: () => getOwnerEvents(alignment, pageSize, profileOwnerData?.id),
-    enabled: !!profileOwnerData && profileOwnerData?.id !== null,
-  });
+  const { data: profileOwnerData, isLoading: getOwnerDataLoading } =
+    getProfileOwnerData(userName);
 
-  /*--------------------------------------------Get Profile Owner Events ---------------------------------------------*/
+  const { data: ownerEvents, isLoading: eventsLoading } = getOwnerEvents(
+    alignment,
+    page,
+    profileOwnerData?.id,
+    previousList,
+    setPreviousList,
+    upcomingList,
+    setUpcomingList
+  );
 
-  const cardStyle = {
-    width: {
-      xs: "78vw",
-      sm: "40vw",
-      md: "29vw",
-      lg: "36vh",
-      xl: "44vh",
-    },
-  };
+  /*----------------------------------------------------- Get Data ---------------------------------------------------*/
 
-  const renderEvents = (events) => {
-    return events.map((event, index) => {
-      return (
-        <EventCard
-          key={index}
-          id={event.id}
-          imageUrl={event.thumbnailUrl}
-          name={event.name}
-          isOnline={event.isOnline}
-          startDate={event.startDate}
-          startTime={event.startTime}
-          customStyle={cardStyle}
-          isAttendee={isAttendee}
-        />
-      );
-    });
-  };
-
-  /*--------------------------------------------  Follow Organizer Request ------------------------------------------*/
-  const fakeAttendee = {
-    organizerId: profileOwnerData?.id,
-  };
-
-  const { mutateAsync, isPending: followOrganizerPending } = useMutation({
-    mutationFn: async () => {
-      const { data } = await axios.post(
-        `https://localhost:8080/api/Attendees/my/follows`,
-        fakeAttendee,
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InlhemVlZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InlhemVlZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTQ0MTEwMCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.nK_MZlfOTw4Fyic7K414WBg02Pk5sJh4BSwzqbUl4OE`,
-          },
-        }
-      );
-      return data;
-    },
-    onSuccess: (data) => {
-      //queryClient.invalidateQueries(["profileOwnerData"]);
-      setIsFollowing(true);
-    },
-  });
-
-  if (getOwnerDataLoading || followOrganizerPending || eventsLoading) {
+  if (getOwnerDataLoading) {
     return <div>Loading...</div>;
   }
-
-  /*------------------------------------------------ Render Functions -----------------------------------------------*/
 
   const {
     id,
@@ -183,7 +101,9 @@ export default function OrganizerProfile() {
     totalFollowersCount,
   } = profileOwnerData;
 
-  const { Events, totalEventCount } = ownerEvents;
+  const totalEventCount = ownerEvents?.totalEventCount;
+
+  const currentEventCount = ownerEvents?.currentEventCount;
 
   const { bio, website, twitter, facebook, linkedIn, instagram } = profile;
 
@@ -213,6 +133,34 @@ export default function OrganizerProfile() {
     width: "100%",
     color: "red",
     padding: "10%",
+  };
+
+  const cardStyle = {
+    width: {
+      xs: "78vw",
+      sm: "40vw",
+      md: "29vw",
+      lg: "36vh",
+      xl: "44vh",
+    },
+  };
+
+  const renderEvents = (events) => {
+    return events.map((event, index) => {
+      return (
+        <EventCard
+          key={index}
+          id={event.id}
+          imageUrl={event.thumbnailUrl}
+          name={event.name}
+          isOnline={event.isOnline}
+          startDate={event.startDate}
+          startTime={event.startTime}
+          customStyle={cardStyle}
+          isAttendee={isAttendee}
+        />
+      );
+    });
   };
 
   return (
@@ -513,15 +461,14 @@ export default function OrganizerProfile() {
                 value={alignment}
                 exclusive
                 onChange={handleEvent}
-                aria-label="Platform"
               >
                 <ToggleButton value="upcoming">Up Coming</ToggleButton>
                 <ToggleButton value="previous">Previous</ToggleButton>
               </ToggleButtonGroup>
-              {/*Slider or Grid View Toggle*/}
             </Box>
 
-            {Events.length === 0 ? (
+            {(alignment === "upcoming" ? upcomingList : previousList)
+              ?.length === 0 ? (
               <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
             ) : (
               <>
@@ -536,10 +483,12 @@ export default function OrganizerProfile() {
                     gap: 2,
                   }}
                 >
-                  {renderEvents(Events)}
+                  {renderEvents(
+                    alignment === "upcoming" ? upcomingList : previousList
+                  )}
                 </Box>
 
-                {pageSize < totalEventCount && (
+                {6 * page < currentEventCount && (
                   <Box
                     width="100%"
                     display="flex"
@@ -551,7 +500,7 @@ export default function OrganizerProfile() {
                       variant="outlined"
                       onClick={(event) => {
                         event.preventDefault();
-                        setPageSize(pageSize + 6);
+                        setPage(page + 1);
                       }}
                     >
                       Show More

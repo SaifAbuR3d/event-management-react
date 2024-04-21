@@ -8,17 +8,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContentText from "@mui/material/DialogContentText";
 import {
   Avatar,
-  List,
-  ListItemButton,
   Menu,
   MenuItem,
-  Paper,
   TextField,
 } from "@mui/material";
 import { useFormik } from "formik";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { queryClient } from "../../../main";
+import { changeImageRequest } from "../../../API/organizerProfileApi";
 
 function ViewImage({ open, handleClose, image }) {
   return (
@@ -34,7 +29,7 @@ function ViewImage({ open, handleClose, image }) {
         <Avatar
           variant="square"
           alt="Profile Image"
-          src={`https://localhost:8080/${image}`}
+          src={`${import.meta.env.VITE_API_URL}/${image}`}
           sx={{ width: "100%", height: "100%" }}
         />
       </DialogContent>
@@ -47,24 +42,7 @@ function ChangeImage({ open, handleClose, ownerData }) {
     newImageUrl: ownerData.imageUrl,
   };
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (formData) => {
-      const { data } = await axios.post(
-        `https://localhost:8080/api/Organizers/my/profile-picture`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTE2MTQzNTQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.aTkq0A3S9X-aEziWYmNLY1TZX-MmBGbXTxSWmTeED1w`,
-          },
-        }
-      );
-      return data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(["profileOwnerData"]);
-      handleClose();
-    },
-  });
+  const { mutateAsync } = changeImageRequest(handleClose);
 
   const formik = useFormik({
     initialValues,
@@ -74,6 +52,7 @@ function ChangeImage({ open, handleClose, ownerData }) {
       await mutateAsync(formData);
     },
   });
+
   return (
     <Dialog
       open={open}

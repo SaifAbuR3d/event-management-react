@@ -5,8 +5,10 @@ import {
 } from "@mui/icons-material";
 import { Box, Button, Snackbar, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import React from "react";
 import { useState } from "react";
+import { followRequest } from "../../API/organizerProfileApi";
 
 export default function ProfileTitleCard({
   displayName,
@@ -35,24 +37,7 @@ export default function ProfileTitleCard({
     organizerId: attendeeId,
   };
 
-  const { mutateAsync, isPending: followOrganizerPending } = useMutation({
-    mutationFn: async () => {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/Attendees/my/follows`,
-        fakeAttendee,
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InlhemVlZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InlhemVlZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTQ0MTEwMCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.nK_MZlfOTw4Fyic7K414WBg02Pk5sJh4BSwzqbUl4OE`,
-          },
-        }
-      );
-      return data;
-    },
-    onSuccess: (data) => {
-      //queryClient.invalidateQueries(["profileOwnerData"]);
-      setIsFollowing(true);
-    },
-  });
+  const { mutateAsync } = followRequest(fakeAttendee, setIsFollowing);
 
   return (
     <Box display={"flex"} flexDirection="column" gap={3} 
