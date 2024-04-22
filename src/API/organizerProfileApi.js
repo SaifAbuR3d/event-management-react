@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
+
 
 const getProfileOwnersData = async (userName) => {
     const { data: ownerData } = await axios.get(
@@ -105,11 +108,13 @@ export function getOwnerEvents(alignment, page, id, previousList, setPreviousLis
             previousList,
             setPreviousList
           ),
-        enabled: id !== null,
+        enabled: !!id,
     })
 };
 
-export function followRequest (fakeAttendee, setIsFollowing) {
+export function followRequest (fakeAttendee) {
+  const { userToken } = useContext(UserContext);
+
     return useMutation({
         mutationFn: async () => {
           const { data } = await axios.post(
@@ -117,20 +122,45 @@ export function followRequest (fakeAttendee, setIsFollowing) {
             fakeAttendee,
             {
               headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InlhemVlZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InlhemVlZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTQ0MTEwMCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.nK_MZlfOTw4Fyic7K414WBg02Pk5sJh4BSwzqbUl4OE`,
+                Authorization: `Bearer ${userToken}`,
               },
             }
           );
           return data;
         },
         onSuccess: (data) => {
-          //queryClient.invalidateQueries(["profileOwnerData"]);
-          setIsFollowing(true);
+          queryClient.invalidateQueries(["profileOwnerData"]);
         },
-    });
+  });
+}
+
+export function unFollowRequest() {
+  const { userToken } = useContext(UserContext);
+
+  return useMutation({
+    mutationFn: async (organizerId) => {
+      const { data } = await axios.delete(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/Attendees/my/follows/${organizerId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["profileOwnerData"]);
+    },
+  });
+  
 }
 
 export function changeImageRequest(handleClose) {
+  const { userToken } = useContext(UserContext);
+
     return useMutation({
         mutationFn: async (formData) => {
           const { data } = await axios.post(
@@ -138,7 +168,7 @@ export function changeImageRequest(handleClose) {
             formData,
             {
               headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTE2MTQzNTQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.aTkq0A3S9X-aEziWYmNLY1TZX-MmBGbXTxSWmTeED1w`,
+                Authorization: `Bearer ${userToken}`,
               },
             }
           );
@@ -152,14 +182,16 @@ export function changeImageRequest(handleClose) {
 }
 
 export function changeBio(handleClose) {
+  const { userToken } = useContext(UserContext);
+
     return useMutation({
         mutationFn: async (requestData) => {
           const { data } = await axios.post(
-            `https://localhost:8080/api/Organizers/my/profile`,
+            `${import.meta.env.VITE_API_URL}/api/Organizers/my/profile`,
             requestData,
             {
               headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiU2FtZWVoLUh1c3NlaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzYW1lZWhodXNzZWluQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Ik9yZ2FuaXplciIsImV4cCI6MTcxMTI0NjcyNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.W2I4dieGI87mB4q0Ep2VRrVWStiGGJU6iNybBNhavMQ`,
+                Authorization: `Bearer ${userToken}`,
               },
             }
           );
@@ -173,14 +205,16 @@ export function changeBio(handleClose) {
 }
 
 export function changeLinks(handleClose) {
+  const { userToken } = useContext(UserContext);
+
     return useMutation({
         mutationFn: async (requestData) => {
           const { data } = await axios.post(
-            `https://localhost:8080/api/Organizers/my/profile`,
+            `${import.meta.env.VITE_API_URL}/api/Organizers/my/profile`,
             requestData,
             {
               headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiU2FtZWVoLUh1c3NlaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzYW1lZWhodXNzZWluQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Ik9yZ2FuaXplciIsImV4cCI6MTcxMTI0NjcyNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.W2I4dieGI87mB4q0Ep2VRrVWStiGGJU6iNybBNhavMQ`,
+                Authorization: `Bearer ${userToken}`,
               },
             }
           );
