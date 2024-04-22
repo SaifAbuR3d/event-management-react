@@ -1,47 +1,35 @@
 import {
   IosShareOutlined,
   PersonAddAltOutlined,
+  PersonRemoveOutlined,
   Verified,
 } from "@mui/icons-material";
-import { Box, Button, Snackbar, Typography } from "@mui/material";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { Box, Button, Typography } from "@mui/material";
 import React from "react";
-import { useState } from "react";
-import { followRequest } from "../../API/organizerProfileApi";
+import { followRequest, unFollowRequest } from "../../API/organizerProfileApi";
 
 export default function ProfileTitleCard({
   displayName,
   isAttendee,
   isFollowing,
   isVerified,
-  setIsFollowing,
-  attendeeId,
+  organizerId,
   userName,
 }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleShareClick = () => {
-    const currentUrl = `http://localhost:3000/profile/${userName}`;
-    navigator.clipboard
-      .writeText(currentUrl)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => {
-          setCopied(false);
-        }, 1500);
-      })
-  };
-
   const fakeAttendee = {
-    organizerId: attendeeId,
+    organizerId: organizerId,
   };
 
-  const { mutateAsync } = followRequest(fakeAttendee, setIsFollowing);
+  const { mutateAsync: follow } = followRequest(fakeAttendee);
+
+  const unFollow = unFollowRequest();
 
   return (
-    <Box display={"flex"} flexDirection="column" gap={3} 
-        alignItems={{xs:"center", md:"start"}}
+    <Box
+      display={"flex"}
+      flexDirection="column"
+      gap={3}
+      alignItems={{ xs: "center", md: "start" }}
     >
       <Box display="flex">
         <Typography
@@ -59,6 +47,7 @@ export default function ProfileTitleCard({
         <Box display="flex" gap={1} justifyContent="center">
           {isFollowing ? (
             <Button
+              onClick={() => unFollow.mutate(organizerId)}
               variant="outlined"
               sx={{ width: { xs: "90%", sm: "110%" } }}
               startIcon={<PersonRemoveOutlined />}
@@ -67,7 +56,7 @@ export default function ProfileTitleCard({
             </Button>
           ) : (
             <Button
-              onClick={mutateAsync}
+              onClick={follow}
               variant="contained"
               sx={{ width: { xs: "90%", sm: "110%" } }}
               startIcon={<PersonAddAltOutlined />}
@@ -80,34 +69,19 @@ export default function ProfileTitleCard({
             variant="contained"
             sx={{ width: { xs: "60%", sm: "70%", lg: "70%" } }}
             startIcon={<IosShareOutlined />}
-            onClick={handleShareClick}
           >
             Share
           </Button>
-
-          <Snackbar
-            open={copied}
-            message="Copied!"
-            autoHideDuration={1500} 
-          />
-
         </Box>
       ) : (
         <>
           <Button
             variant="contained"
-            sx={{ width: { xs: "70%", md:"23%" } }}
+            sx={{ width: { xs: "70%", md: "23%" } }}
             startIcon={<IosShareOutlined />}
-            onClick={handleShareClick}
           >
             Share
           </Button>
-          <Snackbar
-            open={copied}
-            message="Copied!"
-            autoHideDuration={2000} // Automatically hide after 2 seconds
-            onClose={() => setCopied(false)}
-          />
         </>
       )}
     </Box>

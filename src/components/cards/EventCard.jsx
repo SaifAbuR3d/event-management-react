@@ -5,14 +5,10 @@ import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { Box, Paper, Snackbar } from "@mui/material";
-import {
-  DoneAll,
-  IosShare,
-  Key,
-  PeopleOutlineTwoTone,
-} from "@mui/icons-material";
+import { Box, Paper } from "@mui/material";
+import { DoneAll, IosShare, PeopleOutlineTwoTone } from "@mui/icons-material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function EventCard({
   name,
@@ -26,20 +22,15 @@ export default function EventCard({
   customStyle,
   isAttendee,
 }) {
-  const [copied, setCopied] = useState(false);
+  const url = `http://localhost:3000/event/${id}`;
 
-  const handleShareClick = () => {
-    const currentUrl = `http://localhost:3000/event/${id}`;
-    navigator.clipboard.writeText(currentUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    });
+  const openNewWindow = () => {
+    window.open(url, "_blank");
   };
 
   return (
     <Card
+      onClick={openNewWindow}
       component={Paper}
       elevation={2}
       sx={{
@@ -47,8 +38,9 @@ export default function EventCard({
         borderBottomRightRadius: "4%",
         transition: "transform 0.5s ease",
         "&:hover": {
-          transform: "scale(1.02)",
+          transform: "scale(1.01)",
         },
+        cursor: "pointer",
         ...customStyle,
       }}
     >
@@ -74,19 +66,14 @@ export default function EventCard({
             alignItems="center"
           >
             {isAttendee && (
-              <IconButton>
+              <IconButton onClick={(event) => event.stopPropagation()}>
                 <FavoriteIcon />
               </IconButton>
             )}
-            {!copied ? (
-              <IconButton onClick={handleShareClick}>
-                <IosShare />
-              </IconButton>
-            ) : (
-              <IconButton>
-                <DoneAll />
-              </IconButton>
-            )}
+
+            <IconButton onClick={(event) => event.stopPropagation()}>
+              <IosShare />
+            </IconButton>
           </Box>
         </Box>
 
