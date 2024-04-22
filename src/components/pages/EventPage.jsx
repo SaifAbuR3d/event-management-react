@@ -28,6 +28,7 @@ import {
   useGetEventData,
   useGetOrganizerFollowers,
 } from "../../API/eventPageApi.js";
+import MainLoding from "../looding/MainLoding.jsx";
 
 export default function EventPage() {
   //---------for testing  !! --------------------------
@@ -48,7 +49,7 @@ export default function EventPage() {
     useGetOrganizerFollowers(organizerId);
 
   if (isLoading || followersLoading) {
-    return <div>Loading...</div>;
+    return <MainLoding isLoading={isLoading || followersLoading}/>;
   }
 
   // console.log(followersData);

@@ -25,6 +25,7 @@ import Alert from "@mui/material/Alert";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
+import MainLoding from "../looding/MainLoding";
 
 const MainBox = styled("div")(({ theme }) =>
   theme.unstable_sx({
@@ -151,14 +152,7 @@ export default function CreateEvetnPage() {
   }, [isSuccess]);
 
   if (isLoading) {
-    return (
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}
-      >
-        <CircularProgress color="primary" size={"70px"} />
-      </Backdrop>
-    );
+    return <MainLoding isLoading={isLoading}/>;
   }
 
   return (

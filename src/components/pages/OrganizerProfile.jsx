@@ -9,7 +9,6 @@ import {
   ToggleButtonGroup,
   Typography,
   Avatar,
-  Skeleton,
 } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import "swiper/css";
@@ -26,20 +25,22 @@ import {
   getOwnerEvents,
   getProfileOwnerData,
 } from "../../API/organizerProfileApi";
+import { UserContext } from "../../contexts/UserContext";
+import { useContext } from "react";
+import MainLoding from "../looding/MainLoding";
+import EventCardLoading from "../looding/EventCardLoading";
 
 export default function OrganizerProfile() {
   const [alignment, setAlignment] = useState("upcoming");
   const [openBioDialog, setOpenBioDialog] = useState(false);
   const [openSMLDialog, setOpenSMLDialog] = useState(false);
-  const [isAttendee, setIsAttendee] = useState(false);
-  const [isOrganizer, setIsOrganizer] = useState(false);
-  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(true);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [page, setPage] = useState(1);
   const [upcomingList, setUpcomingList] = useState([]);
   const [previousList, setPreviousList] = useState([]);
+
+  const { isAttendee, isCurrentOrganizer, user } = useContext(UserContext);
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
@@ -89,7 +90,7 @@ export default function OrganizerProfile() {
   /*----------------------------------------------------- Get Data ---------------------------------------------------*/
 
   if (getOwnerDataLoading) {
-    return <div>Loading...</div>;
+    return <MainLoding isLoading={getOwnerDataLoading} />;
   }
 
   const {
@@ -141,8 +142,8 @@ export default function OrganizerProfile() {
       xs: "78vw",
       sm: "40vw",
       md: "31vw",
-      lg: "35vh",
-      xl: "44.5vh",
+      lg: "21vw",
+      xl: "21.5vw",
     },
   };
 
@@ -158,17 +159,25 @@ export default function OrganizerProfile() {
           startDate={event.startDate}
           startTime={event.startTime}
           customStyle={cardStyle}
-          isAttendee={isAttendee}
+          isAttendee={attendee}
         />
       );
     });
   };
 
+  const currentOrganizer = isCurrentOrganizer(userName);
+  const attendee = isAttendee();
+
+  const isFollowing =
+    profileOwnerData?.followers.find(
+      (follower) => follower.userName === user?.userName
+    ) !== undefined;
+
   return (
     <Grid container position="relative">
       <CssBaseline />
 
-      <Grid item xs={12} height={"35vh"}>
+      <Grid item xs={12} height={"260px"}>
         <Box position="relative" width="100%" bgcolor="#c5cae9" height="100%">
           <Box
             position="absolute"
@@ -180,11 +189,10 @@ export default function OrganizerProfile() {
             <ProfileTitleCard
               userName={userName}
               displayName={displayName}
-              isAttendee={isAttendee}
+              isAttendee={attendee}
               isFollowing={isFollowing}
               isVerified={isVerified}
-              setIsFollowing={setIsFollowing}
-              attendeeId={profileOwnerData?.id}
+              organizerId={profileOwnerData?.id}
             />
           </Box>
         </Box>
@@ -238,7 +246,7 @@ export default function OrganizerProfile() {
           />
 
           <ChangeViewProfileImage
-            isCurrentOrganizer={isCurrentOrganizer}
+            isCurrentOrganizer={currentOrganizer}
             ownerData={profileOwnerData}
             anchorEl={anchorEl}
             image={imageUrl}
@@ -258,11 +266,10 @@ export default function OrganizerProfile() {
             <ProfileTitleCard
               userName={userName}
               displayName={displayName}
-              isAttendee={isAttendee}
+              isAttendee={attendee}
               isFollowing={isFollowing}
               isVerified={isVerified}
-              setIsFollowing={setIsFollowing}
-              attendeeId={profileOwnerData?.id}
+              organizerId={profileOwnerData?.id}
             />
           </Box>
 
@@ -322,7 +329,7 @@ export default function OrganizerProfile() {
               </Paper>
             </Paper>
             {/*Social Media Link*/}
-            {(socialMedia.length !== 0 || isCurrentOrganizer) && (
+            {(socialMedia.length !== 0 || currentOrganizer) && (
               <Paper
                 elevation={1}
                 sx={{
@@ -369,7 +376,7 @@ export default function OrganizerProfile() {
                   }}
                 >
                   {/*Edit Icon*/}
-                  {isCurrentOrganizer && (
+                  {currentOrganizer && (
                     <IconButton
                       onClick={handleSMLClickOpen}
                       sx={{
@@ -421,12 +428,12 @@ export default function OrganizerProfile() {
             </Typography>
 
             {/*About Section Content*/}
-            <Typography pl={2} pb={2}>
+            <Typography component="pre" pl={2} pb={2}>
               {bio}
             </Typography>
 
             {/*Edit Icon Button*/}
-            {isCurrentOrganizer && (
+            {currentOrganizer && (
               <IconButton
                 aria-label="edit"
                 color="secondary"
@@ -505,21 +512,7 @@ export default function OrganizerProfile() {
                     }}
                   >
                     {Array.from(new Array(6)).map((_, index) => (
-                      <Skeleton
-                        key={index}
-                        variant="rectangular"
-                        height={300}
-                        sx={{
-                          borderRadius: "5%",
-                          width: {
-                            xs: "78vw",
-                            sm: "40vw",
-                            md: "31vw",
-                            lg: "35vh",
-                            xl: "44.5vh",
-                          },
-                        }}
-                      />
+                      <EventCardLoading key={index} customStyle={cardStyle} />
                     ))}
                   </Box>
                 ) : (
