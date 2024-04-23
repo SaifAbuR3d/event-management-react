@@ -9,6 +9,7 @@ import { Box, Paper } from "@mui/material";
 import { DoneAll, IosShare, PeopleOutlineTwoTone } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ShareCard from "./ShareCard";
 
 export default function EventCard({
   name,
@@ -22,6 +23,18 @@ export default function EventCard({
   customStyle,
   isAttendee,
 }) {
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = (event) => {
+    event.stopPropagation();
+    setOpen(true);
+  };
+
+  const handleClose = (event) => {
+    event.stopPropagation();
+    setOpen(false);
+  };
+
   const url = `http://localhost:3000/event/${id}`;
 
   const openNewWindow = () => {
@@ -71,7 +84,7 @@ export default function EventCard({
               </IconButton>
             )}
 
-            <IconButton onClick={(event) => event.stopPropagation()}>
+            <IconButton onClick={handleOpen}>
               <IosShare />
             </IconButton>
           </Box>
@@ -98,6 +111,12 @@ export default function EventCard({
           </Typography>
         )}
       </CardContent>
+      <ShareCard
+        open={open}
+        handleClose={handleClose}
+        label={"Event url"}
+        url={url}
+      />
     </Card>
   );
 }

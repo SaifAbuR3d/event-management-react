@@ -7,6 +7,8 @@ import {
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { followRequest, unFollowRequest } from "../../API/organizerProfileApi";
+import { useState } from "react";
+import ShareCard from "./ShareCard";
 
 export default function ProfileTitleCard({
   displayName,
@@ -16,6 +18,16 @@ export default function ProfileTitleCard({
   organizerId,
   userName,
 }) {
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const fakeAttendee = {
     organizerId: organizerId,
   };
@@ -66,6 +78,7 @@ export default function ProfileTitleCard({
           )}
 
           <Button
+            onClick={handleOpen}
             variant="contained"
             sx={{ width: { xs: "60%", sm: "70%", lg: "70%" } }}
             startIcon={<IosShareOutlined />}
@@ -76,6 +89,7 @@ export default function ProfileTitleCard({
       ) : (
         <>
           <Button
+            onClick={handleOpen}
             variant="contained"
             sx={{ width: { xs: "70%", md: "23%" } }}
             startIcon={<IosShareOutlined />}
@@ -84,6 +98,13 @@ export default function ProfileTitleCard({
           </Button>
         </>
       )}
+
+      <ShareCard
+        open={open}
+        handleClose={handleClose}
+        label={"Profile url"}
+        url={`http://localhost:3000/profile/${userName}`}
+      />
     </Box>
   );
 }

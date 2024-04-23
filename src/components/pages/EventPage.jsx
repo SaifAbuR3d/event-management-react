@@ -5,7 +5,6 @@ import {
   Typography,
   Box,
   IconButton,
-  Snackbar,
   Button,
 } from "@mui/material";
 import { Flag } from "@mui/icons-material";
