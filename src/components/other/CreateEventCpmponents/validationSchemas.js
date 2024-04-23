@@ -13,9 +13,15 @@ function isValidFileType(fileName, fileType) {
 }
 
 export const validationSchemaStepOne = yup.object({
-  name: yup.string().required("Title required"),
+  name: yup
+    .string()
+    .required("Title required")
+    .min(3, "Title must be between 3 and 7000 characters"),
 
-  description: yup.string().required("Description required"),
+  description: yup
+    .string()
+    .required("Description required")
+    .min(3, "Title must be between 3 and 7000 characters"),
 
   Thumbnail: yup
     .mixed()
@@ -28,13 +34,19 @@ export const validationSchemaStepOne = yup.object({
     .date()
     .required("Start date is required")
     .typeError("Invalid date")
-    .min(dayjs(), "Start date must be at least one day ahead"),
+    .min(
+      dayjs().add(1, "day"),
+      "Please set the start date to at least one day ahead of today."
+    ),
 
   endDate: yup
     .date()
     .required("End date is required")
     .typeError("Invalid date")
-    .min(dayjs(), "End date must be at least one day ahead")
+    .min(
+      dayjs().add(1, "day"),
+      "Please set the start date to at least one day ahead of today."
+    )
     .min(yup.ref("startDate"), "End date must be before start date"),
 
   startTime: yup

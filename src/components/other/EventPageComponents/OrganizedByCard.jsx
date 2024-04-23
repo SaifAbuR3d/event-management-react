@@ -2,20 +2,34 @@ import { Avatar, Box, Button, Paper, Typography, Link } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/FacebookRounded";
 import LanguageIcon from "@mui/icons-material/LanguageRounded";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Instagram, LinkedIn } from "@mui/icons-material";
-import { useAddFollow } from "../../../API/eventPageApi";
+import { useAddFollow, useRemoveFollow } from "../../../API/eventPageApi";
+import { UserContext } from "../../../contexts/UserContext";
+import GuestDialog from "./GuestDialog";
 
-export default function OrganizedByCard({ organizer, followersCount }) {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [isAtndee, setIsAtndee] = useState(true);
-
+export default function OrganizedByCard({ organizer, followersData }) {
+  const [following, setFollowing] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { isOrganizer, isAuthenticated, user } = useContext(UserContext);
   const { displayName, id, profile, imageUrl } = organizer;
+  const { totalCount, data } = followersData;
+  const { mutateAsync: mutateFollow } = useAddFollow(id, setFollowing);
+  const { mutateAsync: mutateUnFollow } = useRemoveFollow(id, setFollowing);
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjMiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWhtYWQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhaG1hZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMTU5MDk5NCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.HnCOwN1trD005EZYRzOB6Ebg3Y9R-vP6gDhYaOeqlco";
+  const isFollowingg = () =>
+    !!data?.find((follower) => follower?.userName == user?.userName);
 
-  const { mutateAsync } = useAddFollow(id, token, setIsFollowing);
+  useEffect(() => {
+    setFollowing(isFollowingg());
+  }, [isAuthenticated()]);
+
+  const handleOpenGuestDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseGuestDialog = () => {
+    setOpen(false);
+  };
 
   return (
     <>
@@ -64,34 +78,45 @@ export default function OrganizedByCard({ organizer, followersCount }) {
                 color="initial"
                 sx={{ textWrap: "no-wrap" }}
               >
-                <b>{followersCount}</b> following this creator
+                <b>{totalCount}</b> following this creator
               </Typography>
             </Box>
           </Box>
-          {isAtndee && (
-            <Box
-              alignSelf={"flex-end"}
-              display={"flex"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              sx={{
-                gap: { xs: "25px", sm: "75px", md: "15px" },
-                alignSelf: { xs: "center", md: "flex-end" },
-              }}
+
+          <Box
+            alignSelf={"flex-end"}
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            sx={{
+              gap: { xs: "25px", sm: "75px", md: "15px" },
+              alignSelf: { xs: "center", md: "flex-end" },
+            }}
+          >
+            <Button
+              variant="Text"
+              color="primary"
+              sx={{ height: "42px" }}
+              disabled={isOrganizer()}
             >
-              <Button variant="Text" color="primary" sx={{ height: "42px" }}>
-                Contact
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ height: "42px" }}
-                onClick={mutateAsync}
-              >
-                {!isFollowing ? "Follow" : "Unfollow"}
-              </Button>
-            </Box>
-          )}
+              Contact
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ height: "42px" }}
+              onClick={
+                isAuthenticated()
+                  ? !following
+                    ? mutateFollow
+                    : mutateUnFollow
+                  : handleOpenGuestDialog
+              }
+              disabled={isOrganizer()}
+            >
+              {!following ? "Follow" : "Unfollow"}
+            </Button>
+          </Box>
         </Box>
 
         {/* socil media links */}
@@ -118,6 +143,7 @@ export default function OrganizedByCard({ organizer, followersCount }) {
             <SocialLink href={profile.linkedIn} icon={<LinkedIn />} />
           )}
         </Box>
+        <GuestDialog open={open} handleClose={handleCloseGuestDialog} />
       </Paper>
     </>
   );

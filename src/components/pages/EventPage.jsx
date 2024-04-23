@@ -22,20 +22,19 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/bundle";
 //----------------------------------------------------------------
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useContext, useState } from "react";
 import {
   useGetEventData,
   useGetOrganizerFollowers,
 } from "../../API/eventPageApi.js";
 import MainLoding from "../looding/MainLoding.jsx";
+import { UserContext } from "../../contexts/UserContext.jsx";
+import ShareCard from "../cards/ShareCard.jsx";
 
 export default function EventPage() {
-  //---------for testing  !! --------------------------
-  const [isAtndee, setIsAtndee] = useState(true);
-
-  //-----------------------------
-  const [copied, setcopied] = useState(false);
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const { eventId } = useParams();
 
   {
@@ -48,11 +47,12 @@ export default function EventPage() {
   const { data: followersData, isLoading: followersLoading } =
     useGetOrganizerFollowers(organizerId);
 
+  const { isOrganizer, isAttendee, isAuthenticated } = useContext(UserContext);
+
   if (isLoading || followersLoading) {
     return <MainLoding isLoading={isLoading || followersLoading}/>;
   }
 
-  // console.log(followersData);
   console.log(data);
   const handelMainDateTime = () => {
     const startDate = new Date(`${data.startDate}T${data.startTime}z`);
@@ -101,6 +101,13 @@ export default function EventPage() {
       day: "numeric",
     });
     return formattedStartDate;
+  };
+
+  const handleOpenShareDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseShareDialog = () => {
+    setOpen(false);
   };
 
   return (
@@ -162,32 +169,26 @@ export default function EventPage() {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
+                flexDirection: `${isOrganizer() ? "row-reverse" : "row"}`,
                 width: "85px",
               }}
             >
-              {isAtndee && (
-                <IconButton>
+              {!isOrganizer() && (
+                <IconButton
+                  onClick={!isAuthenticated() ? () => navigate("/login") : null}
+                >
                   <FavoriteBorderIcon />
                 </IconButton>
               )}
 
-              <IconButton
-                onClick={async () => {
-                  await navigator.clipboard.writeText(
-                    `http://localhost:3000/event/${data.id}`
-                  );
-                  setcopied(true);
-                  setTimeout(() => {
-                    setcopied(false);
-                  }, 1500);
-                }}
-              >
+              <IconButton onClick={handleOpenShareDialog}>
                 <IosShareIcon />
               </IconButton>
-              <Snackbar
-                open={copied}
-                autoHideDuration={1500}
-                message="Link Is Copied To Clipboard"
+              <ShareCard
+                open={open}
+                handleClose={handleCloseShareDialog}
+                url={`http://localhost:3000/event/${eventId}`}
+                label={"Event URL"}
               />
             </Box>
           </Grid>
@@ -252,32 +253,33 @@ export default function EventPage() {
 
             <OrganizedByCard
               organizer={data.organizer}
-              followersCount={followersData}
+              followersData={followersData}
             />
 
             {/* Report this event   */}
-
-            <Box
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              <Button color="primary">
-                <Flag />
-                <Typography
-                  variant="body1"
-                  color="primary"
-                  sx={{
-                    fontSize: "15px",
-                    fontWeight: "500",
-                    ml: 1,
-                    textTransform: "capitalize",
-                  }}
-                >
-                  Report this event
-                </Typography>
-              </Button>
-            </Box>
+            {isAttendee() && (
+              <Box
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                <Button color="primary">
+                  <Flag />
+                  <Typography
+                    variant="body1"
+                    color="primary"
+                    sx={{
+                      fontSize: "15px",
+                      fontWeight: "500",
+                      ml: 1,
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Report this event
+                  </Typography>
+                </Button>
+              </Box>
+            )}
           </Grid>
 
           {/* get ticket */}
@@ -291,7 +293,9 @@ export default function EventPage() {
               display: { xs: "none", md: "flex" },
             }}
           >
-            {isAtndee && <GetTicketsCard ticketsData={data.tickets} data={data} />}
+            {!isOrganizer() && (
+              <GetTicketsCard ticketsData={data.tickets} data={data} />
+            )}
           </Grid>
 
           {/* other event you may like */}
@@ -482,7 +486,9 @@ export default function EventPage() {
           zIndex: "1000",
         }}
       >
-        <GetTicketsCard ticketsData={data.tickets} data={data} />
+        {!isOrganizer() && (
+          <GetTicketsCard ticketsData={data.tickets} data={data} />
+        )}
       </Box>
     </>
   );

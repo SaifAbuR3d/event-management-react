@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 export function useGetCategories() {
   return useQuery({
@@ -14,7 +16,8 @@ export function useGetCategories() {
   });
 }
 
-export function useCreateEvent(token) {
+export function useCreateEvent() {
+  const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: async (eventData) => {
       const { data } = await axios.post(
@@ -22,7 +25,7 @@ export function useCreateEvent(token) {
         eventData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         }
       );

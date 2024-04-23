@@ -38,11 +38,11 @@ export function UserContextProvider({ children }) {
   const isAdmin = () => user?.role == "Admin";
   const isAttendee = () => user?.role == "Attendee";
   const isAuthenticated = () => userToken != null;
-  
+
   const isCurrentOrganizer = (userName) =>
     isOrganizer() && user.userName == userName;
-  const isCurrentAttendee = (attendeeId) =>
-    isAttendee() && user.id == attendeeId;
+  const isCurrentAttendee = (userName) =>
+    isAttendee() && user.userName == userName;
 
   useEffect(() => {
     if (userToken) {
