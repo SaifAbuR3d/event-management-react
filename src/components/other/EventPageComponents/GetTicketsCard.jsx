@@ -1,10 +1,20 @@
 import { Paper, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import GetTicketDialog from "../GetTicketComponent/GetTicketDialog";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../../../contexts/UserContext";
+import GuestDialog from "./GuestDialog";
 
 export default function GetTicketsCard({ ticketsData, data }) {
   const [openDialog, setOpenDialog] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { isAuthenticated } = useContext(UserContext);
+  const handleOpenGuestDialog = () => {
+    setOpen(true);
+  };
+  const handleCloseGuestDialog = () => {
+    setOpen(false);
+  };
 
   const handleClickOpen = () => {
     setOpenDialog(true);
@@ -59,7 +69,7 @@ export default function GetTicketsCard({ ticketsData, data }) {
         variant="contained"
         color="primary"
         sx={{ width: "90%" }}
-        onClick={handleClickOpen}
+        onClick={isAuthenticated() ? handleClickOpen : handleOpenGuestDialog}
       >
         Buy Ticket
       </Button>
@@ -69,6 +79,7 @@ export default function GetTicketsCard({ ticketsData, data }) {
         handleClose={handleClose}
         data={data}
       />
+      <GuestDialog open={open} handleClose={handleCloseGuestDialog} />
     </Paper>
   );
 }

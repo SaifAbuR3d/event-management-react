@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
+import { useContext } from "react";
+import { UserContext } from "../contexts/UserContext";
 
 export function useGetEventData(eventId) {
   return useQuery({
@@ -19,18 +21,22 @@ export function useGetOrganizerFollowers(organizerId) {
   return useQuery({
     queryKey: ["organizer_followers", organizerId],
     queryFn: async () => {
-      const { headers } = await axios.get(
+      const { headers, data } = await axios.get(
         `${
           import.meta.env.VITE_API_URL
         }/api/organizers/${organizerId}/followers`
       );
-      return JSON.parse(headers["x-pagination"]).TotalCount;
+      return {
+        totalCount: JSON.parse(headers["x-pagination"]).TotalCount,
+        data: data,
+      };
     },
     enabled: !!organizerId,
   });
 }
 
-export function useAddFollow(organizerId, token, setIsFollowing) {
+export function useAddFollow(organizerId, setFollowing) {
+  const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: () =>
       axios.post(
@@ -38,13 +44,35 @@ export function useAddFollow(organizerId, token, setIsFollowing) {
         { organizerId },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userToken}`,
           },
         }
       ),
     onSuccess: () => {
       queryClient.invalidateQueries(["organizer_followers", organizerId]);
-      setIsFollowing(true);
+      setFollowing(true);
+    },
+  });
+}
+
+export function useRemoveFollow(organizerId, setFollowing) {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationFn: () =>
+      axios.delete(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/Attendees/my/follows/${organizerId}`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["organizer_followers", organizerId]);
+      setFollowing(false);
     },
   });
 }

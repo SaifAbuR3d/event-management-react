@@ -1,8 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useContext
-} from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Button,
   CssBaseline,
@@ -14,13 +10,9 @@ import {
   InputAdornment,
   Typography,
   Alert,
-  Snackbar
+  Snackbar,
 } from "@mui/material";
-import {
-  Google,
-  Visibility,
-  VisibilityOff
-} from "@mui/icons-material";
+import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { useNavigate } from "react-router-dom";
 
@@ -46,7 +38,6 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Login() {
-
   const [showPassword, setShowPassword] = useState(false);
   const [randomSideImage, setRandomSideImage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -82,17 +73,21 @@ export default function Login() {
 
   const onSubmit = async (values) => {
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, values);
-      
-      saveCurrentUser(data.token);
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        values
+      );
 
+      saveCurrentUser(data.token);
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setErrorMessage("Invalid email or password. Please try again.");
       } else if (error.response) {
         setErrorMessage("An error occurred. Please try again later.");
       } else if (error.request) {
-        setErrorMessage("No response received from the server. Please try again later.");
+        setErrorMessage(
+          "No response received from the server. Please try again later."
+        );
       } else {
         setErrorMessage("An error occurred. Please try again later.");
       }
@@ -104,7 +99,6 @@ export default function Login() {
     onSubmit,
     validationSchema,
   });
-
 
   const fields = [
     {
@@ -157,14 +151,12 @@ export default function Login() {
     );
   });
 
-
   return (
     <Grid container component="main" sx={{ height: "100vh" }}>
       <CssBaseline />
 
       {/*Left Side */}
       <Grid item xs={12} md={7} component={Paper} square>
-
         <Box
           sx={{
             my: 5,
@@ -192,10 +184,7 @@ export default function Login() {
               gap: "1vh",
             }}
           >
-
-
             {renderFields}
-
 
             {/*Continue button*/}
             <Button
@@ -225,19 +214,21 @@ export default function Login() {
             >
               Continue with google
             </Button>
-
           </Box>
         </Box>
 
         {/* Display error message if it exists*/}
         {errorMessage && (
-          <Snackbar open={errorMessage !== ""} autoHideDuration={5000} onClose={() => setErrorMessage("")}>
+          <Snackbar
+            open={errorMessage !== ""}
+            autoHideDuration={5000}
+            onClose={() => setErrorMessage("")}
+          >
             <Alert severity="error" onClose={() => setErrorMessage("")}>
               {errorMessage}
             </Alert>
           </Snackbar>
         )}
-
       </Grid>
 
       {/*Right Side*/}
@@ -252,7 +243,6 @@ export default function Login() {
           backgroundPosition: "center",
         }}
       />
-
     </Grid>
   );
 }
