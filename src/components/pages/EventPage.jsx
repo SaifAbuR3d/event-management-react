@@ -5,7 +5,6 @@ import {
   Typography,
   Box,
   IconButton,
-  Snackbar,
   Button,
 } from "@mui/material";
 import { Flag } from "@mui/icons-material";
@@ -28,6 +27,7 @@ import {
   useGetEventData,
   useGetOrganizerFollowers,
 } from "../../API/eventPageApi.js";
+import MainLoding from "../looding/MainLoding.jsx";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import ShareCard from "../cards/ShareCard.jsx";
 
@@ -49,7 +49,7 @@ export default function EventPage() {
   const { isOrganizer, isAttendee, isAuthenticated } = useContext(UserContext);
 
   if (isLoading || followersLoading) {
-    return <div>Loading...</div>;
+    return <MainLoding isLoading={isLoading || followersLoading}/>;
   }
 
   console.log(data);

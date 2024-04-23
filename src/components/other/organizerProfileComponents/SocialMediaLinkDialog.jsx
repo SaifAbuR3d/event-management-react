@@ -7,9 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { queryClient } from "../../../main";
+import { changeLinks } from "../../../API/organizerProfileApi";
 
 export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
   const initialValues = {
@@ -20,38 +18,25 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
     Website: profile.website,
   };
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async () => {
-      const { data } = await axios.post(
-        `https://localhost:8080/api/Organizers/my/profile`,
-        {
-          ...profile,
-          linkedIn: formik.values.LinkedIn,
-          facebook: formik.values.Facebook,
-          twitter: formik.values.Twitter,
-          instagram: formik.values.Instagram,
-          website: formik.values.Website,
-        },
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjkiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiU2FtZWVoLUh1c3NlaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzYW1lZWhodXNzZWluQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Ik9yZ2FuaXplciIsImV4cCI6MTcxMTI0NjcyNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.W2I4dieGI87mB4q0Ep2VRrVWStiGGJU6iNybBNhavMQ`,
-          },
-        }
-      );
-      return data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(["profileOwnerData"]);
-      handleClose();
-    },
-  });
+  const { mutateAsync } = changeLinks(handleClose);
 
   const formik = useFormik({
     initialValues,
-    onSubmit: mutateAsync,
+    onSubmit: async (values) => {
+      const requestData = {
+        ...profile,
+        linkedIn: formik.values.LinkedIn,
+        facebook: formik.values.Facebook,
+        twitter: formik.values.Twitter,
+        instagram: formik.values.Instagram,
+        website: formik.values.Website,
+      };
+      await mutateAsync(requestData);
+    },
   });
 
   const { linkedIn, facebook, twitter, instagram, website } = profile;
+
   const renderSocialMedia = [
     { platform: "LinkedIn", link: linkedIn },
     { platform: "Facebook", link: facebook },
@@ -89,9 +74,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
         component: "form",
         style: {
           position: "absolute",
-          top: "40%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          top: "1%",
         },
       }}
     >

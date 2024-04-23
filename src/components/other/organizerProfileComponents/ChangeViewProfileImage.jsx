@@ -6,48 +6,33 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContentText from "@mui/material/DialogContentText";
-import { Paper, TextField } from "@mui/material";
+import {
+  Avatar,
+  Menu,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { useFormik } from "formik";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { queryClient } from "../../../main";
+import { changeImageRequest } from "../../../API/organizerProfileApi";
 
 function ViewImage({ open, handleClose, image }) {
   return (
     <Dialog
       open={open}
       onClose={handleClose}
+      fullWidth
       PaperProps={{
         component: "div",
       }}
     >
-      <DialogContent>
-        <Box
-          component={Paper}
-          elevation={1}
-          sx={{
-            backgroundImage: `url(https://localhost:8080/${image})`,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            width: {
-              xs: "330px",
-              sm: "550px",
-              md: "550px",
-              lg: "550px",
-            },
-            height: {
-              xs: "330px",
-              sm: "550px",
-              md: "550px",
-              lg: "550px",
-            },
-          }}
+      <DialogContent sx={{ p: 0 }}>
+        <Avatar
+          variant="square"
+          alt="Profile Image"
+          src={`${import.meta.env.VITE_API_URL}/${image}`}
+          sx={{ width: "100%", height: "100%" }}
         />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>close</Button>
-      </DialogActions>
     </Dialog>
   );
 }
@@ -57,24 +42,7 @@ function ChangeImage({ open, handleClose, ownerData }) {
     newImageUrl: ownerData.imageUrl,
   };
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (formData) => {
-      const { data } = await axios.post(
-        `https://localhost:8080/api/Organizers/my/profile-picture`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYW5pbmk4NiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFobWFkYW5pbmk4NkBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJPcmdhbml6ZXIiLCJleHAiOjE3MTE2MTQzNTQsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCJ9.aTkq0A3S9X-aEziWYmNLY1TZX-MmBGbXTxSWmTeED1w`,
-          },
-        }
-      );
-      return data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(["profileOwnerData"]);
-      handleClose();
-    },
-  });
+  const { mutateAsync } = changeImageRequest(handleClose);
 
   const formik = useFormik({
     initialValues,
@@ -84,6 +52,7 @@ function ChangeImage({ open, handleClose, ownerData }) {
       await mutateAsync(formData);
     },
   });
+
   return (
     <Dialog
       open={open}
@@ -94,9 +63,7 @@ function ChangeImage({ open, handleClose, ownerData }) {
         component: "form",
         style: {
           position: "absolute",
-          top: "17%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
+          top: "1%",
         },
       }}
     >
@@ -132,10 +99,12 @@ export default function ChangeViewProfileImage({
   image,
   ownerData,
   isCurrentOrganizer,
+  anchorEl,
 }) {
   const [openViewImage, setOpenViewImage] = React.useState(false);
 
   const handleOpenViewImage = () => {
+    handleClose();
     setOpenViewImage(true);
   };
   const handleCloseViewImage = () => {
@@ -145,6 +114,7 @@ export default function ChangeViewProfileImage({
   const [openChangeImage, setOpenChangeImage] = React.useState(false);
 
   const handleOpenChangeImage = () => {
+    handleClose();
     setOpenChangeImage(true);
   };
   const handleCloseChangeImage = () => {
@@ -152,33 +122,17 @@ export default function ChangeViewProfileImage({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      PaperProps={{
-        component: "div",
-        style: {
-          position: "absolute",
-          top: "59%",
-          left: "12.5%",
-          transform: "translate(-50%, -50%)",
-        },
-      }}
-    >
-      <DialogTitle display="flex" justifyContent="center" color="blue">
-        Profile Image
-      </DialogTitle>
-
-      <DialogContent>
-        <Button fullWidth onClick={handleOpenViewImage}>
-          View Image
-        </Button>
+    <Box>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem sx={{ width: "200px" }} onClick={handleOpenViewImage}>
+          <span>View Image</span>
+        </MenuItem>
         {isCurrentOrganizer && (
-          <Button fullWidth onClick={handleOpenChangeImage}>
-            Chaneg Image
-          </Button>
+          <MenuItem sx={{ width: "200px" }} onClick={handleOpenChangeImage}>
+            <span>Change Image</span>
+          </MenuItem>
         )}
-      </DialogContent>
+      </Menu>
 
       <ViewImage
         image={image}
@@ -191,6 +145,6 @@ export default function ChangeViewProfileImage({
         open={openChangeImage}
         handleClose={handleCloseChangeImage}
       />
-    </Dialog>
+    </Box>
   );
 }

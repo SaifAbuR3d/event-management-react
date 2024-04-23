@@ -32,7 +32,8 @@ const Icons = [FacebookOutlined, LinkedIn, Twitter, MailRounded];
 export default function ShareCard({ open, handleClose, url, label }) {
   const [copied, setcopied] = useState(false);
 
-  const handleCopy = () => {
+  const handleCopy = (event) => {
+    event.stopPropagation();
     navigator.clipboard.writeText(`${url}`);
     setcopied(true);
     setTimeout(() => {
