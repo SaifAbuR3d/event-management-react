@@ -160,6 +160,8 @@ export default function OrganizerProfile() {
           startTime={event.startTime}
           customStyle={cardStyle}
           isAttendee={attendee}
+          organizerName={profileOwnerData?.displayName}
+          numberOfFollers={profileOwnerData?.totalFollowersCount}
         />
       );
     });
