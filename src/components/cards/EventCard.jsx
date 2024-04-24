@@ -23,6 +23,8 @@ export default function EventCard({
   customStyle,
   isAttendee,
 }) {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
 
   const handleOpen = (event) => {
@@ -35,15 +37,9 @@ export default function EventCard({
     setOpen(false);
   };
 
-  const url = `http://localhost:3000/event/${id}`;
-
-  const openNewWindow = () => {
-    window.open(url, "_blank");
-  };
-
   return (
     <Card
-      onClick={openNewWindow}
+      onClick={() => navigate(`/event/${id}`)}
       component={Paper}
       elevation={2}
       sx={{
@@ -115,7 +111,7 @@ export default function EventCard({
         open={open}
         handleClose={handleClose}
         label={"Event url"}
-        url={url}
+        url={`http://localhost:3000/event/${id}`}
       />
     </Card>
   );
