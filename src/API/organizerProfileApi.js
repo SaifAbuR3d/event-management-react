@@ -226,3 +226,19 @@ export function useChangeLinks(handleClose) {
         },
     });
 }
+
+export function useIsFollowing(organizerId) {
+  const { user, isAttendee } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["isFollowing", organizerId, user?.id],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendees/${
+          user?.id
+        }/follows?organizerId=${organizerId}`
+      );
+      return !!data.length;
+    },
+    enabled: !!organizerId && isAttendee(),
+  });
+}

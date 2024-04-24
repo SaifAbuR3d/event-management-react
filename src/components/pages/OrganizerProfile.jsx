@@ -24,6 +24,7 @@ import ProfileTitleCard from "../cards/ProfileTitleCard";
 import {
   useGetProfileOwnerData,
   useGetOwnerEvents,
+  useIsFollowing,
 } from "../../API/organizerProfileApi";
 import { UserContext } from "../../contexts/UserContext";
 import { useContext } from "react";
@@ -40,7 +41,7 @@ export default function OrganizerProfile() {
   const [upcomingList, setUpcomingList] = useState([]);
   const [previousList, setPreviousList] = useState([]);
 
-  const { isAttendee, isCurrentOrganizer, user } = useContext(UserContext);
+  const { isAttendee, isCurrentOrganizer } = useContext(UserContext);
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
@@ -86,6 +87,10 @@ export default function OrganizerProfile() {
     upcomingList,
     setUpcomingList
   );
+
+  const isFollowing = !!useIsFollowing(profileOwnerData?.id).data;
+  const currentOrganizer = isCurrentOrganizer(userName);
+  const attendee = isAttendee();
 
   /*----------------------------------------------------- Get Data ---------------------------------------------------*/
 
@@ -164,14 +169,6 @@ export default function OrganizerProfile() {
       );
     });
   };
-
-  const currentOrganizer = isCurrentOrganizer(userName);
-  const attendee = isAttendee();
-
-  const isFollowing =
-    profileOwnerData?.followers.find(
-      (follower) => follower.userName === user?.userName
-    ) !== undefined;
 
   return (
     <Grid container position="relative">
