@@ -22,8 +22,8 @@ import SocialMediaLinkButton from "../other/organizerProfileComponents/SocialMed
 import EventCard from "../cards/EventCard";
 import ProfileTitleCard from "../cards/ProfileTitleCard";
 import {
-  getOwnerEvents,
-  getProfileOwnerData,
+  useGetProfileOwnerData,
+  useGetOwnerEvents,
 } from "../../API/organizerProfileApi";
 import { UserContext } from "../../contexts/UserContext";
 import { useContext } from "react";
@@ -75,9 +75,9 @@ export default function OrganizerProfile() {
   const { userName } = useParams();
 
   const { data: profileOwnerData, isLoading: getOwnerDataLoading } =
-    getProfileOwnerData(userName);
+    useGetProfileOwnerData(userName);
 
-  const { data: ownerEvents, isLoading: eventsLoading } = getOwnerEvents(
+  const { data: ownerEvents, isLoading: eventsLoading } = useGetOwnerEvents(
     alignment,
     page,
     profileOwnerData?.id,

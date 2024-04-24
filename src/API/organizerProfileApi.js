@@ -88,14 +88,14 @@ const getOwnersEvents = async (
     return { currentEventCount, totalEventCount };
 };
 
-export function getProfileOwnerData(userName) {
+export function useGetProfileOwnerData(userName) {
   return useQuery({
     queryKey: ["profileOwnerData", userName],
     queryFn: () => getProfileOwnersData(userName),
   });
 }
 
-export function getOwnerEvents(alignment, page, id, previousList, setPreviousList, upcomingList, setUpcomingList) {
+export function useGetOwnerEvents(alignment, page, id, previousList, setPreviousList, upcomingList, setUpcomingList) {
     return useQuery({
         queryKey: ["OnwerEvents", alignment, page, id],
         queryFn: () =>
@@ -112,7 +112,7 @@ export function getOwnerEvents(alignment, page, id, previousList, setPreviousLis
     })
 };
 
-export function followRequest (fakeAttendee) {
+export function useFollowRequest (fakeAttendee) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -134,7 +134,7 @@ export function followRequest (fakeAttendee) {
   });
 }
 
-export function unFollowRequest() {
+export function useUnFollowRequest() {
   const { userToken } = useContext(UserContext);
 
   return useMutation({
@@ -158,7 +158,7 @@ export function unFollowRequest() {
   
 }
 
-export function changeImageRequest(handleClose) {
+export function useChangeImageRequest(handleClose) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -181,7 +181,7 @@ export function changeImageRequest(handleClose) {
     });
 }
 
-export function changeBio(handleClose) {
+export function useChangeBio(handleClose) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -204,7 +204,7 @@ export function changeBio(handleClose) {
     });
 }
 
-export function changeLinks(handleClose) {
+export function useChangeLinks(handleClose) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({

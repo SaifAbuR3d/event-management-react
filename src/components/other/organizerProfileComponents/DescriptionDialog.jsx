@@ -7,14 +7,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
-import { changeBio } from "../../../API/organizerProfileApi";
+import { useChangeBio } from "../../../API/organizerProfileApi";
 
 export default function DescriptionDialog({ open, handleClose, profile }) {
   const initialValues = {
     newBio: profile.bio,
   };
 
-  const { mutateAsync } = changeBio(handleClose);
+  const { mutateAsync } = useChangeBio(handleClose);
 
   const formik = useFormik({
     initialValues,
