@@ -33,7 +33,6 @@ export default function EventCard({
   };
 
   const handleClose = (event) => {
-    event.stopPropagation();
     setOpen(false);
   };
 
