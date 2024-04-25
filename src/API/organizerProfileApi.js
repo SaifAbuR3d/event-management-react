@@ -57,8 +57,6 @@ const getOwnersEvents = async (
           sortColumn: "startDate",
           sortOrder: "asc",
           organizerId: id,
-          upcomingEvents: !isUpcoming,
-          previousEvents: isUpcoming,
         },
       }
     );
@@ -70,8 +68,7 @@ const getOwnersEvents = async (
   
     const currentEventCount = JSON.parse(headers1["x-pagination"]).TotalCount;
   
-    const totalEventCount =
-      currentEventCount + JSON.parse(headers2["x-pagination"]).TotalCount;
+    const totalEventCount = JSON.parse(headers2["x-pagination"]).TotalCount;
   
     const currentList = isUpcoming ? upcomingList : previousList;
     const setList = isUpcoming ? setUpcomingList : setPreviousList;
@@ -84,8 +81,8 @@ const getOwnersEvents = async (
     if (newEvents.length > 0) {
       setList([...currentList, ...newEvents]);
     }
-  
-    return { currentEventCount, totalEventCount };
+
+    return { Events1, currentEventCount, totalEventCount };
 };
 
 export function useGetProfileOwnerData(userName) {

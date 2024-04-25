@@ -30,6 +30,7 @@ import { UserContext } from "../../contexts/UserContext";
 import { useContext } from "react";
 import MainLoding from "../looding/MainLoding";
 import EventCardLoading from "../looding/EventCardLoading";
+import { queryClient } from "../../main";
 
 export default function OrganizerProfile() {
   const [alignment, setAlignment] = useState("upcoming");
@@ -38,8 +39,6 @@ export default function OrganizerProfile() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [page, setPage] = useState(1);
-  const [upcomingList, setUpcomingList] = useState([]);
-  const [previousList, setPreviousList] = useState([]);
 
   const { isAttendee, isCurrentOrganizer } = useContext(UserContext);
 
@@ -78,6 +77,28 @@ export default function OrganizerProfile() {
   const { data: profileOwnerData, isLoading: getOwnerDataLoading } =
     useGetProfileOwnerData(userName);
 
+  const initialData1 = queryClient.getQueryData([
+    "OnwerEvents",
+    "upcoming",
+    1,
+    profileOwnerData?.id,
+  ]);
+
+  const initialData2 = queryClient.getQueryData([
+    "OnwerEvents",
+    "previous",
+    1,
+    profileOwnerData?.id,
+  ]);
+
+  const [upcomingList, setUpcomingList] = useState(
+    () => initialData1?.Events1 || []
+  );
+
+  const [previousList, setPreviousList] = useState(
+    () => initialData2?.Events1 || []
+  );
+
   const { data: ownerEvents, isLoading: eventsLoading } = useGetOwnerEvents(
     alignment,
     page,
@@ -99,7 +120,6 @@ export default function OrganizerProfile() {
   }
 
   const {
-    id,
     displayName,
     isVerified,
     profile,
@@ -432,7 +452,6 @@ export default function OrganizerProfile() {
             {/*Edit Icon Button*/}
             {currentOrganizer && (
               <IconButton
-                aria-label="edit"
                 color="secondary"
                 onClick={handleBioClickOpen}
                 sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
