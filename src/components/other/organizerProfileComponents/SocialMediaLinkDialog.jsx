@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
-import { changeLinks } from "../../../API/organizerProfileApi";
+import { useChangeLinks } from "../../../API/organizerProfileApi";
 
 export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
   const initialValues = {
@@ -18,7 +18,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
     Website: profile.website,
   };
 
-  const { mutateAsync } = changeLinks(handleClose);
+  const { mutateAsync } = useChangeLinks(handleClose);
 
   const formik = useFormik({
     initialValues,

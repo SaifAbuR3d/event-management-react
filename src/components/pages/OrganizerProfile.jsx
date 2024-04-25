@@ -22,13 +22,15 @@ import SocialMediaLinkButton from "../other/organizerProfileComponents/SocialMed
 import EventCard from "../cards/EventCard";
 import ProfileTitleCard from "../cards/ProfileTitleCard";
 import {
-  getOwnerEvents,
-  getProfileOwnerData,
+  useGetProfileOwnerData,
+  useGetOwnerEvents,
+  useIsFollowing,
 } from "../../API/organizerProfileApi";
 import { UserContext } from "../../contexts/UserContext";
 import { useContext } from "react";
 import MainLoding from "../looding/MainLoding";
 import EventCardLoading from "../looding/EventCardLoading";
+import { queryClient } from "../../main";
 
 export default function OrganizerProfile() {
   const [alignment, setAlignment] = useState("upcoming");
@@ -37,10 +39,8 @@ export default function OrganizerProfile() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [page, setPage] = useState(1);
-  const [upcomingList, setUpcomingList] = useState([]);
-  const [previousList, setPreviousList] = useState([]);
 
-  const { isAttendee, isCurrentOrganizer, user } = useContext(UserContext);
+  const { isAttendee, isCurrentOrganizer } = useContext(UserContext);
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
@@ -75,9 +75,31 @@ export default function OrganizerProfile() {
   const { userName } = useParams();
 
   const { data: profileOwnerData, isLoading: getOwnerDataLoading } =
-    getProfileOwnerData(userName);
+    useGetProfileOwnerData(userName);
 
-  const { data: ownerEvents, isLoading: eventsLoading } = getOwnerEvents(
+  const initialData1 = queryClient.getQueryData([
+    "OnwerEvents",
+    "upcoming",
+    1,
+    profileOwnerData?.id,
+  ]);
+
+  const initialData2 = queryClient.getQueryData([
+    "OnwerEvents",
+    "previous",
+    1,
+    profileOwnerData?.id,
+  ]);
+
+  const [upcomingList, setUpcomingList] = useState(
+    () => initialData1?.Events1 || []
+  );
+
+  const [previousList, setPreviousList] = useState(
+    () => initialData2?.Events1 || []
+  );
+
+  const { data: ownerEvents, isLoading: eventsLoading } = useGetOwnerEvents(
     alignment,
     page,
     profileOwnerData?.id,
@@ -87,6 +109,10 @@ export default function OrganizerProfile() {
     setUpcomingList
   );
 
+  const isFollowing = !!useIsFollowing(profileOwnerData?.id).data;
+  const currentOrganizer = isCurrentOrganizer(userName);
+  const attendee = isAttendee();
+
   /*----------------------------------------------------- Get Data ---------------------------------------------------*/
 
   if (getOwnerDataLoading) {
@@ -94,7 +120,6 @@ export default function OrganizerProfile() {
   }
 
   const {
-    id,
     displayName,
     isVerified,
     profile,
@@ -164,14 +189,6 @@ export default function OrganizerProfile() {
       );
     });
   };
-
-  const currentOrganizer = isCurrentOrganizer(userName);
-  const attendee = isAttendee();
-
-  const isFollowing =
-    profileOwnerData?.followers.find(
-      (follower) => follower.userName === user?.userName
-    ) !== undefined;
 
   return (
     <Grid container position="relative">
@@ -435,7 +452,6 @@ export default function OrganizerProfile() {
             {/*Edit Icon Button*/}
             {currentOrganizer && (
               <IconButton
-                aria-label="edit"
                 color="secondary"
                 onClick={handleBioClickOpen}
                 sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}

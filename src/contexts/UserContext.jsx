@@ -13,9 +13,11 @@ export function UserContextProvider({ children }) {
 
     const tokenData = jwtDecode(token);
     setUser({
-      id: tokenData[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-      ],
+      id: tokenData["id"],
+      userId:
+        tokenData[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+        ],
       email:
         tokenData[
           "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
