@@ -12,6 +12,7 @@ import OrganizerProfile from "./components/pages/OrganizerProfile";
 import CreateEvetnPage from "./components/pages/CreateEvetnPage";
 import Login from "./shared/auth/login/Login.jsx";
 import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
+import ReportsTable from "./components/other/ReportsTable.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -39,6 +40,12 @@ export const Router = createBrowserRouter([
   {
     path: "admin-dashboard",
     element: <AdminLayout />,
+    children: [
+      {
+        path: "reports",
+        element: <ReportsTable />,
+      },
+    ],
   },
   {
     path: "register",
