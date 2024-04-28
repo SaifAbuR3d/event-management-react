@@ -29,8 +29,6 @@ const EventCard = React.memo(function EventCard({
   isLikedByCurrentUser,
   customStyle,
 }) {
-  const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
   const navigate = useNavigate();
@@ -74,7 +72,7 @@ const EventCard = React.memo(function EventCard({
     return formattedStartDate;
   };
   const url = `http://localhost:3000/event/${id}`;
-  
+
   return (
     <Card
       onClick={() => navigate(`/event/${id}`)}
