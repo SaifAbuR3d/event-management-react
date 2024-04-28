@@ -64,12 +64,23 @@ export default function GetTicketsCard({ ticketsData, data }) {
         top: "14vh",
       }}
     >
-      {handelTicketPrice()}
+      {data.ticketsSalesEnded ? (
+        <Typography
+          variant="body1"
+          color="initial"
+          sx={{ fontWeight: "700", fontSize: "20px" }}
+        >
+          Sales Ended
+        </Typography>
+      ) : (
+        handelTicketPrice()
+      )}
       <Button
         variant="contained"
         color="primary"
-        sx={{ width: "90%" }}
+        sx={{ width: "90%", textTransform: "capitalize" }}
         onClick={isAuthenticated() ? handleClickOpen : handleOpenGuestDialog}
+        disabled={data.ticketsSalesEnded}
       >
         Buy Ticket
       </Button>

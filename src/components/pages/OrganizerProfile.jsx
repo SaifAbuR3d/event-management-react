@@ -40,6 +40,8 @@ export default function OrganizerProfile() {
   const [upcomingList, setUpcomingList] = useState([]);
   const [previousList, setPreviousList] = useState([]);
 
+  console.log(upcomingList);
+
   const { isAttendee, isCurrentOrganizer, user } = useContext(UserContext);
 
   const handleClickListItem = (event) => {

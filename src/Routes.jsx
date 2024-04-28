@@ -23,7 +23,7 @@ export const Router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "event/:eventId", // event/id
+        path: "event/:eventId",
         element: <EventPage />,
       },
       {
