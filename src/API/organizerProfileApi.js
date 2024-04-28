@@ -57,8 +57,6 @@ const getOwnersEvents = async (
           sortColumn: "startDate",
           sortOrder: "asc",
           organizerId: id,
-          upcomingEvents: !isUpcoming,
-          previousEvents: isUpcoming,
         },
       }
     );
@@ -70,8 +68,7 @@ const getOwnersEvents = async (
   
     const currentEventCount = JSON.parse(headers1["x-pagination"]).TotalCount;
   
-    const totalEventCount =
-      currentEventCount + JSON.parse(headers2["x-pagination"]).TotalCount;
+    const totalEventCount = JSON.parse(headers2["x-pagination"]).TotalCount;
   
     const currentList = isUpcoming ? upcomingList : previousList;
     const setList = isUpcoming ? setUpcomingList : setPreviousList;
@@ -84,18 +81,18 @@ const getOwnersEvents = async (
     if (newEvents.length > 0) {
       setList([...currentList, ...newEvents]);
     }
-  
-    return { currentEventCount, totalEventCount };
+
+    return { Events1, currentEventCount, totalEventCount };
 };
 
-export function getProfileOwnerData(userName) {
+export function useGetProfileOwnerData(userName) {
   return useQuery({
     queryKey: ["profileOwnerData", userName],
     queryFn: () => getProfileOwnersData(userName),
   });
 }
 
-export function getOwnerEvents(alignment, page, id, previousList, setPreviousList, upcomingList, setUpcomingList) {
+export function useGetOwnerEvents(alignment, page, id, previousList, setPreviousList, upcomingList, setUpcomingList) {
     return useQuery({
         queryKey: ["OnwerEvents", alignment, page, id],
         queryFn: () =>
@@ -112,7 +109,7 @@ export function getOwnerEvents(alignment, page, id, previousList, setPreviousLis
     })
 };
 
-export function followRequest (fakeAttendee) {
+export function useFollowRequest (fakeAttendee) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -134,7 +131,7 @@ export function followRequest (fakeAttendee) {
   });
 }
 
-export function unFollowRequest() {
+export function useUnFollowRequest() {
   const { userToken } = useContext(UserContext);
 
   return useMutation({
@@ -158,7 +155,7 @@ export function unFollowRequest() {
   
 }
 
-export function changeImageRequest(handleClose) {
+export function useChangeImageRequest(handleClose) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -181,7 +178,7 @@ export function changeImageRequest(handleClose) {
     });
 }
 
-export function changeBio(handleClose) {
+export function useChangeBio(handleClose) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -204,7 +201,7 @@ export function changeBio(handleClose) {
     });
 }
 
-export function changeLinks(handleClose) {
+export function useChangeLinks(handleClose) {
   const { userToken } = useContext(UserContext);
 
     return useMutation({
@@ -225,4 +222,20 @@ export function changeLinks(handleClose) {
           handleClose();
         },
     });
+}
+
+export function useIsFollowing(organizerId) {
+  const { user, isAttendee } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["isFollowing", organizerId, user?.id],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendees/${
+          user?.id
+        }/follows?organizerId=${organizerId}`
+      );
+      return !!data.length;
+    },
+    enabled: !!organizerId && isAttendee(),
+  });
 }

@@ -6,7 +6,7 @@ import {
 } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
-import { followRequest, unFollowRequest } from "../../API/organizerProfileApi";
+import { useFollowRequest, useUnFollowRequest } from "../../API/organizerProfileApi";
 import { useState } from "react";
 import ShareCard from "./ShareCard";
 
@@ -32,9 +32,9 @@ export default function ProfileTitleCard({
     organizerId: organizerId,
   };
 
-  const { mutateAsync: follow } = followRequest(fakeAttendee);
+  const { mutateAsync: follow } = useFollowRequest(fakeAttendee);
 
-  const unFollow = unFollowRequest();
+  const unFollow = useUnFollowRequest();
 
   return (
     <Box

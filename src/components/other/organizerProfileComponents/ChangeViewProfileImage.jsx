@@ -6,14 +6,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContentText from "@mui/material/DialogContentText";
-import {
-  Avatar,
-  Menu,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { Avatar, Menu, MenuItem, TextField, styled } from "@mui/material";
 import { useFormik } from "formik";
-import { changeImageRequest } from "../../../API/organizerProfileApi";
+import { useChangeImageRequest } from "../../../API/organizerProfileApi";
+import { CloudUpload } from "@mui/icons-material";
 
 function ViewImage({ open, handleClose, image }) {
   return (
@@ -37,19 +33,27 @@ function ViewImage({ open, handleClose, image }) {
   );
 }
 
-function ChangeImage({ open, handleClose, ownerData }) {
-  const initialValues = {
-    newImageUrl: ownerData.imageUrl,
-  };
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
-  const { mutateAsync } = changeImageRequest(handleClose);
+function ChangeImage({ open, handleClose, ownerData }) {
+  const { mutateAsync } = useChangeImageRequest(handleClose);
 
   const formik = useFormik({
-    initialValues,
+    initialValues: { newImageUrl: null },
     onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("image", values.newImageUrl);
-      await mutateAsync(formData);
+      if (values.newImageUrl) {
+        const formData = new FormData();
+        formData.append("image", values.newImageUrl);
+        await mutateAsync(formData);
+      }
     },
   });
 
@@ -67,22 +71,27 @@ function ChangeImage({ open, handleClose, ownerData }) {
         },
       }}
     >
-      <DialogTitle color="blue">Change Profile Image</DialogTitle>
-      <DialogContent>
-        <DialogContentText mb={3}>Please choose new image</DialogContentText>
+      <DialogTitle sx={{ m: "auto" }} color="blue">
+        Change Profile Image
+      </DialogTitle>
+      <DialogContent sx={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
+        <DialogContentText mb={3}>Please choose a new image</DialogContentText>
 
-        <TextField
-          onChange={(event) =>
-            formik.setFieldValue("newImageUrl", event.target.files[0])
-          }
-          autoFocus
-          id="newImageUrl"
-          name="newImageUrl"
-          type="file"
-          fullWidth
-          variant="outlined"
-          inputProps={{ accept: "image/*" }}
-        />
+        <Button
+        sx={{width:"40%"}}
+          component="label"
+          variant="contained"
+          startIcon={<CloudUpload />}
+        >
+          Upload Image
+          <VisuallyHiddenInput
+            type="file"
+            accept="image/*"
+            onChange={(event) =>
+              formik.setFieldValue("newImageUrl", event.currentTarget.files[0])
+            }
+          />
+        </Button>
       </DialogContent>
 
       <DialogActions>

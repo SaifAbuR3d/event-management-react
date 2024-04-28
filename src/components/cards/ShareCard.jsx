@@ -33,7 +33,6 @@ export default function ShareCard({ open, handleClose, url, label }) {
   const [copied, setcopied] = useState(false);
 
   const handleCopy = (event) => {
-    event.stopPropagation();
     navigator.clipboard.writeText(`${url}`);
     setcopied(true);
     setTimeout(() => {
@@ -45,6 +44,7 @@ export default function ShareCard({ open, handleClose, url, label }) {
     <Dialog
       open={open}
       onClose={handleClose}
+      onClick={(event) => event.stopPropagation()}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       fullWidth
