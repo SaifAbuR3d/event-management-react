@@ -6,53 +6,94 @@ import {
   Box,
   IconButton,
   Button,
+  useMediaQuery,
 } from "@mui/material";
-import { Flag } from "@mui/icons-material";
+import { Favorite, Flag } from "@mui/icons-material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IosShareIcon from "@mui/icons-material/IosShare";
-//----------------------------------------------------------------
 import GetTicketsCard from "../other/EventPageComponents/GetTicketsCard.jsx";
 import TitleAndSubtitleCard from "../other/EventPageComponents/TitleAndSubtitleCard.jsx";
 import OrganizedByCard from "../other/EventPageComponents/OrganizedByCard.jsx";
 import SwiperButton from "../other/EventPageComponents/SwiperButton.jsx";
 import EventCard from "../cards/EventCard.jsx";
-//----------------------------------------------------------------
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/bundle";
-//----------------------------------------------------------------
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import {
+  GetOtherEventsMayLike,
+  useAddLike,
   useGetEventData,
-  useGetOrganizerFollowers,
+  useGetReviews,
+  useRemoveLike,
 } from "../../API/eventPageApi.js";
 import MainLoding from "../looding/MainLoding.jsx";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import ShareCard from "../cards/ShareCard.jsx";
+import { useTheme } from "@emotion/react";
+import ReportDialog from "../other/EventPageComponents/ReportDialog.jsx";
+import ReviewCard from "../other/EventPageComponents/ReviewCard.jsx";
+import { LoadingButton } from "@mui/lab";
+import AddReviewDialog from "../other/EventPageComponents/AddReviewDialog.jsx";
 
 export default function EventPage() {
   const [open, setOpen] = useState(false);
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [openReviewDialog, setOpenReviewDialog] = useState(false);
   const navigate = useNavigate();
   const { eventId } = useParams();
+  const theme = useTheme();
+  const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
+  const matchesLG = useMediaQuery(theme.breakpoints.up("lg"));
+  const handelSlidesPerView = () => {
+    if (matchesSM) {
+      return 1;
+    } else if (matchesLG) {
+      return 3.6;
+    } else {
+      return 2.6;
+    }
+  };
 
   {
     /* get data api*/
   }
   const { data, isLoading } = useGetEventData(eventId);
 
+  const { data: eventsMayLikeData, isLoading: eventsMayLikeLoading } =
+    GetOtherEventsMayLike(eventId);
+
   const organizerId = data?.organizer.id;
 
-  const { data: followersData, isLoading: followersLoading } =
-    useGetOrganizerFollowers(organizerId);
+  const { mutateAsync: mutateLike, isPending: isPendingLike } =
+    useAddLike(eventId);
+
+  const { mutateAsync: mutateDislike, isPending: isPendingDisLike } =
+    useRemoveLike(eventId);
+
+  const {
+    data: reviewsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useGetReviews(eventId);
+
+  /* get data api*/
 
   const { isOrganizer, isAttendee, isAuthenticated } = useContext(UserContext);
 
-  if (isLoading || followersLoading) {
-    return <MainLoding isLoading={isLoading || followersLoading}/>;
+  if (isLoading || eventsMayLikeLoading || status === "loading") {
+    return (
+      <MainLoding
+        isLoading={isLoading || eventsMayLikeLoading || status === "loading"}
+      />
+    );
   }
 
   console.log(data);
+
   const handelMainDateTime = () => {
     const startDate = new Date(`${data.startDate}T${data.startTime}z`);
     const endDate = new Date(`${data.endDate}T${data.endTime}z`);
@@ -107,6 +148,21 @@ export default function EventPage() {
   };
   const handleCloseShareDialog = () => {
     setOpen(false);
+  };
+  const handlOpenReportDialog = () => {
+    setOpenReportDialog(true);
+  };
+
+  const handlCloseReportDialog = () => {
+    setOpenReportDialog(false);
+  };
+
+  const handlOpenReviewDialog = () => {
+    setOpenReviewDialog(true);
+  };
+
+  const handlCloseReviewDialog = () => {
+    setOpenReviewDialog(false);
   };
 
   return (
@@ -174,9 +230,20 @@ export default function EventPage() {
             >
               {!isOrganizer() && (
                 <IconButton
-                  onClick={!isAuthenticated() ? () => navigate("/login") : null}
+                  disabled={isPendingLike || isPendingDisLike}
+                  onClick={
+                    isAuthenticated()
+                      ? data.isLikedByCurrentUser
+                        ? mutateDislike
+                        : mutateLike
+                      : () => navigate("/login")
+                  }
                 >
-                  <FavoriteBorderIcon />
+                  {data.isLikedByCurrentUser ? (
+                    <Favorite />
+                  ) : (
+                    <FavoriteBorderIcon />
+                  )}
                 </IconButton>
               )}
 
@@ -209,50 +276,102 @@ export default function EventPage() {
                 {data.name}
               </Typography>
             </Paper>
-
-            {/* Date and Time  */}
-
-            <TitleAndSubtitleCard
-              title={"Date and Time"}
-              subtitle={`${handelMainDateTime()}`}
-              forWhat={"date"}
-            />
-
-            {/* Location  */}
-
-            <TitleAndSubtitleCard
-              title={"Location"}
-              subtitle={data.isOnline ? "Online" : data.street}
-              forWhat={"location"}
-              center={[data.lat, data.lon]}
-              isOnline={data.isOnline}
-            />
-
-            {/* Restrictions */}
-            {data.isManaged && (
-              <TitleAndSubtitleCard
-                title={"Restrictions"}
-                subtitle={{
-                  allowedGender: data.allowedGender,
-                  minAge: data.minAge,
-                  maxAge: data.maxAge,
+            {data.hasEnded ? (
+              <Box
+                sx={{
+                  width: "95%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  mb: 3,
+                  ml: 1,
                 }}
-                forWhat={"restriction"}
-              />
+              >
+                <Typography variant="h6" sx={{ mb: 1 }} color="initial">
+                  Reviews
+                </Typography>
+                {reviewsData.pages.map((page) => (
+                  <Fragment key={page.currentPage}>
+                    {page.reviews.map((review) => (
+                      <ReviewCard key={review.id} data={review} />
+                    ))}
+                  </Fragment>
+                ))}
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "20px",
+                    mt: 1,
+                  }}
+                >
+                  <LoadingButton
+                    variant="outlined"
+                    onClick={() => fetchNextPage()}
+                    disabled={!hasNextPage || isFetchingNextPage}
+                    loading={isFetchingNextPage}
+                  >
+                    Show More
+                  </LoadingButton>
+                  {isAttendee() && (
+                    <Button variant="contained" onClick={handlOpenReviewDialog}>
+                      Add Review
+                    </Button>
+                  )}
+                  <AddReviewDialog
+                    eventId={eventId}
+                    open={openReviewDialog}
+                    handleClose={handlCloseReviewDialog}
+                  />
+                </Box>
+              </Box>
+            ) : (
+              <>
+                {/* Date and Time  */}
+                <TitleAndSubtitleCard
+                  title={"Date and Time"}
+                  subtitle={`${handelMainDateTime()}`}
+                  forWhat={"date"}
+                />
+
+                {/* Location  */}
+
+                <TitleAndSubtitleCard
+                  title={"Location"}
+                  subtitle={data.isOnline ? "Online" : data.street}
+                  forWhat={"location"}
+                  center={[data.lat, data.lon]}
+                  isOnline={data.isOnline}
+                />
+
+                {/* Restrictions */}
+                {data.isManaged && (
+                  <TitleAndSubtitleCard
+                    title={"Restrictions"}
+                    subtitle={{
+                      allowedGender: data.allowedGender,
+                      minAge: data.minAge,
+                      maxAge: data.maxAge,
+                    }}
+                    forWhat={"restriction"}
+                  />
+                )}
+
+                {/* About this event  */}
+
+                <TitleAndSubtitleCard
+                  title={"About this event"}
+                  subtitle={data.description}
+                />
+              </>
             )}
-
-            {/* About this event  */}
-
-            <TitleAndSubtitleCard
-              title={"About this event"}
-              subtitle={data.description}
-            />
 
             {/* Organized By  */}
 
             <OrganizedByCard
+              organizerId={organizerId}
               organizer={data.organizer}
-              followersData={followersData}
             />
 
             {/* Report this event   */}
@@ -262,7 +381,7 @@ export default function EventPage() {
                 justifyContent={"center"}
                 alignItems={"center"}
               >
-                <Button color="primary">
+                <Button color="primary" onClick={handlOpenReportDialog}>
                   <Flag />
                   <Typography
                     variant="body1"
@@ -279,6 +398,11 @@ export default function EventPage() {
                 </Button>
               </Box>
             )}
+            <ReportDialog
+              open={openReportDialog}
+              handleClose={handlCloseReportDialog}
+              eventId={eventId}
+            />
           </Grid>
 
           {/* get ticket */}
@@ -306,11 +430,11 @@ export default function EventPage() {
               mt: 2,
             }}
           >
-            <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <Box>
               <Swiper
                 // modules={[Navigation, Autoplay]}
-                spaceBetween={50}
-                slidesPerView={3}
+                spaceBetween={20}
+                slidesPerView={handelSlidesPerView()}
                 style={{ display: "flex", flexDirection: "column-reverse" }}
               >
                 <Box
@@ -331,141 +455,28 @@ export default function EventPage() {
                 </Box>
 
                 <Box>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                      customStyle={{
-                        minWidth: {
-                          xs: "70vw",
-                          sm: "44vw",
-                          md: "24vw",
-                        },
-                      }}
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                      customStyle={{
-                        minWidth: {
-                          xs: "70vw",
-                          sm: "44vw",
-                          md: "24vw",
-                        },
-                      }}
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                      customStyle={{
-                        minWidth: {
-                          xs: "70vw",
-                          sm: "44vw",
-                          md: "24vw",
-                        },
-                      }}
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                      customStyle={{
-                        minWidth: {
-                          xs: "70vw",
-                          sm: "44vw",
-                          md: "24vw",
-                        },
-                      }}
-                    />
-                  </SwiperSlide>
-                </Box>
-              </Swiper>
-            </Box>
-            <Box sx={{ display: { xs: "block", md: "none" } }}>
-              <Swiper
-                // modules={[Navigation, Autoplay]}
-                spaceBetween={50}
-                slidesPerView={1}
-                style={{ display: "flex", flexDirection: "column-reverse" }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    mb: 3,
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                    Other events you may like
-                  </Typography>
-                  <Box>
-                    <SwiperButton />
-                  </Box>
-                </Box>
-
-                <Box>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <EventCard
-                      name={"learn react"}
-                      isOnline={true}
-                      startDate={"Saturday,Mar 24"}
-                      startTime={"18:00"}
-                      organizerName={"ahmad anini"}
-                      numberOfFollers={"3000"}
-                    />
-                  </SwiperSlide>
+                  {eventsMayLikeData.map((event) => (
+                    <SwiperSlide key={event.id}>
+                      <EventCard
+                        name={event.name}
+                        id={event.id}
+                        isOnline={event.isOnline}
+                        startDate={event.startDate}
+                        startTime={event.startTime}
+                        organizerName={event.organizer.displayName}
+                        imageUrl={event.thumbnailUrl}
+                        isLikedByCurrentUser={event.isLikedByCurrentUser}
+                        customStyle={{
+                          minWidth: {
+                            xs: "70vw",
+                            sm: "34vw",
+                            md: "24vw",
+                            lg: "14vw",
+                          },
+                        }}
+                      />
+                    </SwiperSlide>
+                  ))}
                 </Box>
               </Swiper>
             </Box>

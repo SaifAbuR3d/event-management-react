@@ -1,28 +1,65 @@
-import { Avatar, Box, Button, Paper, Typography, Link } from "@mui/material";
-import FacebookIcon from "@mui/icons-material/FacebookRounded";
-import LanguageIcon from "@mui/icons-material/LanguageRounded";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import { useContext, useEffect, useState } from "react";
-import { Instagram, LinkedIn } from "@mui/icons-material";
-import { useAddFollow, useRemoveFollow } from "../../../API/eventPageApi";
+import {
+  Avatar,
+  Box,
+  Button,
+  Paper,
+  Typography,
+  Link as MuiLink,
+} from "@mui/material";
+import { useContext, useState } from "react";
+import {
+  Instagram,
+  LinkedIn,
+  Facebook,
+  Language,
+  Twitter,
+} from "@mui/icons-material";
+import {
+  useAddFollow,
+  useCheckIsFollowingOrganizer,
+  useGetOrganizerFollowers,
+  useRemoveFollow,
+} from "../../../API/eventPageApi";
 import { UserContext } from "../../../contexts/UserContext";
 import GuestDialog from "./GuestDialog";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import MainLoding from "../../looding/MainLoding";
+import LoadingButton from "@mui/lab/LoadingButton";
 
-export default function OrganizedByCard({ organizer, followersData }) {
-  const [following, setFollowing] = useState(false);
+const StyledLink = styled(Link)(({ theme }) => ({
+  color: "black",
+  textDecoration: "none",
+  cursor: "pointer",
+  fontSize: "16px",
+  fontWeight: "bold",
+  "&:hover": {
+    textDecoration: "underline",
+    color: "violet",
+  },
+}));
+
+export default function OrganizedByCard({ organizer }) {
   const [open, setOpen] = useState(false);
   const { isOrganizer, isAuthenticated, user } = useContext(UserContext);
-  const { displayName, id, profile, imageUrl } = organizer;
-  const { totalCount, data } = followersData;
-  const { mutateAsync: mutateFollow } = useAddFollow(id, setFollowing);
-  const { mutateAsync: mutateUnFollow } = useRemoveFollow(id, setFollowing);
+  const { displayName, id, profile, imageUrl, userName } = organizer;
 
-  const isFollowingg = () =>
-    !!data?.find((follower) => follower?.userName == user?.userName);
+  const { data: followersData, isLoading: followersLoading } =
+    useGetOrganizerFollowers(id);
 
-  useEffect(() => {
-    setFollowing(isFollowingg());
-  }, [isAuthenticated()]);
+  const { data: checkFlag, isLoading: isLoadingCheck } =
+    useCheckIsFollowingOrganizer(id);
+
+  const { mutateAsync: mutateFollow, isPending: isPendingFollow } =
+    useAddFollow(id);
+  const { mutateAsync: mutateUnFollow, isPending: isPendingUnFollow } =
+    useRemoveFollow(id);
+
+  if (followersLoading || isLoadingCheck) {
+    return <MainLoding isLoading={followersLoading || isLoadingCheck} />;
+  }
+
+  const { totalCount } = followersData;
 
   const handleOpenGuestDialog = () => {
     setOpen(true);
@@ -30,6 +67,16 @@ export default function OrganizedByCard({ organizer, followersData }) {
   const handleCloseGuestDialog = () => {
     setOpen(false);
   };
+
+  const { website, twitter, facebook, linkedIn, instagram } = profile;
+
+  const socialMedia = [
+    { icon: <LinkedIn />, link: linkedIn },
+    { icon: <Facebook />, link: facebook },
+    { icon: <Twitter />, link: twitter },
+    { icon: <Instagram />, link: instagram },
+    { icon: <Language />, link: website },
+  ];
 
   return (
     <>
@@ -67,12 +114,12 @@ export default function OrganizedByCard({ organizer, followersData }) {
             <Avatar
               sx={{ width: "47px", height: "47px" }}
               alt={displayName}
-              src={`${import.meta.env.VITE_API_URL}/${imageUrl}`}
+              src={
+                imageUrl ? `${import.meta.env.VITE_API_URL}/${imageUrl}` : null
+              }
             />
             <Box>
-              <Typography variant="h6" color="initial">
-                {displayName}
-              </Typography>
+              <StyledLink to={`/profile/${userName}`}>{displayName}</StyledLink>
               <Typography
                 variant="body1"
                 color="initial"
@@ -101,21 +148,22 @@ export default function OrganizedByCard({ organizer, followersData }) {
             >
               Contact
             </Button>
-            <Button
+            <LoadingButton
               variant="contained"
               color="primary"
               sx={{ height: "42px" }}
+              loading={isPendingFollow || isPendingUnFollow}
               onClick={
                 isAuthenticated()
-                  ? !following
+                  ? !checkFlag
                     ? mutateFollow
                     : mutateUnFollow
                   : handleOpenGuestDialog
               }
               disabled={isOrganizer()}
             >
-              {!following ? "Follow" : "Unfollow"}
-            </Button>
+              {!checkFlag ? "Follow" : "Unfollow"}
+            </LoadingButton>
           </Box>
         </Box>
 
@@ -127,20 +175,13 @@ export default function OrganizedByCard({ organizer, followersData }) {
           gap={"20px"}
           mt={"35px"}
         >
-          {profile?.website && (
-            <SocialLink href={profile.website} icon={<LanguageIcon />} />
-          )}
-          {profile?.facebook && (
-            <SocialLink href={profile.facebook} icon={<FacebookIcon />} />
-          )}
-          {profile?.instagram && (
-            <SocialLink href={profile.instagram} icon={<Instagram />} />
-          )}
-          {profile?.twitter && (
-            <SocialLink href={profile.twitter} icon={<TwitterIcon />} />
-          )}
-          {profile?.linkedIn && (
-            <SocialLink href={profile.linkedIn} icon={<LinkedIn />} />
+          {socialMedia.map(
+            (item) =>
+              item.link && (
+                <MuiLink key={item.link} href={item.link} target="_blank">
+                  {item.icon}
+                </MuiLink>
+              )
           )}
         </Box>
         <GuestDialog open={open} handleClose={handleCloseGuestDialog} />
@@ -148,9 +189,3 @@ export default function OrganizedByCard({ organizer, followersData }) {
     </>
   );
 }
-
-const SocialLink = ({ href, icon }) => (
-  <Link href={href} target="_blank">
-    {icon}
-  </Link>
-);

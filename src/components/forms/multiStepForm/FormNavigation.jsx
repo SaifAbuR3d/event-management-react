@@ -1,3 +1,4 @@
+import { LoadingButton } from "@mui/lab";
 import { Box, Button } from "@mui/material";
 import PropTypes from "prop-types";
 export default function FormNavigation(props) {
@@ -21,9 +22,14 @@ export default function FormNavigation(props) {
           Back
         </Button>
       )}
-      <Button variant="contained" type="submit" sx={{ flexBasis: "15%" }}>
+      <LoadingButton
+        loading={props.isPending}
+        variant="contained"
+        type="submit"
+        sx={{ flexBasis: "15%" }}
+      >
         {props.isLastStep ? "Submit" : "Next"}
-      </Button>
+      </LoadingButton>
     </Box>
   );
 }

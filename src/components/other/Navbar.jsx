@@ -62,7 +62,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 //---------------------------------------------------------
 
-const pages = ["Find Events", "Create Event"];
+const pages = [
+  { name: "Find Events", path: "/events/create" },
+  { name: "Create Event", path: "/events/create" },
+];
 const auth = ["Login", "Register"];
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -86,17 +89,15 @@ export default function Navbar() {
   //   setAnchorElUser(null);
   // };
 
-
-  const { isAuthenticated, removeCurrentUser } = useContext(UserContext);
+  const { isAuthenticated, removeCurrentUser, isOrganizer } =
+    useContext(UserContext);
 
   const logout = () => {
     removeCurrentUser();
-  }
+  };
 
   return (
     <AppBar position="sticky" top="0" color="navBarColor">
-
-
       <Toolbar sx={{ height: "0px" }}>
         {/*----------AdbIcon-------------*/}
         <AdbIcon sx={{ display: { xs: "flex" }, mr: 1 }} />
@@ -118,7 +119,6 @@ export default function Navbar() {
         >
           Eventbrite
         </Typography>
-
 
         {/*---------Menu just dispaly on {xs} Breakpoint ------------*/}
         <Box sx={{ order: 1, display: { xs: "flex", md: "none" } }}>
@@ -150,9 +150,9 @@ export default function Navbar() {
               display: { xs: "block", md: "none" },
             }}
           >
-            {pages.map((page) => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">{page}</Typography>
+            {pages.map((page, i) => (
+              <MenuItem key={i} onClick={() => navigate(page.path)}>
+                <Typography textAlign="center">{page.name}</Typography>
               </MenuItem>
             ))}
           </Menu>
@@ -177,7 +177,6 @@ export default function Navbar() {
           </Search>
         </Box>
 
-
         {/*---------pages-- "Find Events", "Create Event"------------*/}
         <Box
           sx={{
@@ -187,8 +186,8 @@ export default function Navbar() {
         >
           {pages.map((page) => (
             <Button
-              key={page}
-              onClick={handleCloseNavMenu}
+              key={page.name}
+              onClick={() => navigate(page.path)}
               sx={{
                 my: 2,
                 color: "#39364f",
@@ -201,13 +200,13 @@ export default function Navbar() {
                 textWrap: "nowrap",
               }}
             >
-              {page}
+              {page.name}
             </Button>
           ))}
         </Box>
 
         {/*Logout button */}
-        {isAuthenticated() &&
+        {isAuthenticated() && (
           <Button
             key={"Logout"}
             onClick={() => logout()}
@@ -225,10 +224,10 @@ export default function Navbar() {
           >
             Logout
           </Button>
-        }
+        )}
 
         {/*---------auth-- "Login", "Register"------------*/}
-        {!isAuthenticated() &&
+        {!isAuthenticated() && (
           <Box sx={{ display: { xs: "flex" } }}>
             {auth.map((authItem) => (
               <Button
@@ -254,8 +253,7 @@ export default function Navbar() {
               </Button>
             ))}
           </Box>
-        }
-
+        )}
       </Toolbar>
     </AppBar>
   );

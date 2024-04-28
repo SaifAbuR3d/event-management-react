@@ -39,9 +39,9 @@ export default function OrganizerProfile() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [page, setPage] = useState(1);
-
+  
   const { isAttendee, isCurrentOrganizer } = useContext(UserContext);
-
+  
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
   };
