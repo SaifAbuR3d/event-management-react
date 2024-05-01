@@ -8,8 +8,10 @@ import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { useContext } from "react";
 import { useDrawer } from "../../contexts/DrawerContext";
+import { useTheme } from "@emotion/react";
 
 const Search = styled("div")(({ theme }) => ({
+  border: "black solid 1px",
   position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -52,22 +54,38 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function AdminNavbar({ open }) {
-    const {drawerOpen } = useDrawer();
+  const theme = useTheme();
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar
+    <Box
+      display="flex"
+      justifyContent="center"
+      bgcolor="#f7fbff"
+      color="black"
+      sx={{
+        width: { xs: `calc(100% - 65px)` },
+        ml: { xs: `65px` },
+      }}
+    >
+      <Box
+        width={1200}
+        ml={5}
+        mr={5}
         elevation={0}
+        color="black"
+        bgcolor="#f7fbff"
         position="sticky"
-        sx={{
-          width: { xs: `calc(100% - 60px)` },
-          ml: { xs: `60px` },
-          bgcolor: "#f7fbff",
-          color: "black",
-        }}
       >
-        <Toolbar>
+        <Toolbar
+          sx={{
+            [theme.breakpoints.up("sm")]: {
+              paddingLeft: "0px", 
+              paddingRight: "0px",
+            },
+          }}
+        >
           <Typography
-            variant="h6"
+            variant="h5"
+            fontWeight={500}
             noWrap
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
@@ -84,7 +102,7 @@ export default function AdminNavbar({ open }) {
             />
           </Search>
         </Toolbar>
-      </AppBar>
+      </Box>
     </Box>
   );
 }

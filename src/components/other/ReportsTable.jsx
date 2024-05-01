@@ -8,10 +8,11 @@ export default function ReportsTable() {
   return (
     <Grid
       sx={{
-        width: { xs: `calc(100% - 60px)` },
-        ml: { xs: `60px` },
+        width: { xs: `calc(100% - 65px)` },
+        ml: { xs: `65px` },
       }}
-      height="91vh"
+      minHeight="91vh"
+      maxHeight="100vh"
       bgcolor="#f7fbff"
       display="flex"
       justifyContent="center"

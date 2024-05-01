@@ -22,12 +22,27 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../../contexts/UserContext";
-import { useGetReports } from "../../API/AdminApi";
+import { useGetReports, useSetStatusSeen } from "../../API/AdminApi";
 import { queryClient } from "../../main";
+import ReportDialog from "./ReportDialog";
 
 export default function BasicTable() {
   const [sortType, setSortType] = useState("desc");
   const [pageNumber, setPageNumber] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [report, setReport] = useState({});
+
+  const {mutateAsync} = useSetStatusSeen();
+
+  const handleOpen = async (row) => {
+    row.status === "Pending" && await mutateAsync(row.id);
+    setReport(row);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleSortType = (event) => {
     setSortType(event.target.value);
@@ -76,7 +91,7 @@ export default function BasicTable() {
 
   return (
     <TableContainer component={Paper} sx={{ borderRadius: "2%" }}>
-      <Table sx={{ minWidth: 300 }} aria-label="simple table">
+      <Table>
         <TableHead>
           <TableRow style={{ height: "85px" }}>
             <TableCell align="left" colSpan={2}>
@@ -132,7 +147,7 @@ export default function BasicTable() {
             <TableRow
               key={index}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              onClick={() => console.log(index)}
+              onClick={() => handleOpen(row)}
               style={{ cursor: "pointer" }}
             >
               <StyledTableCell content={row.eventId} />
@@ -167,6 +182,7 @@ export default function BasicTable() {
                 ))}
               </TableRow>
             ))}
+          <ReportDialog open={open} handleClose={handleClose} report={report}/>
         </TableBody>
         <TableFooter>
           <TableRow>

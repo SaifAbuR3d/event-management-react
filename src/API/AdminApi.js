@@ -26,3 +26,25 @@ export function useGetReports(pageNumber, sortType){
         },
     });
 }
+
+export function useSetStatusSeen() {
+  const { userToken } = useContext(UserContext);
+
+  return useMutation({
+    mutationFn: async (eventId) => {
+      const {data} = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/reports/${eventId}/seen`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["Reports"]);
+    },
+});
+}
