@@ -1,5 +1,5 @@
 import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -8,12 +8,17 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { Grid } from "@mui/material";
+import { Grid, Collapse } from "@mui/material";
 import {
   FlagOutlined,
   NewReleasesOutlined,
+  ExpandLess,
+  ExpandMore,
+  PersonOutlined,
+  GroupOutlined,
 } from "@mui/icons-material";
 import { useDrawer } from "../../contexts/DrawerContext";
+import { useState } from "react";
 
 const drawerWidth = 260;
 
@@ -43,7 +48,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -65,10 +69,15 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function AdminDrawer() {
-  const {drawerOpen, handleDrawerOpen, handleDrawerClose } = useDrawer();
+  const { drawerOpen, handleDrawerOpen, handleDrawerClose } = useDrawer();
+  const [openVerification, setOpenVerification] = useState(false);
+
+  const handleVerificationClick = () => {
+    setOpenVerification(!openVerification);
+  };
 
   return (
-    <Grid sx={{ display: "flex"}}>
+    <Grid sx={{ display: "flex" }}>
       <CssBaseline />
 
       <Drawer variant="permanent" open={drawerOpen}>
@@ -100,29 +109,76 @@ export default function AdminDrawer() {
           </ListItem>
         </DrawerHeader>
         <List>
-          {["Reports", "Account verification"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: drawerOpen ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: drawerOpen ? "initial" : "center",
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: drawerOpen ? 3 : "auto",
+                  justifyContent: "center",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: drawerOpen ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {index === 0 && <FlagOutlined />}
-                  {index === 1 && <NewReleasesOutlined />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: drawerOpen ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+                <FlagOutlined />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Reports"}
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: drawerOpen ? "initial" : "center",
+                px: 2.5,
+              }}
+              onClick={handleVerificationClick}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: drawerOpen ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <NewReleasesOutlined />
+              </ListItemIcon>
+
+              <ListItemText
+                primary={"Account verification"}
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              />
+            </ListItemButton>
+
+            <Collapse in={openVerification} timeout="auto" unmountOnExit>
+              <List
+                component="div"
+                disablePadding
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              >
+                <ListItemButton sx={{ pl: 8 }}>
+                  <ListItemIcon>
+                    <PersonOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary="Attendee" />
+                </ListItemButton>
+                <ListItemButton sx={{ pl: 8 }}>
+                  <ListItemIcon>
+                    <GroupOutlined />
+                  </ListItemIcon>
+                  <ListItemText primary="Organizer" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </ListItem>
         </List>
       </Drawer>
     </Grid>

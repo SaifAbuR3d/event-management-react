@@ -13,6 +13,7 @@ import CreateEvetnPage from "./components/pages/CreateEvetnPage";
 import Login from "./shared/auth/login/Login.jsx";
 import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
 import ReportsTable from "./components/other/ReportsTable.jsx";
+import AttendeeVerificationsTable from "./components/other/AttendeeVerificationsTable.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ export const Router = createBrowserRouter([
       {
         path: "reports",
         element: <ReportsTable />,
+      },
+      {
+        path: "acount-verifications",
+        element: <AttendeeVerificationsTable />,
       },
     ],
   },

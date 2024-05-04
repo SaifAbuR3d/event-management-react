@@ -33,6 +33,7 @@ export default function ReportDialog({ open, handleClose, report }) {
           <Paper
             elevation={0}
             sx={{
+              minHeight:"150px",
               border: "1px solid grey",
               p: "15px",
             }}
