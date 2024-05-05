@@ -5,14 +5,16 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, IconButton, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { AccountCircleOutlined, BeenhereOutlined, Close, FileDownloadOutlined, GppBadOutlined } from "@mui/icons-material";
+import {
+  AccountCircleOutlined,
+  BeenhereOutlined,
+  Close,
+  FileDownloadOutlined,
+  GppBadOutlined,
+} from "@mui/icons-material";
 import { useSetApprove, useSetReject } from "../../API/AdminApi";
 
-export default function VerificationDialog({
-  open,
-  handleClose,
-  request,
-}) {
+export default function VerificationDialog({ open, handleClose, request }) {
   const [adminMessage, setAdminMessage] = useState("");
 
   const navigate = useNavigate();
@@ -22,10 +24,12 @@ export default function VerificationDialog({
 
   const handleApprove = async () => {
     await Approve(request.id, adminMessage);
+    setAdminMessage("");
   };
 
   const handleReject = async () => {
     await Reject(request.id, adminMessage);
+    setAdminMessage("");
   };
 
   const customStyle = {
@@ -95,7 +99,7 @@ export default function VerificationDialog({
             variant="outlined"
             startIcon={<AccountCircleOutlined />}
             sx={{ ...customStyle }}
-            onClick={() => navigate(`/profile/${request.organizerUserName}`)}
+            onClick={() => navigate(`/profile/${request.userName}`)}
           >
             View Profile
           </Button>

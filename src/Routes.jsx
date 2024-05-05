@@ -14,6 +14,8 @@ import Login from "./shared/auth/login/Login.jsx";
 import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
 import ReportsTable from "./components/other/ReportsTable.jsx";
 import AttendeeVerificationsTable from "./components/other/AttendeeVerificationsTable.jsx";
+import OrganizerVerificationsTable from "./components/other/OrganizerVerificationsTable.jsx";
+import VerificationRequest from "./shared/VerificationRequest.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -36,6 +38,10 @@ export const Router = createBrowserRouter([
         path: "events/create",
         element: <CreateEvetnPage />,
       },
+      {
+        path: "verification",
+        element: <VerificationRequest />
+      }
     ],
   },
   {
@@ -47,9 +53,13 @@ export const Router = createBrowserRouter([
         element: <ReportsTable />,
       },
       {
-        path: "acount-verifications",
+        path: "iv-request/attendee",
         element: <AttendeeVerificationsTable />,
       },
+      {
+        path: "iv-request/organizer",
+        element: <OrganizerVerificationsTable />
+      }
     ],
   },
   {
