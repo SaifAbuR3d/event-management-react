@@ -23,6 +23,7 @@ import axios from "axios";
 import { queryClient } from "../../../main";
 import PayMethodAcordion from "./PayMethodAcordion";
 import { Close, ShoppingCartOutlined } from "@mui/icons-material";
+import { UserContext } from "../../../contexts/UserContext";
 
 export default function GetTicketDialog({ open, handleClose, data }) {
   const [orders, setOrders] = useState(new Map());
@@ -140,6 +141,8 @@ export default function GetTicketDialog({ open, handleClose, data }) {
 
   const { eventId } = useParams();
 
+  const { userToken } = React.useContext(UserContext);
+
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (values) => {
       const { data } = await axios.post(
@@ -147,13 +150,16 @@ export default function GetTicketDialog({ open, handleClose, data }) {
         { tickets, ...values },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEzIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InlhemVlZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InlhemVlZEBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBdHRlbmRlZSIsImV4cCI6MTcxMjY2NTMyNCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIn0.G-FlGvUF7DV1TwNW8lNkumLaOW3Chn-BFm6qz7cX2No`,
+            Authorization: `Bearer ${userToken}`,
           },
         }
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["event", eventId]);
+      queryClient.invalidateQueries({
+        queryKey: [["event", eventId]],
+        exact: true,
+      });
       handleCloseDialog();
     },
   });
