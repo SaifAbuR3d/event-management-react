@@ -18,13 +18,12 @@ import {
   validationSchemaStepTwo,
 } from "../other/CreateEventCpmponents/validationSchemas";
 import utc from "dayjs/plugin/utc";
-
 import { styled } from "@mui/system";
 import Alert from "@mui/material/Alert";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MainLoding from "../looding/MainLoding";
+import { useNavigate } from "react-router-dom";
 
 const MainBox = styled("div")(({ theme }) =>
   theme.unstable_sx({
@@ -46,12 +45,20 @@ const MainTitle = styled(Typography)(({ theme }) =>
 );
 
 export default function CreateEvetnPage() {
+  const [error, setError] = useState("");
+  const [isManged, setIsManged] = useState(false);
+  const navigate = useNavigate();
   const { data, isLoading } = useGetCategories();
 
-  const [isManged, setIsManged] = useState(false);
+  const { mutateAsync, isPending, isError } = useCreateEvent();
 
-  const { mutateAsync, isPending, error, isError, isSuccess } =
-    useCreateEvent();
+  const handelMutateAsync = (values) => {
+    mutateAsync(values)
+      .then(({ eventId }) => {
+        setTimeout(() => navigate(`/event/${eventId}`));
+      })
+      .catch((error) => setError(error));
+  };
 
   const handelValues = (values) => {
     dayjs.extend(utc); // extend dayjs with utc plugin
@@ -93,11 +100,6 @@ export default function CreateEvetnPage() {
       ).format("HH:mm:ss")}`
     ).toISOString();
 
-    console.log(startDateUtc.substring(0, 10));
-    console.log(startDateUtc.substring(11, startDateUtc.length - 1));
-    console.log(endDateUtc.substring(0, 10));
-    console.log(endDateUtc.substring(11, startDateUtc.length - 1));
-
     // Step 1
     formData.append("name", values.name);
     formData.append("description", values.description);
@@ -131,23 +133,8 @@ export default function CreateEvetnPage() {
     return formData;
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Event Created successfully", {
-        position: "top-right",
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-    }
-  }, [isSuccess]);
-
   if (isLoading) {
-    return <MainLoding isLoading={isLoading}/>;
+    return <MainLoding isLoading={isLoading} />;
   }
 
   return (
@@ -167,7 +154,7 @@ export default function CreateEvetnPage() {
           </Typography>
           {isError && (
             <Alert variant="standard" severity="error" sx={{ mb: 2 }}>
-              {error.response.data.detail}
+              {error?.response?.data?.destail}
             </Alert>
           )}
           <MultiStepForm
@@ -204,8 +191,9 @@ export default function CreateEvetnPage() {
             }}
             onSubmit={(values) => {
               const formData = handelValues(values);
-              mutateAsync(formData);
+              handelMutateAsync(formData);
             }}
+            isPending={isPending}
           >
             <FormStep
               stepName={"Event Overview"}
@@ -404,7 +392,6 @@ export default function CreateEvetnPage() {
           </MultiStepForm>
         </Box>
       </Container>
-      <ToastContainer />
     </>
   );
 }

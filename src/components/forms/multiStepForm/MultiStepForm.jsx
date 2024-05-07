@@ -5,7 +5,12 @@ import FormNavigation from "./FormNavigation";
 import Stepper from "@mui/material/Stepper";
 import { Step, StepLabel } from "@mui/material";
 
-export default function MultiStepForm({ children, initialValues, onSubmit }) {
+export default function MultiStepForm({
+  children,
+  initialValues,
+  onSubmit,
+  isPending,
+}) {
   const [stepNumber, setStepNumber] = useState(0);
   const [snapShot, setSnapShot] = useState(initialValues);
   const steps = React.Children.toArray(children); //FormStepComponent
@@ -29,15 +34,11 @@ export default function MultiStepForm({ children, initialValues, onSubmit }) {
     if (step.props.onSubmit) {
       await step.props.onSubmit(values);
     }
-    /*The condition if (step.props.onSubmit)
-     checks if there's a submit handler function (onSubmit) provided as a prop to the current step component.
-If such a function exists (if condition evaluates to true),
- it calls this function passing the values as an argument.
-  The values likely represent the form values collected in the current step. */
+
     if (isLastStep) {
       return onSubmit(values, actions);
     } else {
-      actions.setTouched({}); // reset the Touched obj  as we navigate from page to page
+      actions.setTouched({});
       next(values);
     }
   };
@@ -49,7 +50,26 @@ If such a function exists (if condition evaluates to true),
     >
       {(formik) => (
         <Form autoComplete={"off"} encType="multipart/form-data">
-          <Stepper activeStep={stepNumber} sx={{ mb: 3, width: "100%" }}>
+          <Stepper
+            activeStep={stepNumber}
+            sx={{
+              "& .MuiStepIcon-root": {
+                // targets the icons in the steps
+                width: "30px",
+                height: "30px",
+                "& .MuiSvgIcon-root": {
+                  // targets the SVG icon itself
+                  fontSize: "15px", // increase the icon size
+                },
+              },
+              "& .MuiStepLabel-label": {
+                // targets the step labels
+                fontSize: "20px", // increase label font size
+              },
+              width: "100%",
+              mb: 3,
+            }}
+          >
             {steps.map((currentStep) => {
               const label = currentStep.props.stepName;
               return (
@@ -64,6 +84,7 @@ If such a function exists (if condition evaluates to true),
             isLastStep={isLastStep}
             hasPrevious={stepNumber > 0}
             onBackClick={() => previous(formik.values)}
+            isPending={isPending}
           />
         </Form>
       )}
