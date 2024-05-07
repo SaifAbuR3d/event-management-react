@@ -41,28 +41,18 @@ export default function OrganizerProfile() {
   const [page, setPage] = useState(1);
   
   const { isAttendee, isCurrentOrganizer } = useContext(UserContext);
-  
-  const handleClickListItem = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClickListItem = (event) => setAnchorEl(event.currentTarget);
 
-  const handleSMLClickOpen = () => {
-    setOpenSMLDialog(true);
-  };
-  const handleSMLClose = () => {
-    setOpenSMLDialog(false);
-  };
+  const handleClose = () => setAnchorEl(null);
 
-  const handleBioClickOpen = () => {
-    setOpenBioDialog(true);
-  };
-  const handleBioClose = () => {
-    setOpenBioDialog(false);
-  };
+  const handleSMLClickOpen = () => setOpenSMLDialog(true);
+
+  const handleSMLClose = () => setOpenSMLDialog(false);
+
+  const handleBioClickOpen = () => setOpenBioDialog(true);
+
+  const handleBioClose = () => setOpenBioDialog(false);
 
   const handleEvent = (event, newAlignment) => {
     if (newAlignment !== null) {
@@ -445,7 +435,7 @@ export default function OrganizerProfile() {
             </Typography>
 
             {/*About Section Content*/}
-            <Typography component="pre" pl={2} pb={2}>
+            <Typography component="pre" pl={2} pb={2} whiteSpace="pre-wrap">
               {bio}
             </Typography>
 

@@ -8,10 +8,14 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import MainLayout from "./components/layouts/MainLayout";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import EventPage from "./components/pages/EventPage";
-import OrganizerProfile from "./components/pages/OrganizerProfile";
+import OrganizerProfile from "./components/pages/OrganizerProfilePage.jsx";
 import CreateEvetnPage from "./components/pages/CreateEvetnPage";
 import Login from "./shared/auth/login/Login.jsx";
 import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
+import VerificationRequest from "./components/pages/VerificationRequestPage.jsx";
+import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
+import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
+import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -34,11 +38,29 @@ export const Router = createBrowserRouter([
         path: "events/create",
         element: <CreateEvetnPage />,
       },
+      {
+        path: "verification",
+        element: <VerificationRequest />,
+      },
     ],
   },
   {
     path: "admin-dashboard",
     element: <AdminLayout />,
+    children: [
+      {
+        path: "reports",
+        element: <ReportTable />,
+      },
+      {
+        path: "iv-request/attendee",
+        element: <AttendeeRequestTable />,
+      },
+      {
+        path: "iv-request/organizer",
+        element: <OrganizerRequestsData />,
+      },
+    ],
   },
   {
     path: "register",
