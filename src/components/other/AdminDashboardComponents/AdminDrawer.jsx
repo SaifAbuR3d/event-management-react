@@ -8,17 +8,19 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { Grid, Collapse } from "@mui/material";
+import { Grid, Collapse, Divider, Box } from "@mui/material";
 import {
   FlagOutlined,
   NewReleasesOutlined,
-  ExpandLess,
-  ExpandMore,
   PersonOutlined,
   GroupOutlined,
+  Logout,
 } from "@mui/icons-material";
-import { useDrawer } from "../../contexts/DrawerContext";
+import { useDrawer } from "../../../contexts/DrawerContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../../../contexts/UserContext";
 
 const drawerWidth = 260;
 
@@ -72,15 +74,25 @@ export default function AdminDrawer() {
   const { drawerOpen, handleDrawerOpen, handleDrawerClose } = useDrawer();
   const [openVerification, setOpenVerification] = useState(false);
 
-  const handleVerificationClick = () => {
-    setOpenVerification(!openVerification);
+  const navigate = useNavigate();
+  const { removeCurrentUser } = useContext(UserContext);
+
+  const handleVerificationClick = () => setOpenVerification(!openVerification);
+
+  const handleLogOut = () => {
+    removeCurrentUser();
+    navigate("/login");
   };
 
   return (
     <Grid sx={{ display: "flex" }}>
       <CssBaseline />
 
-      <Drawer variant="permanent" open={drawerOpen}>
+      <Drawer
+        variant="permanent"
+        open={drawerOpen}
+        sx={{ position: "relative" }}
+      >
         <DrawerHeader sx={{ display: "flex", justifyContent: "center", p: 0 }}>
           <ListItem disablePadding sx={{ display: "block" }}>
             <ListItemButton
@@ -109,7 +121,11 @@ export default function AdminDrawer() {
           </ListItem>
         </DrawerHeader>
         <List>
-          <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={() => navigate(`/admin-dashboard/reports`)}
+          >
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -164,13 +180,23 @@ export default function AdminDrawer() {
                 disablePadding
                 sx={{ opacity: drawerOpen ? 1 : 0 }}
               >
-                <ListItemButton sx={{ pl: 8 }}>
+                <ListItemButton
+                  sx={{ pl: 8 }}
+                  onClick={() =>
+                    navigate(`/admin-dashboard/iv-request/attendee`)
+                  }
+                >
                   <ListItemIcon>
                     <PersonOutlined />
                   </ListItemIcon>
                   <ListItemText primary="Attendee" />
                 </ListItemButton>
-                <ListItemButton sx={{ pl: 8 }}>
+                <ListItemButton
+                  sx={{ pl: 8 }}
+                  onClick={() =>
+                    navigate(`/admin-dashboard/iv-request/organizer`)
+                  }
+                >
                   <ListItemIcon>
                     <GroupOutlined />
                   </ListItemIcon>
@@ -180,6 +206,36 @@ export default function AdminDrawer() {
             </Collapse>
           </ListItem>
         </List>
+        <Box position="absolute" bottom={4} width="100%">
+          <Divider />
+          <ListItem
+            disablePadding
+            sx={{ display: "block" }}
+            onClick={handleLogOut}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: drawerOpen ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: drawerOpen ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <Logout />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Log out"}
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+        </Box>
       </Drawer>
     </Grid>
   );

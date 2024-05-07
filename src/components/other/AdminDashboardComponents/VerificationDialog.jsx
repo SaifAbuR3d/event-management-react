@@ -12,7 +12,7 @@ import {
   FileDownloadOutlined,
   GppBadOutlined,
 } from "@mui/icons-material";
-import { useSetApprove, useSetReject } from "../../API/AdminApi";
+import { useSetApprove, useSetReject } from "../../../API/AdminApi";
 
 export default function VerificationDialog({ open, handleClose, request }) {
   const [adminMessage, setAdminMessage] = useState("");

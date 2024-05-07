@@ -12,7 +12,7 @@ import {
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useSendVerificationRequest } from "../API/SharedApi";
+import { useSendVerificationRequest } from "../../API/SharedApi";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -137,26 +137,23 @@ export default function VerificationRequest() {
             2- Use a supported file format (JPG, PNG, PDF).
           </Typography>
 
-            <Button
-              sx={{ width: "60%", mt: 4 }}
-              component="label"
-              variant="contained"
-              startIcon={<CloudUpload />}
-            >
-              Upload File
-              <VisuallyHiddenInput
-                name="document"
-                type="file"
-                accept=".jpg,.png,.pdf"
-                onChange={(event) => {
-                  setErrorMessage(null); // Reset error message when file is selected
-                  formik.setFieldValue(
-                    "document",
-                    event.currentTarget.files[0]
-                  );
-                }}
-              />
-            </Button>
+          <Button
+            sx={{ width: "60%", mt: 4 }}
+            component="label"
+            variant="contained"
+            startIcon={<CloudUpload />}
+          >
+            Upload File
+            <VisuallyHiddenInput
+              name="document"
+              type="file"
+              accept=".jpg,.png,.pdf"
+              onChange={(event) => {
+                setErrorMessage(null); // Reset error message when file is selected
+                formik.setFieldValue("document", event.currentTarget.files[0]);
+              }}
+            />
+          </Button>
           <Box pt={4} pr={2} width="100%" display="flex" justifyContent="end">
             <Button type="submit" variant="contained">
               Submit

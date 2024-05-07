@@ -1,14 +1,13 @@
 import * as React from "react";
 import { styled, alpha } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { useContext } from "react";
-import { useDrawer } from "../../contexts/DrawerContext";
 import { useTheme } from "@emotion/react";
+import { UserContext } from "../../../contexts/UserContext";
 
 const Search = styled("div")(({ theme }) => ({
   border: "black solid 1px",
@@ -41,7 +40,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     [theme.breakpoints.up("sm")]: {
@@ -53,7 +51,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function AdminNavbar({ open }) {
+export default function AdminNavbar() {
+  const { user } = useContext(UserContext);
+
   const theme = useTheme();
   return (
     <Box
@@ -62,8 +62,8 @@ export default function AdminNavbar({ open }) {
       bgcolor="#f7fbff"
       color="black"
       sx={{
-        width: { xs: `calc(100% - 65px)` },
-        ml: { xs: `65px` },
+        width: { xs: `calc(100% - 55px)` },
+        ml: { xs: `55px` },
       }}
     >
       <Box
@@ -78,7 +78,7 @@ export default function AdminNavbar({ open }) {
         <Toolbar
           sx={{
             [theme.breakpoints.up("sm")]: {
-              paddingLeft: "0px", 
+              paddingLeft: "0px",
               paddingRight: "0px",
             },
           }}
@@ -90,7 +90,7 @@ export default function AdminNavbar({ open }) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            Hello Sameeh
+            Hello {user?.userName}
           </Typography>
           <Search>
             <SearchIconWrapper>

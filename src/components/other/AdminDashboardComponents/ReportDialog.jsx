@@ -4,8 +4,9 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, IconButton, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Close } from "@mui/icons-material";
 
 export default function ReportDialog({ open, handleClose, report }) {
   const navigate = useNavigate();
@@ -22,8 +23,20 @@ export default function ReportDialog({ open, handleClose, report }) {
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth={"sm"}>
-      <DialogTitle variant="h5" m={"auto"}>
-        Report Details
+      <DialogTitle
+        variant="h5"
+        display="flex"
+        justifyContent="center"
+        position="relative"
+        width="100%"
+      >
+        <Typography variant="h5">Report Details</Typography>
+        <IconButton
+          sx={{ position: "absolute", right: "5px", top: "5px" }}
+          onClick={handleClose}
+        >
+          <Close fontSize="medium" />
+        </IconButton>{" "}
       </DialogTitle>
       <DialogContent>
         <Box>
@@ -33,7 +46,7 @@ export default function ReportDialog({ open, handleClose, report }) {
           <Paper
             elevation={0}
             sx={{
-              minHeight:"150px",
+              minHeight: "150px",
               border: "1px solid grey",
               p: "15px",
             }}
@@ -41,11 +54,7 @@ export default function ReportDialog({ open, handleClose, report }) {
             {report.content}
           </Paper>
         </Box>
-        <Box
-          pt={2}
-          display="flex"
-          justifyContent="space-between"
-        >
+        <Box pt={2} display="flex" justifyContent="space-between">
           <Button
             variant="outlined"
             sx={{ ...cuctomStyle }}
@@ -71,10 +80,6 @@ export default function ReportDialog({ open, handleClose, report }) {
           </Button>
         </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button type="submit">Save</Button>
-      </DialogActions>
     </Dialog>
   );
 }

@@ -4,15 +4,15 @@ import { queryClient } from "../main";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 
-export function useGetReports(pageNumber, sortType) {
+export function useGetReports(pageNumber, sortType, status) {
   const { userToken } = useContext(UserContext);
   return useQuery({
-    queryKey: ["Reports", pageNumber, sortType],
+    queryKey: ["Reports", pageNumber, sortType, status],
     queryFn: async () => {
       const { data: Reports, headers } = await axios.get(
         `${
           import.meta.env.VITE_API_URL
-        }/api/reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`,
+        }/api/reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}&status=${status}`,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,

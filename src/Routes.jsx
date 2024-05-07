@@ -8,14 +8,14 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import MainLayout from "./components/layouts/MainLayout";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import EventPage from "./components/pages/EventPage";
-import OrganizerProfile from "./components/pages/OrganizerProfile";
+import OrganizerProfile from "./components/pages/OrganizerProfilePage.jsx";
 import CreateEvetnPage from "./components/pages/CreateEvetnPage";
 import Login from "./shared/auth/login/Login.jsx";
 import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
-import ReportsTable from "./components/other/ReportsTable.jsx";
-import AttendeeVerificationsTable from "./components/other/AttendeeVerificationsTable.jsx";
-import OrganizerVerificationsTable from "./components/other/OrganizerVerificationsTable.jsx";
-import VerificationRequest from "./shared/VerificationRequest.jsx";
+import VerificationRequest from "./components/pages/VerificationRequestPage.jsx";
+import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
+import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
+import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -40,8 +40,8 @@ export const Router = createBrowserRouter([
       },
       {
         path: "verification",
-        element: <VerificationRequest />
-      }
+        element: <VerificationRequest />,
+      },
     ],
   },
   {
@@ -50,16 +50,16 @@ export const Router = createBrowserRouter([
     children: [
       {
         path: "reports",
-        element: <ReportsTable />,
+        element: <ReportTable />,
       },
       {
         path: "iv-request/attendee",
-        element: <AttendeeVerificationsTable />,
+        element: <AttendeeRequestTable />,
       },
       {
         path: "iv-request/organizer",
-        element: <OrganizerVerificationsTable />
-      }
+        element: <OrganizerRequestsData />,
+      },
     ],
   },
   {
