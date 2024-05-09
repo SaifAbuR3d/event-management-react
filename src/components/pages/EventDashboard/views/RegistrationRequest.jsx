@@ -10,13 +10,14 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import { gridClasses } from "@mui/x-data-grid";
 import { grey } from "@mui/material/colors";
 import dayjs from "dayjs";
 import Actions from "../../../other/eventDashboardComponents/Actions";
-import MainLoding from "../../../looding/MainLoding";
+import CustomNoRowsOverlay from "../../../other/eventDashboardComponents/CustomNoRowsOverlay";
 
 function getStatusChip(status) {
   const statusMap = {
@@ -35,6 +36,21 @@ function getStatusChip(status) {
   };
   return statusMap[status] || { label: status, color: "default" };
 }
+
+const CustomLoadingOverlay = () => (
+  <div style={{ position: "absolute", top: 0, width: "100%", height: "100%" }}>
+    {Array.from(new Array(5)).map((_, index) => (
+      <Skeleton
+        key={index}
+        variant="rectangular"
+        animation="wave"
+        width="100%"
+        height={60}
+        style={{ marginBottom: 6 }}
+      />
+    ))}
+  </div>
+);
 
 export default function RegistrationRequest() {
   const { eventId } = useParams();
@@ -61,7 +77,6 @@ export default function RegistrationRequest() {
     isLoading: isLoadingTestData,
     fetchPreviousPage,
     hasPreviousPage,
-    isFetchingPreviousPage,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -166,13 +181,8 @@ export default function RegistrationRequest() {
     setPageSize(newModel.pageSize);
   };
 
-  if (isLoadingTestData || status === "loading") {
-    return <MainLoding isLoading={isLoadingTestData || status === "loading"} />;
-  }
-
   return (
-    <Box sx={{ m: 4, mt: "100px" }}>
-      {/* Custom Header */}
+    <Box sx={{ width: "73%", minHeight: "90vh", m: "auto", mt: "100px" }}>
       <Box
         display="flex"
         alignItems="center"
@@ -203,6 +213,11 @@ export default function RegistrationRequest() {
         </Box>
       </Box>
       <DataGrid
+        autoHeight={true}
+        slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
+          loadingOverlay: CustomLoadingOverlay,
+        }}
         sortingMode="server"
         sortModel={sortModel}
         onSortModelChange={handleSortModelChange}
@@ -214,9 +229,11 @@ export default function RegistrationRequest() {
         rows={rows}
         getRowId={(row) => row.id}
         rowCount={totalRows}
-        loading={isLoadingTestData}
-        pageSizeOptions={[5, 10, 25]} // Ensure the page size matches the query
-        rowsPerPageOptions={[5, 10, 20]} // Page size options
+        loading={
+          isLoadingTestData || status === "loading" || isFetchingNextPage
+        }
+        pageSizeOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 25]}
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={handlePaginationModelChange}
@@ -225,7 +242,7 @@ export default function RegistrationRequest() {
           bottom: params.isLastVisible ? 0 : 5,
         })}
         sx={{
-          overflow: "hidden",
+          minHeight: 400,
           [`& .${gridClasses.row}`]: {
             bgcolor: grey[200],
           },

@@ -110,9 +110,7 @@ export default function TicketCard({
             sx={{ visibility: isManaged ? "hidden" : "" }}
             color="primary"
             onClick={() => addTicket(name, price, id)}
-            disabled={
-              quantity - count <= 0 || isEnded() || !isStarted()
-            }
+            disabled={quantity - count <= 0 || isEnded() || !isStarted()}
           >
             <Add
               fontSize="large"

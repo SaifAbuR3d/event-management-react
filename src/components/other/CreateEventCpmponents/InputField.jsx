@@ -338,14 +338,14 @@ export function TicketsFieldArray({ name }) {
                   <DateField
                     label="Start Sale"
                     name={`tickets.${index}.startSale`}
-                    minDate={dayjs().add(1, "day")}
+                    minDate={dayjs()}
                   />
                 </Grid>
                 <Grid item xs={5.7}>
                   <DateField
                     label="End Sale"
                     name={`tickets.${index}.endSale`}
-                    minDate={dayjs().add(1, "day")}
+                    minDate={dayjs()}
                   />
                 </Grid>
                 <Grid item xs={5.7}>

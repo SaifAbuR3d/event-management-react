@@ -91,6 +91,27 @@ export default function EventDrawer({ open, setOpen, eventData }) {
     return <MainLoding isLoading={isLoading} />;
   }
 
+  const links = [
+    {
+      title: "Main",
+      icon: <Dashboard />,
+      path: "",
+    },
+    {
+      title: "Attedee List",
+      icon: <GroupsIcon />,
+      path: "AttendeeList",
+    },
+  ];
+
+  if (eventData?.isManaged) {
+    links.push({
+      title: "Registration Request",
+      icon: <ManageAccountsIcon />,
+      path: "RegistrationRequest",
+    });
+  }
+
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader sx={{ display: "flex", justifyContent: "space-evenly" }}>
@@ -105,24 +126,7 @@ export default function EventDrawer({ open, setOpen, eventData }) {
       </DrawerHeader>
       <Divider />
       <List>
-        {[
-          {
-            title: "Main",
-            icon: <Dashboard />,
-            path: "",
-          },
-          {
-            title: "Attedee List",
-            icon: <GroupsIcon />,
-            path: "AttendeeList",
-          },
-
-          {
-            title: "Registration Request",
-            icon: <ManageAccountsIcon />,
-            path: "RegistrationRequest",
-          },
-        ].map((item, index) => (
+        {links.map((item, index) => (
           <ListItem key={index} disablePadding sx={{ display: "block" }}>
             <ListItemButton
               onClick={() => navigate(item.path)}

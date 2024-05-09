@@ -3,7 +3,6 @@ import EventDrawer from "../other/eventDashboardComponents/EventDrawer";
 import { Outlet, useParams } from "react-router-dom";
 import EventAppbar from "../other/eventDashboardComponents/EventAppbar";
 import { Box } from "@mui/material";
-import Container from "@mui/material/Container";
 import { useGetEventData } from "../../API/eventPageApi";
 
 export default function EventDashboardLayout() {
@@ -18,7 +17,7 @@ export default function EventDashboardLayout() {
       <EventDrawer open={open} setOpen={setOpen} eventData={eventData} />
       <Box
         sx={{
-          width: "73%",
+          width: "100%",
           minHeight: "90vh",
           m: "auto",
         }}

@@ -1,11 +1,9 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { useGetRegRequests } from "../../../../API/eventDahboardApi";
+import { useAttendeeList } from "../../../../API/eventDahboardApi";
 import { useParams } from "react-router-dom";
 import {
-  Avatar,
   Box,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
@@ -15,30 +13,12 @@ import {
 import { gridClasses } from "@mui/x-data-grid";
 import { grey } from "@mui/material/colors";
 import dayjs from "dayjs";
-import Actions from "../../../other/eventDashboardComponents/Actions";
-import MainLoding from "../../../looding/MainLoding";
-
-function getStatusChip(status) {
-  const statusMap = {
-    Pending: {
-      label: "Pending",
-      color: "info",
-    },
-    Approved: {
-      label: "Approved",
-      color: "success",
-    },
-    Rejected: {
-      label: "Rejected",
-      color: "error",
-    },
-  };
-  return statusMap[status] || { label: status, color: "default" };
-}
+import { Cancel, CheckCircle } from "@mui/icons-material";
+import CustomNoRowsOverlay from "../../../other/eventDashboardComponents/CustomNoRowsOverlay.jsx";
 
 export default function AttendeeList() {
   const { eventId } = useParams();
-  const [statusFilter, setStatusFilter] = React.useState("Pending");
+  const [verifiedFilter, setVerifiedFilter] = React.useState(false);
   const [sortModel, setSortModel] = React.useState([]);
   const [paginationModel, setPaginationModel] = React.useState({
     page: 0,
@@ -47,9 +27,9 @@ export default function AttendeeList() {
 
   const [pageSize, setPageSize] = React.useState(5);
 
-  const handleStatusFilterChange = (event) => {
-    setStatusFilter(event.target.value);
-    console.log(statusFilter);
+  const handleVerifiedFilterChange = (event) => {
+    setVerifiedFilter(event.target.value);
+    console.log(verifiedFilter);
   };
 
   const handleSortModelChange = (newModel) => {
@@ -66,7 +46,8 @@ export default function AttendeeList() {
     hasNextPage,
     isFetchingNextPage,
     status,
-  } = useGetRegRequests(eventId, pageSize, statusFilter, sortModel);
+  } = useAttendeeList(eventId, pageSize, verifiedFilter, sortModel);
+
   const columns = [
     {
       field: "id",
@@ -76,72 +57,49 @@ export default function AttendeeList() {
       headerAlign: "center",
     },
     {
-      field: "attendeeProfilePictureUrl",
-      headerName: "Avatar",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) => (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Avatar
-            src={params.row.attendeeProfilePictureUrl}
-            alt={params.row.attendeeUserName}
-          />
-        </Box>
-      ),
-    },
-    {
-      field: "attendeeUserName",
+      field: "userName",
       headerName: "User Name",
       width: 200,
       align: "center",
       headerAlign: "center",
     },
     {
-      field: "creationDate",
-      headerName: "Creation Date",
+      field: "fullName",
+      headerName: "Full Name",
+      width: 200,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "gender",
+      headerName: "Gender",
+      width: 200,
+      sortable: false,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "dateOfBirth",
+      headerName: "Date of Birth",
       width: 230,
       align: "center",
       headerAlign: "center",
       renderCell: (params) =>
-        dayjs(params.row.creationDate).format("YYYY-MM-DD HH:mm:ss"),
+        dayjs(params.row.dateOfBirth).format("YYYY-MM-DD"),
     },
     {
-      field: "lastModified",
-      headerName: "Last Modified",
-      width: 230,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) =>
-        dayjs(params.row.lastModified).format("YYYY-MM-DD HH:mm:ss"),
-    },
-    {
-      field: "status",
-      headerName: "Status",
+      field: "isVerified",
+      headerName: "Verified",
       width: 200,
       align: "center",
       headerAlign: "center",
       sortable: false,
-      renderCell: (params) => {
-        const { label, color } = getStatusChip(params.value);
-        return <Chip label={label} color={color} />;
-      },
-    },
-    {
-      field: "action",
-      headerName: "Action",
-      width: 260,
-      sortable: false,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => <Actions params={params} />,
+      renderCell: (params) =>
+        params.value ? (
+          <CheckCircle color="secondary" />
+        ) : (
+          <Cancel color="error" />
+        ),
     },
   ];
 
@@ -165,12 +123,15 @@ export default function AttendeeList() {
     setPageSize(newModel.pageSize);
   };
 
-  if (isLoadingTestData || status === "loading") {
-    return <MainLoding isLoading={isLoadingTestData || status === "loading"} />;
-  }
-
   return (
-    <Box sx={{ m: 4, mt: "100px" }}>
+    <Box
+      sx={{
+        width: "60%",
+        minHeight: "90vh",
+        m: "auto",
+        mt: "100px",
+      }}
+    >
       {/* Custom Header */}
       <Box
         display="flex"
@@ -183,25 +144,28 @@ export default function AttendeeList() {
         bgcolor="#f5f5f5"
       >
         <Typography variant="h5" fontWeight="700">
-          Registration Request
+          Attendee List
         </Typography>
         <Box display="flex" alignItems="center" gap={2} mb={0}>
           <FormControl sx={{ width: 200 }} size="small">
-            <InputLabel>Status Filter</InputLabel>
+            <InputLabel>Verified Filter</InputLabel>
             <Select
-              label="Status Filter"
-              value={statusFilter}
-              onChange={handleStatusFilterChange}
+              label="Verified Filter"
+              value={verifiedFilter}
+              onChange={handleVerifiedFilterChange}
             >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Approved">Approved</MenuItem>
-              <MenuItem value="Rejected">Rejected</MenuItem>
+              <MenuItem value={false}>All</MenuItem>
+              <MenuItem value={true}>Only Verified</MenuItem>
             </Select>
           </FormControl>
         </Box>
       </Box>
+
       <DataGrid
+        autoHeight
+        slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
+        }}
         sortingMode="server"
         sortModel={sortModel}
         onSortModelChange={handleSortModelChange}
@@ -213,9 +177,11 @@ export default function AttendeeList() {
         rows={rows}
         getRowId={(row) => row.id}
         rowCount={totalRows}
-        loading={isLoadingTestData}
-        pageSizeOptions={[5, 10, 25]} // Ensure the page size matches the query
-        rowsPerPageOptions={[5, 10, 20]} // Page size options
+        loading={
+          isLoadingTestData || status === "loading" || isFetchingNextPage
+        }
+        pageSizeOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 25]}
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={handlePaginationModelChange}
@@ -224,7 +190,7 @@ export default function AttendeeList() {
           bottom: params.isLastVisible ? 0 : 5,
         })}
         sx={{
-          overflow: "hidden",
+          minHeight: 400,
           [`& .${gridClasses.row}`]: {
             bgcolor: grey[200],
           },

@@ -50,6 +50,53 @@ export function useGetRegRequests(eventId, pageSize, statusFilter, sortModel) {
   });
 }
 
+export function useAttendeeList(eventId, pageSize, verifiedFilter, sortModel) {
+  const defaultSortConfig = { field: "id", sort: "asc" };
+  const sortConfig = sortModel.length > 0 ? sortModel[0] : defaultSortConfig;
+  const { userToken } = useContext(UserContext);
+  return useInfiniteQuery({
+    queryKey: [
+      "AttendeeList",
+      eventId,
+      pageSize,
+      verifiedFilter,
+      sortConfig.field,
+      sortConfig.sort,
+    ],
+    queryFn: async ({ pageParam }) => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendees`,
+        {
+          params: {
+            eventId: eventId,
+            pageSize: pageSize,
+            pageIndex: pageParam,
+            onlyVerified: verifiedFilter,
+            sortColumn: sortConfig.field,
+            sortOrder: sortConfig.sort,
+          },
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      const pagination = JSON.parse(response.headers["x-pagination"]);
+      return {
+        data: [...response.data],
+        currentPage: pageParam,
+        TotalCount: pagination.TotalCount,
+        nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
+        previousPage: pagination.HasPreviousPage
+          ? pagination.PageIndex - 1
+          : null,
+      };
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getPreviousPageParam: (lastPage) => lastPage.previousPage,
+  });
+}
+
 export function useApproveRegReq(eventId) {
   const { userToken } = useContext(UserContext);
   return useMutation({
