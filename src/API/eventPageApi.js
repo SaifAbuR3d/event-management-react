@@ -138,7 +138,7 @@ export function GetOtherEventsMayLike(eventId) {
 
 //--------Report Event--------------------------------
 
-export function useReportEvent(handleClose) {
+export function useReportEvent() {
   const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: (requestData) =>
@@ -152,7 +152,7 @@ export function useReportEvent(handleClose) {
         }
       ),
     onSuccess: () => {
-      handleClose();
+      //
     },
   });
 }
@@ -160,7 +160,7 @@ export function useReportEvent(handleClose) {
 //--------Like event--------------------------------
 
 export function useAddLike(eventId) {
-  const { user, userToken } = useContext(UserContext);
+  const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: () =>
       axios.post(
@@ -182,7 +182,7 @@ export function useAddLike(eventId) {
 }
 
 export function useRemoveLike(eventId) {
-  const { user, userToken } = useContext(UserContext);
+  const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: () =>
       axios.delete(

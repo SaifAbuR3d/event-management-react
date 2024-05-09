@@ -12,6 +12,10 @@ import OrganizerProfile from "./components/pages/OrganizerProfilePage.jsx";
 import CreateEvetnPage from "./components/pages/CreateEvetnPage";
 import Login from "./shared/auth/login/Login.jsx";
 import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
+import EventDashboardHome from "./components/pages/EventDashboard/views/EventDashboardHome.jsx";
+import AttendeeList from "./components/pages/EventDashboard/views/AttendeeList.jsx";
+import RegistrationRequest from "./components/pages/EventDashboard/views/RegistrationRequest.jsx";
+import EventDashboardLayout from "./components/layouts/EventDashboardLayout.jsx";
 import VerificationRequest from "./components/pages/VerificationRequestPage.jsx";
 import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
@@ -41,6 +45,24 @@ export const Router = createBrowserRouter([
       {
         path: "verification",
         element: <VerificationRequest />,
+      },
+    ],
+  },
+  {
+    path: "eventDashboard/:eventId",
+    element: <EventDashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <EventDashboardHome />,
+      },
+      {
+        path: "AttendeeList",
+        element: <AttendeeList />,
+      },
+      {
+        path: "RegistrationRequest",
+        element: <RegistrationRequest />,
       },
     ],
   },

@@ -104,13 +104,19 @@ export const validationSchemaStepTwo = yup.object({
           .date()
           .typeError("Invalid date")
           .required("Start Sale Date is required")
-          .min(dayjs(), "Start date must be at least one day ahead"),
+          .min(
+            dayjs().subtract(1, "day"),
+            "Start Sale date must be in the future"
+          ),
 
         endSale: yup
           .date()
           .typeError("Invalid date")
           .required("end Sale date is required")
-          .min(dayjs(), "end Sale date must be at least one day ahead")
+          .min(
+            dayjs().subtract(1, "day"),
+            "End Sale date must be in the future"
+          )
           .min(yup.ref("startSale"), "end Sale date must be after start date"),
 
         startSaleTime: yup
