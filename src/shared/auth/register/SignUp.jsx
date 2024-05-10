@@ -41,9 +41,8 @@ export default function SignUp() {
   const [randomSideImage, setRandomSideImage] = useState("");
   const navigate = useNavigate();
 
-  {
-    /*Choose Random Side Image*/
-  }
+  /*Choose Random Side Image*/
+  
   const sideImages = [
     Sideimage,
     Sideimage1,
