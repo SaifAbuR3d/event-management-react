@@ -174,7 +174,7 @@ export default function OrganizerProfile() {
           startDate={event.startDate}
           startTime={event.startTime}
           customStyle={cardStyle}
-          isAttendee={attendee}
+          isLikedByCurrentUser={event.isLikedByCurrentUser}
         />
       );
     });

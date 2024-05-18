@@ -1,6 +1,6 @@
 import { Add, Remove } from "@mui/icons-material";
 import { Box, Divider, IconButton, Paper, Typography } from "@mui/material";
-import React from "react";
+import dayjs from "dayjs";
 import { useState } from "react";
 
 export default function TicketCard({
@@ -14,6 +14,9 @@ export default function TicketCard({
   addToOrder,
   removeFromOrder,
   isManaged,
+  ticketsSalesEnded,
+  ticketsSalesRunning,
+  ticketsSalesStarted,
 }) {
   const [count, setCount] = useState(isManaged ? 1 : 0);
 
@@ -28,55 +31,23 @@ export default function TicketCard({
   };
 
   const handelEndSaleDate = () => {
-    const date = new Date(endSale);
-    const monthAbbreviation = date.toLocaleString("default", {
-      month: "short",
-    });
-    const day = date.getDate();
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const amOrPm = hours >= 12 ? "PM" : "AM";
-    if (hours > 12) {
-      hours -= 12;
-    }
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    const formattedDate = `${day} ${monthAbbreviation} ${year} at ${hours}:${formattedMinutes} ${amOrPm}`;
-
+    const endDate = new Date(`${endSale}z`);
+    const date = dayjs(endDate);
+    const formattedDate = date.format("D MMM YYYY [at] h:mm A");
     return formattedDate;
   };
 
   const handelStartSaleDate = () => {
-    const date = new Date(startSale);
-    const monthAbbreviation = date.toLocaleString("default", {
-      month: "short",
-    });
-    const day = date.getDate();
-    const year = date.getFullYear();
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const amOrPm = hours >= 12 ? "PM" : "AM";
-    if (hours > 12) {
-      hours -= 12;
-    }
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-    const formattedDate = `${day} ${monthAbbreviation} ${year} at ${hours}:${formattedMinutes} ${amOrPm}`;
-
+    const startDate = new Date(`${endSale}z`);
+    const date = dayjs(startDate);
+    const formattedDate = date.format("D MMM YYYY [at] h:mm A");
     return formattedDate;
   };
 
-  const isStarted = () => {
-    const date = new Date(startSale);
-    const currentDate = new Date();
-    return date < currentDate;
-  };
+  const isStarted = () => ticketsSalesStarted;
 
-  const isEnded = () => {
-    const date = new Date(endSale);
-    const currentDate = new Date();
+  const isEnded = () => ticketsSalesEnded;
 
-    return date < currentDate;
-  };
   return (
     <Paper
       elevation={0}

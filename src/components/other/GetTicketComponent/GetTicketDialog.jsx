@@ -13,6 +13,7 @@ import {
   useMediaQuery,
   TextField,
   IconButton,
+  Alert,
 } from "@mui/material";
 import TicketCard from "../../cards/TicketCard";
 import { useState } from "react";
@@ -24,7 +25,10 @@ import { queryClient } from "../../../main";
 import PayMethodAcordion from "./PayMethodAcordion";
 import { Close, ShoppingCartOutlined } from "@mui/icons-material";
 import { UserContext } from "../../../contexts/UserContext";
-
+import MangedEventStep from "./MangedEventStep";
+import * as yup from "yup";
+import MainLoding from "../../looding/MainLoding";
+import { useGetRegRequestForEvent } from "../../../API/eventPageApi";
 export default function GetTicketDialog({ open, handleClose, data }) {
   const [orders, setOrders] = useState(new Map());
   const [total, setTotal] = useState(0);
@@ -46,6 +50,9 @@ export default function GetTicketDialog({ open, handleClose, data }) {
     thumbnailUrl,
     tickets: ticketsData,
     isManaged,
+    ticketsSalesEnded,
+    ticketsSalesRunning,
+    ticketsSalesStarted,
   } = data;
 
   const addToOrder = (name, price, id) => {
@@ -94,6 +101,9 @@ export default function GetTicketDialog({ open, handleClose, data }) {
         quantity={ticket.availableQuantity}
         startSale={ticket.startSale}
         endSale={ticket.endSale}
+        ticketsSalesEnded={ticketsSalesEnded}
+        ticketsSalesRunning={ticketsSalesRunning}
+        ticketsSalesStarted={ticketsSalesStarted}
         addToOrder={addToOrder}
         removeFromOrder={removeFromOrder}
         isManaged={isManaged}
@@ -125,6 +135,7 @@ export default function GetTicketDialog({ open, handleClose, data }) {
   };
 
   const initialValues = {
+    RegistrationRequest: "",
     notes: "hi how are you?",
     paymentMethodId: 2,
     totalAmount: 0,
@@ -143,7 +154,7 @@ export default function GetTicketDialog({ open, handleClose, data }) {
 
   const { userToken } = React.useContext(UserContext);
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: async (values) => {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/events/${eventId}/bookings`,
@@ -163,6 +174,21 @@ export default function GetTicketDialog({ open, handleClose, data }) {
       handleCloseDialog();
     },
   });
+
+  const { isVerified } = React.useContext(UserContext);
+  const { data: RegRequestData, isLoading } = useGetRegRequestForEvent(
+    eventId,
+    open
+  );
+
+  if (isLoading) {
+    return <MainLoding isLoading={isLoading} />;
+  }
+  const isNotVerified = !isVerified();
+  const flag = !!RegRequestData;
+  const isPending = RegRequestData?.status === "Pending";
+  const isApproved = RegRequestData?.status === "Approved";
+  const isRejected = RegRequestData?.status === "Rejected";
 
   const handelMainDateTime = () => {
     const start_Date = new Date(`${startDate}T${startTime}z`);
@@ -263,6 +289,67 @@ export default function GetTicketDialog({ open, handleClose, data }) {
               handleCloseDialog={handleCloseDialog}
               clearOrder={clearOrder}
             >
+              {isManaged && (
+                <FormStep
+                  onSubmit={() => console.log("step 2 is submit")}
+                  validationSchema={yup.object().shape({
+                    RegistrationRequest: yup
+                      .mixed()
+                      .test(
+                        "must-verify",
+                        "You must verify your account before proceeding to the next step",
+                        function () {
+                          return !isNotVerified;
+                        }
+                      )
+                      .test(
+                        "must-approve",
+                        "Approval must be obtained from the event organizer before proceeding to the next step",
+                        function () {
+                          return isApproved;
+                        }
+                      ),
+                  })}
+                >
+                  <Box
+                    pl={{
+                      xs: 2,
+                      sm: 10,
+                    }}
+                    pr={{
+                      xs: 2,
+                      sm: 10,
+                    }}
+                    pt={4}
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
+                    sx={{
+                      overflowY: "auto",
+                    }}
+                    height={{
+                      xs: "75vh",
+                      sm: "67vh",
+                      md: "71vh",
+                    }}
+                  >
+                    <Typography variant="h4" fontWeight={400}>
+                      Managed Event
+                    </Typography>
+                    <Box>
+                      <MangedEventStep
+                        eventId={eventId}
+                        flag={flag}
+                        isPending={isPending}
+                        isApproved={isApproved}
+                        isRejected={isRejected}
+                        isNotVerified={isNotVerified}
+                      />
+                    </Box>
+                  </Box>
+                </FormStep>
+              )}
+
               {/*********************** Choose Tickets form **********************/}
               <FormStep onSubmit={createFinalOrder}>
                 <Box

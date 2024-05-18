@@ -42,7 +42,9 @@ export default function FormNavigation(props) {
       </Box>
       <Box
         display="flex"
-        justifyContent={props.isLastStep ? "space-between" : "end"}
+        justifyContent={
+          props.isLastStep || props.isPenultimateStep ? "space-between" : "end"
+        }
       >
         {props.hasPrevious && (
           <Button variant="outlined" type="button" onClick={handleOpenBack}>
@@ -57,11 +59,11 @@ export default function FormNavigation(props) {
         />
         <Button
           variant="contained"
-          disabled={props.totalAmount === 0}
+          disabled={props.isPenultimateStep && props.totalAmount === 0}
           type="submit"
           sx={{ p: 1, width: "150px" }}
         >
-          {props.isLastStep ? "Palce order" : "Check out"}
+          {props.isLastStep ? "Palce order" : "Next"}
         </Button>
       </Box>
     </Box>
