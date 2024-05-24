@@ -32,7 +32,7 @@ export default function GetOrganizerDashboard() {
         variant="contained"
         color="primary"
         sx={{ width: "90%", textTransform: "capitalize" }}
-        onClick={() => navigate(`/eventDashboard/${eventId}`)}
+        onClick={() => navigate(`/event-dashboard/${eventId}`)}
       >
         Organizer Dashboard
       </Button>

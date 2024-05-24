@@ -41,7 +41,6 @@ export default function AttendeeList() {
     isLoading: isLoadingTestData,
     fetchPreviousPage,
     hasPreviousPage,
-    isFetchingPreviousPage,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -52,28 +51,28 @@ export default function AttendeeList() {
     {
       field: "id",
       headerName: "ID",
-      width: 80,
+      flex: 0.5,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "userName",
       headerName: "User Name",
-      width: 200,
+      flex: 1,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "fullName",
       headerName: "Full Name",
-      width: 200,
+      flex: 1,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "gender",
       headerName: "Gender",
-      width: 200,
+      flex: 1,
       sortable: false,
       align: "center",
       headerAlign: "center",
@@ -81,7 +80,7 @@ export default function AttendeeList() {
     {
       field: "dateOfBirth",
       headerName: "Date of Birth",
-      width: 230,
+      flex: 1,
       align: "center",
       headerAlign: "center",
       renderCell: (params) =>
@@ -90,7 +89,7 @@ export default function AttendeeList() {
     {
       field: "isVerified",
       headerName: "Verified",
-      width: 200,
+      flex: 1,
       align: "center",
       headerAlign: "center",
       sortable: false,
@@ -126,8 +125,8 @@ export default function AttendeeList() {
   return (
     <Box
       sx={{
-        width: "60%",
-        minHeight: "90vh",
+        width: "80%",
+        minHeight: "100%",
         m: "auto",
         mt: "100px",
       }}
@@ -190,6 +189,7 @@ export default function AttendeeList() {
           bottom: params.isLastVisible ? 0 : 5,
         })}
         sx={{
+          width: "100%",
           minHeight: 400,
           [`& .${gridClasses.row}`]: {
             bgcolor: grey[200],

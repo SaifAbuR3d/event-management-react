@@ -87,14 +87,14 @@ export default function RegistrationRequest() {
     {
       field: "id",
       headerName: "ID",
-      width: 80,
+      flex: 0.5,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "attendeeProfilePictureUrl",
       headerName: "Avatar",
-      width: 120,
+      flex: 0.5,
       align: "center",
       headerAlign: "center",
       sortable: false,
@@ -116,14 +116,14 @@ export default function RegistrationRequest() {
     {
       field: "attendeeUserName",
       headerName: "User Name",
-      width: 200,
+      flex: 1,
       align: "center",
       headerAlign: "center",
     },
     {
       field: "creationDate",
       headerName: "Creation Date",
-      width: 230,
+      flex: 1,
       align: "center",
       headerAlign: "center",
       renderCell: (params) =>
@@ -132,7 +132,7 @@ export default function RegistrationRequest() {
     {
       field: "lastModified",
       headerName: "Last Modified",
-      width: 230,
+      flex: 1,
       align: "center",
       headerAlign: "center",
       renderCell: (params) =>
@@ -141,7 +141,7 @@ export default function RegistrationRequest() {
     {
       field: "status",
       headerName: "Status",
-      width: 200,
+      flex: 1,
       align: "center",
       headerAlign: "center",
       sortable: false,
@@ -153,7 +153,7 @@ export default function RegistrationRequest() {
     {
       field: "action",
       headerName: "Action",
-      width: 260,
+      flex: 1,
       sortable: false,
       align: "center",
       headerAlign: "center",
@@ -182,7 +182,7 @@ export default function RegistrationRequest() {
   };
 
   return (
-    <Box sx={{ width: "73%", minHeight: "90vh", m: "auto", mt: "100px" }}>
+    <Box sx={{ width: "80%", minHeight: "100%", m: "auto", mt: "100px" }}>
       <Box
         display="flex"
         alignItems="center"
