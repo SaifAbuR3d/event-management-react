@@ -16,6 +16,7 @@ import VerificationRequest from "./components/pages/VerificationRequestPage.jsx"
 import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
+import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -31,8 +32,12 @@ export const Router = createBrowserRouter([
         element: <EventPage />,
       },
       {
-        path: "profile/:userName",
+        path: "organizer-profile/:userName",
         element: <OrganizerProfile />,
+      },
+      {
+        path: "attendee-profile/:userName",
+        element: <AttendeeProfilePage />,
       },
       {
         path: "events/create",
