@@ -10,6 +10,8 @@ import { Avatar, Menu, MenuItem, TextField, styled } from "@mui/material";
 import { useFormik } from "formik";
 import { useChangeImageRequest } from "../../../API/organizerProfileApi";
 import { CloudUpload } from "@mui/icons-material";
+import { useContext } from "react";
+import { UserContext } from "../../../contexts/UserContext";
 
 function ViewImage({ open, handleClose, image }) {
   return (
@@ -43,7 +45,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-function ChangeImage({ open, handleClose, ownerData }) {
+function ChangeImage({ open, handleClose }) {
   const { mutateAsync } = useChangeImageRequest(handleClose);
 
   const formik = useFormik({
@@ -74,11 +76,13 @@ function ChangeImage({ open, handleClose, ownerData }) {
       <DialogTitle sx={{ m: "auto" }} color="blue">
         Change Profile Image
       </DialogTitle>
-      <DialogContent sx={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
+      <DialogContent
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
         <DialogContentText mb={3}>Please choose a new image</DialogContentText>
 
         <Button
-        sx={{width:"40%"}}
+          sx={{ width: "40%" }}
           component="label"
           variant="contained"
           startIcon={<CloudUpload />}
@@ -107,18 +111,17 @@ export default function ChangeViewProfileImage({
   handleClose,
   image,
   ownerData,
-  isCurrentOrganizer,
   anchorEl,
 }) {
   const [openViewImage, setOpenViewImage] = React.useState(false);
+
+  const {isCurrentOrganizer} = useContext(UserContext);
 
   const handleOpenViewImage = () => {
     handleClose();
     setOpenViewImage(true);
   };
-  const handleCloseViewImage = () => {
-    setOpenViewImage(false);
-  };
+  const handleCloseViewImage = () => setOpenViewImage(false);
 
   const [openChangeImage, setOpenChangeImage] = React.useState(false);
 
@@ -126,9 +129,9 @@ export default function ChangeViewProfileImage({
     handleClose();
     setOpenChangeImage(true);
   };
-  const handleCloseChangeImage = () => {
-    setOpenChangeImage(false);
-  };
+  const handleCloseChangeImage = () => setOpenChangeImage(false);
+
+  const currentOrganizer = isCurrentOrganizer(ownerData?.imageUrl);
 
   return (
     <Box>
@@ -136,7 +139,7 @@ export default function ChangeViewProfileImage({
         <MenuItem sx={{ width: "200px" }} onClick={handleOpenViewImage}>
           <span>View Image</span>
         </MenuItem>
-        {isCurrentOrganizer && (
+        {currentOrganizer && (
           <MenuItem sx={{ width: "200px" }} onClick={handleOpenChangeImage}>
             <span>Change Image</span>
           </MenuItem>
