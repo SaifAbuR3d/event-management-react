@@ -6,6 +6,8 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { Box, Paper } from "@mui/material";
 import {
+  ConfirmationNumberOutlined,
+  ConfirmationNumberSharp,
   Favorite,
   FavoriteBorder,
   IosShare,
@@ -16,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import ShareCard from "./ShareCard";
 import { UserContext } from "../../contexts/UserContext";
 import { useAddLike, useRemoveLike } from "../../API/eventPageApi";
+import ShowTicketsDialog from "../other/AttendeeProfileComponent/ShowTicketsDialog";
 
 const EventCard = React.memo(function EventCard({
   name,
@@ -28,8 +31,11 @@ const EventCard = React.memo(function EventCard({
   imageUrl,
   isLikedByCurrentUser,
   customStyle,
+  isBooking,
 }) {
   const [open, setOpen] = useState(false);
+  const [openTickets, setOpenTickets] = useState(false);
+
   const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
   const navigate = useNavigate();
   const { isOrganizer, isAuthenticated } = React.useContext(UserContext);
@@ -55,10 +61,19 @@ const EventCard = React.memo(function EventCard({
     event.stopPropagation();
     setOpen(true);
   };
+
   const handleClose = (event) => {
     setOpen(false);
   };
 
+  const handleOpenTickets = (event) => {
+    event.stopPropagation();
+    setOpenTickets(true);
+  };
+  
+  const handleCloseTickets = () => {
+    setOpenTickets(false);
+  };
   const handelMainDateTime = () => {
     const startDatee = new Date(`${startDate}T${startTime}z`);
     startDatee.setSeconds(0);
@@ -71,7 +86,6 @@ const EventCard = React.memo(function EventCard({
     });
     return formattedStartDate;
   };
-  const url = `http://localhost:3000/event/${id}`;
 
   return (
     <Card
@@ -111,29 +125,43 @@ const EventCard = React.memo(function EventCard({
             justifyContent="space-between"
             alignItems="center"
           >
-            {!isOrganizer() && (
-              <IconButton
-                disabled={isPendingLike || isPendingDisLike}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  if (isAuthenticated()) {
-                    if (isLiked) {
-                      handelMutateDislike();
-                    } else {
-                      handelMutateLike();
-                    }
-                  } else {
-                    navigate("/login");
-                  }
-                }}
-              >
-                {isLiked ? <Favorite /> : <FavoriteBorder />}
+            {isBooking ? (
+              <IconButton onClick={handleOpenTickets}>
+                <ConfirmationNumberOutlined fontSize="large" />
               </IconButton>
+            ) : (
+              <>
+                {!isOrganizer() && (
+                  <IconButton
+                    disabled={isPendingLike || isPendingDisLike}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      if (isAuthenticated()) {
+                        if (isLiked) {
+                          handelMutateDislike();
+                        } else {
+                          handelMutateLike();
+                        }
+                      } else {
+                        navigate("/login");
+                      }
+                    }}
+                  >
+                    {isLiked ? <Favorite /> : <FavoriteBorder />}
+                  </IconButton>
+                )}
+                <IconButton onClick={handleOpen}>
+                  <IosShare />
+                </IconButton>
+              </>
             )}
 
-            <IconButton onClick={handleOpen}>
-              <IosShare />
-            </IconButton>
+            <ShowTicketsDialog
+              open={openTickets}
+              handleClose={handleCloseTickets}
+              eventId={id}
+              eventName={name}
+            />
           </Box>
         </Box>
 
