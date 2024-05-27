@@ -15,8 +15,8 @@ import {
   PersonOutlined,
   GroupOutlined,
   Logout,
+  Remove,
 } from "@mui/icons-material";
-import { useDrawer } from "../../../contexts/DrawerContext";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -71,13 +71,24 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function AdminDrawer() {
-  const { drawerOpen, handleDrawerOpen, handleDrawerClose } = useDrawer();
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [openVerification, setOpenVerification] = useState(false);
+  const [openUsers, setOpenUsers] = useState(false);
+  
+  const handleDrawerOpen = () => setDrawerOpen(true);
+
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+    setOpenUsers(false);
+    setOpenVerification(false);
+  };
 
   const navigate = useNavigate();
   const { removeCurrentUser } = useContext(UserContext);
 
-  const handleVerificationClick = () => setOpenVerification(!openVerification);
+  const handleVerificationClick = () =>
+    setOpenVerification(drawerOpen && !openVerification);
+  const handleUsersOnClick = () => setOpenUsers(drawerOpen && !openUsers);
 
   const handleLogOut = () => {
     removeCurrentUser();
@@ -187,7 +198,7 @@ export default function AdminDrawer() {
                   }
                 >
                   <ListItemIcon>
-                    <PersonOutlined />
+                    <Remove />
                   </ListItemIcon>
                   <ListItemText primary="Attendee" />
                 </ListItemButton>
@@ -198,7 +209,60 @@ export default function AdminDrawer() {
                   }
                 >
                   <ListItemIcon>
-                    <GroupOutlined />
+                    <Remove />
+                  </ListItemIcon>
+                  <ListItemText primary="Organizer" />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: drawerOpen ? "initial" : "center",
+                px: 2.5,
+              }}
+              onClick={handleUsersOnClick}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: drawerOpen ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <GroupOutlined />
+              </ListItemIcon>
+
+              <ListItemText
+                primary={"Users"}
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              />
+            </ListItemButton>
+
+            <Collapse in={openUsers} timeout="auto" unmountOnExit>
+              <List
+                component="div"
+                disablePadding
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              >
+                <ListItemButton
+                  sx={{ pl: 8 }}
+                  onClick={() => navigate(`/admin-dashboard/attendees`)}
+                >
+                  <ListItemIcon>
+                    <Remove />
+                  </ListItemIcon>
+                  <ListItemText primary="Attendee" />
+                </ListItemButton>
+                <ListItemButton
+                  sx={{ pl: 8 }}
+                  onClick={() => navigate(`/admin-dashboard/organizers`)}
+                >
+                  <ListItemIcon>
+                    <Remove />
                   </ListItemIcon>
                   <ListItemText primary="Organizer" />
                 </ListItemButton>

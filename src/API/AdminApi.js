@@ -9,20 +9,50 @@ export function useGetReports(pageNumber, sortType, status) {
   return useQuery({
     queryKey: ["Reports", pageNumber, sortType, status],
     queryFn: async () => {
-      const { data: Reports, headers } = await axios.get(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}&status=${status}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
+      let queryString = `${
+        import.meta.env.VITE_API_URL
+      }/api/reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`;
+
+      if (status !== "All") {
+        queryString += `&status=${status}`;
+      }
+
+      const { data: Reports, headers } = await axios.get(queryString, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
 
       const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
 
       return { Reports, totalPages };
+    },
+  });
+}
+
+export function useGetAllAttendees(pageNumber, sortType, status, eventId) {
+
+  console.log(status);
+  let queryString = `${
+    import.meta.env.VITE_API_URL
+  }/api/Attendees?PageIndex=${pageNumber}&PageSize=6&sortColumn=creationDate&sortOrder=${sortType}`;
+
+  if (status !== "All") {
+    queryString += `&OnlyVerified=${status}`;
+  }
+
+  if(eventId != 0) {
+    queryString += `&EventId=${eventId}`;
+  }
+
+  return useQuery({
+    queryKey: ["Attendees", pageNumber, status, sortType, eventId],
+    queryFn: async () => {
+      const { data: Attendees, headers } = await axios.get(queryString);
+
+      const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
+
+      return { Attendees, totalPages };
     },
   });
 }
@@ -71,7 +101,9 @@ export function useGetAtendeeIVRs(
     ],
     queryFn: async () => {
       // Adjust query string as necessary
-      let queryString = `${import.meta.env.VITE_API_URL}/api/iv-requests?onlyAttendees=${onlyAttendee}&onlyOrganizers=${onlyOrganizer}&pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`;
+      let queryString = `${
+        import.meta.env.VITE_API_URL
+      }/api/iv-requests?onlyAttendees=${onlyAttendee}&onlyOrganizers=${onlyOrganizer}&pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`;
 
       if (Status !== "All") {
         queryString += `&status=${Status}`;
@@ -100,7 +132,7 @@ export function useSetApprove(handleClose) {
     mutationFn: async (ivrId, adminMessage) => {
       const { data } = await axios.patch(
         `${import.meta.env.VITE_API_URL}/api/iv-requests/${ivrId}/approve`,
-        {adminMessage: adminMessage},
+        { adminMessage: adminMessage },
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -123,7 +155,7 @@ export function useSetReject(handleClose) {
     mutationFn: async (ivrId, adminMessage) => {
       const { data } = await axios.patch(
         `${import.meta.env.VITE_API_URL}/api/iv-requests/${ivrId}/reject`,
-        {adminMessage: adminMessage},
+        { adminMessage: adminMessage },
         {
           headers: {
             Authorization: `Bearer ${userToken}`,

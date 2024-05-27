@@ -17,6 +17,7 @@ import ReportTable from "./components/other/AdminDashboardComponents/ReportTable
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
+import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ export const Router = createBrowserRouter([
         path: "iv-request/organizer",
         element: <OrganizerRequestsData />,
       },
+      {
+        path: "attendees",
+        element: <AllAttendeesTable />
+      }
     ],
   },
   {
