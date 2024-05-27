@@ -226,7 +226,9 @@ export default function AllAttendeesTable() {
                     }}
                   >
                     {row.imageUrl ? (
-                      <Avatar src={row.imageUrl} />
+                      <Avatar
+                        src={`${import.meta.env.VITE_API_URL}/${row.imageUrl}`}
+                      />
                     ) : (
                       <Avatar {...stringAvatar(row.fullName)} />
                     )}
@@ -286,7 +288,7 @@ export default function AllAttendeesTable() {
                       <StyledTableCell
                         key={`placeholder-cell-${index}`}
                         style={{
-                          height: "66.5px",
+                          height: "68.5px",
                           border: "none",
                           bgcolor: "#f5f5f5",
                         }}
