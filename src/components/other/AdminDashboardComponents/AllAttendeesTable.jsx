@@ -22,21 +22,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import {
-  useGetAllAttendees,
-  useGetReports,
-  useSetStatusSeen,
-} from "../../../API/AdminApi";
-import ReportDialog from "./ReportDialog";
+import { useGetAllAttendees } from "../../../API/AdminApi";
 import {
   Block,
-  DeleteForever,
   Edit,
   FilterListSharp,
   Unpublished,
   Verified,
 } from "@mui/icons-material";
-import dayjs from "dayjs";
 import DeleteUserDialog from "./DeleteUserDialog";
 
 export default function AllAttendeesTable() {
@@ -88,7 +81,6 @@ export default function AllAttendeesTable() {
     let hash = 0;
     let i;
 
-    /* eslint-disable no-bitwise */
     for (i = 0; i < string.length; i += 1) {
       hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
@@ -99,7 +91,6 @@ export default function AllAttendeesTable() {
       const value = (hash >> (i * 8)) & 0xff;
       color += `00${value.toString(16)}`.slice(-2);
     }
-    /* eslint-enable no-bitwise */
 
     return color;
   }
@@ -267,8 +258,16 @@ export default function AllAttendeesTable() {
                     key={index}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    {Array.from(new Array(6)).map((_, index) => (
-                      <TableCell key={index} align="center">
+                    <TableCell align="center">
+                      <Skeleton
+                        sx={{ m: "auto" }}
+                        variant="circular"
+                        width={40}
+                        height={40}
+                      />
+                    </TableCell>
+                    {Array.from(new Array(5)).map((_, cellIndex) => (
+                      <TableCell key={cellIndex} align="center">
                         <Skeleton
                           sx={{ m: "auto" }}
                           animation="wave"
@@ -279,6 +278,7 @@ export default function AllAttendeesTable() {
                     ))}
                   </TableRow>
                 ))}
+
               {!isLoading &&
                 Array.from(new Array(placeholderRowCount)).map((_, index) => (
                   <TableRow key={`placeholder-${index}`}>
