@@ -49,7 +49,7 @@ export const Router = createBrowserRouter([
     ],
   },
   {
-    path: "eventDashboard/:eventId",
+    path: "event-dashboard/:eventId",
     element: <EventDashboardLayout />,
     children: [
       {
@@ -57,11 +57,11 @@ export const Router = createBrowserRouter([
         element: <EventDashboardHome />,
       },
       {
-        path: "AttendeeList",
+        path: "Attendee-list",
         element: <AttendeeList />,
       },
       {
-        path: "RegistrationRequest",
+        path: "registration-request",
         element: <RegistrationRequest />,
       },
     ],

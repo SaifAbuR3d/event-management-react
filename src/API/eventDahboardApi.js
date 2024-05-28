@@ -1,8 +1,10 @@
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
+
+const STALE_TIME = 60000;
 
 export function useGetRegRequests(eventId, pageSize, statusFilter, sortModel) {
   const defaultSortConfig = { field: "creationDate", sort: "desc" };
@@ -47,6 +49,7 @@ export function useGetRegRequests(eventId, pageSize, statusFilter, sortModel) {
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     getPreviousPageParam: (lastPage) => lastPage.previousPage,
+    staleTime: STALE_TIME,
   });
 }
 
@@ -94,6 +97,7 @@ export function useAttendeeList(eventId, pageSize, verifiedFilter, sortModel) {
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
     getPreviousPageParam: (lastPage) => lastPage.previousPage,
+    staleTime: STALE_TIME,
   });
 }
 
@@ -139,6 +143,24 @@ export function useRejectRegReq(eventId) {
       queryClient.invalidateQueries({
         queryKey: ["reg-requests", eventId],
       });
+    },
+  });
+}
+
+export function useGetEventStatus(eventId) {
+  const { userToken } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["event-status", eventId],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/events/${eventId}/stats`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
     },
   });
 }
