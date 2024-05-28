@@ -86,9 +86,7 @@ export default function SideListWithContent({ open, setOpen, children }) {
 
   const { eventId } = useParams();
 
-  const { data: ProfileOwnerData, isLoading } = useGetProfileOwnerData(
-    user?.userName
-  );
+  const { data, isLoading } = useGetProfileOwnerData(user?.userName);
   const { data: eventData, isLoading: isLoadingEventData } =
     useGetEventData(eventId);
 
@@ -155,13 +153,11 @@ export default function SideListWithContent({ open, setOpen, children }) {
         </List>
         <Divider />
         <Box sx={{ mx: "auto", mt: 3, mb: 1 }}>
-          <Tooltip title={ProfileOwnerData?.displayName}>
+          <Tooltip title={data?.displayName}>
             <Avatar
               src={
-                ProfileOwnerData?.imageUrl
-                  ? `${import.meta.env.VITE_API_URL}/${
-                      ProfileOwnerData?.imageUrl
-                    }`
+                data?.imageUrl
+                  ? `${import.meta.env.VITE_API_URL}/${data?.imageUrl}`
                   : ""
               }
               {...(open && { sx: { width: 100, height: 100 } })}
@@ -169,16 +165,8 @@ export default function SideListWithContent({ open, setOpen, children }) {
           </Tooltip>
         </Box>
         <Box sx={{ textAlign: "center" }}>
-          {open && (
-            <Typography variant="body1">
-              {ProfileOwnerData?.displayName}
-            </Typography>
-          )}
-          {open && (
-            <Typography variant="body2">
-              {ProfileOwnerData?.userName}
-            </Typography>
-          )}
+          {open && <Typography variant="body1">{data?.displayName}</Typography>}
+          {open && <Typography variant="body2">{data?.userName}</Typography>}
           <Tooltip title="Logout" sx={{ mt: 1 }}>
             <IconButton onClick={logout}>
               <Logout />

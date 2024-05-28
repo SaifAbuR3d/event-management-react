@@ -14,9 +14,9 @@ import { useGetEventStatus } from "../../../../API/eventDahboardApi";
 import { useParams } from "react-router-dom";
 import MainLoding from "../../../looding/MainLoding";
 import dayjs from "dayjs";
+import MyBarChart from "../../../other/eventDashboardComponents/MyBarChart";
 import SoldTicketsAreaChart from "../../../other/eventDashboardComponents/SoldTicketsAreaChart";
 import TicketsPieChart from "../../../other/eventDashboardComponents/TicketsPieChart";
-import TicketsBarChart from "../../../other/eventDashboardComponents/TicketsBarChart";
 
 export default function EventDashboardHome() {
   const { eventId } = useParams();
@@ -126,7 +126,7 @@ export default function EventDashboardHome() {
           elevation={3}
           sx={{ p: 2, flexGrow: "1", display: "flex", alignItems: "center" }}
         >
-          <TicketsBarChart barChartData={data.tickets} />
+          <MyBarChart barChartData={data.tickets} />
         </Paper>
       </Box>
 

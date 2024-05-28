@@ -1,4 +1,4 @@
-import { AttachMoney, Group } from "@mui/icons-material";
+import { AttachMoney, Event, Group } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -10,13 +10,13 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
+import MyPieChart from "../../../other/eventDashboardComponents/MyPieChart";
+import MyAreaChart from "../../../other/eventDashboardComponents/MyAreaChart";
 import { useGetEventStatus } from "../../../../API/eventDahboardApi";
 import { useParams } from "react-router-dom";
 import MainLoding from "../../../looding/MainLoding";
 import dayjs from "dayjs";
-import SoldTicketsAreaChart from "../../../other/eventDashboardComponents/SoldTicketsAreaChart";
-import TicketsPieChart from "../../../other/eventDashboardComponents/TicketsPieChart";
-import TicketsBarChart from "../../../other/eventDashboardComponents/TicketsBarChart";
+// import MyBarChart from "../../../other/eventDashboardComponents/MyBarChart";
 
 export default function EventDashboardHome() {
   const { eventId } = useParams();
@@ -126,15 +126,15 @@ export default function EventDashboardHome() {
           elevation={3}
           sx={{ p: 2, flexGrow: "1", display: "flex", alignItems: "center" }}
         >
-          <TicketsBarChart barChartData={data.tickets} />
+          {/* <MyBarChart barChartData={data.tickets} /> */}
         </Paper>
       </Box>
 
       <Paper elevation={3} sx={{ p: 2, gridColumn: "1/3" }}>
-        <TicketsPieChart PieChatData={PieChatData} />
+        <MyPieChart PieChatData={PieChatData} />
       </Paper>
       <Paper elevation={3} sx={{ p: 2, gridColumn: "1/3" }}>
-        <SoldTicketsAreaChart sellingTrack={data.sellingTrack} />
+        <MyAreaChart sellingTrack={data.sellingTrack} />
       </Paper>
     </Box>
   );

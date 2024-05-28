@@ -1,8 +1,8 @@
-import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useAttendeeList } from "../../../../API/eventDahboardApi";
 import { useParams } from "react-router-dom";
 import {
+  Avatar,
   Box,
   FormControl,
   InputLabel,
@@ -15,29 +15,20 @@ import { grey } from "@mui/material/colors";
 import dayjs from "dayjs";
 import { Cancel, CheckCircle } from "@mui/icons-material";
 import CustomNoRowsOverlay from "../../../other/eventDashboardComponents/CustomNoRowsOverlay.jsx";
+import { useMemo, useState } from "react";
 
 export default function AttendeeList() {
   const { eventId } = useParams();
-  const [verifiedFilter, setVerifiedFilter] = React.useState(false);
-  const [sortModel, setSortModel] = React.useState([]);
-  const [paginationModel, setPaginationModel] = React.useState({
+  const [pageSize, setPageSize] = useState(5);
+  const [verifiedFilter, setVerifiedFilter] = useState("");
+  const [sortModel, setSortModel] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 5,
   });
 
-  const [pageSize, setPageSize] = React.useState(5);
-
-  const handleVerifiedFilterChange = (event) => {
-    setVerifiedFilter(event.target.value);
-    console.log(verifiedFilter);
-  };
-
-  const handleSortModelChange = (newModel) => {
-    setSortModel(newModel);
-  };
-
   const {
-    data: testData,
+    data: AtendeeData,
     isLoading: isLoadingTestData,
     fetchPreviousPage,
     hasPreviousPage,
@@ -47,70 +38,90 @@ export default function AttendeeList() {
     status,
   } = useAttendeeList(eventId, pageSize, verifiedFilter, sortModel);
 
-  const columns = [
-    {
-      field: "id",
-      headerName: "ID",
-      flex: 0.5,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "userName",
-      headerName: "User Name",
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "fullName",
-      headerName: "Full Name",
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "gender",
-      headerName: "Gender",
-      flex: 1,
-      sortable: false,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "dateOfBirth",
-      headerName: "Date of Birth",
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) =>
-        dayjs(params.row.dateOfBirth).format("YYYY-MM-DD"),
-    },
-    {
-      field: "isVerified",
-      headerName: "Verified",
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      sortable: false,
-      renderCell: (params) =>
-        params.value ? (
-          <CheckCircle color="secondary" />
-        ) : (
-          <Cancel color="error" />
+  const columns = useMemo(() => {
+    return [
+      {
+        field: "id",
+        headerName: "ID",
+        flex: 0.5,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "attendeeProfilePictureUrl",
+        headerName: "Avatar",
+        flex: 0.5,
+        align: "center",
+        headerAlign: "center",
+        sortable: false,
+        renderCell: (params) => (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              src={
+                params.row.imageUrl
+                  ? `${import.meta.env.VITE_API_URL}/${params.row.imageUrl}`
+                  : null
+              }
+              alt={params.row.fullName}
+            />
+          </Box>
         ),
-    },
-  ];
+      },
+      {
+        field: "fullName",
+        headerName: "Full Name",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "gender",
+        headerName: "Gender",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "dateOfBirth",
+        headerName: "Date of Birth",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+        renderCell: (params) =>
+          dayjs(params.row.dateOfBirth).format("YYYY-MM-DD"),
+      },
+      {
+        field: "isVerified",
+        headerName: "Verified",
+        flex: 1,
+        align: "center",
+        headerAlign: "center",
+        sortable: false,
+        renderCell: (params) =>
+          params.value ? (
+            <CheckCircle color="secondary" />
+          ) : (
+            <Cancel color="error" />
+          ),
+      },
+    ];
+  }, []);
 
-  const rows = React.useMemo(() => {
-    if (!testData) return [];
-    const currentPageData = testData.pages.find(
+  const rows = useMemo(() => {
+    if (!AtendeeData) return [];
+    const currentPageData = AtendeeData.pages.find(
       (page) => page.currentPage === paginationModel.page + 1
     );
     return currentPageData ? currentPageData.data : [];
-  }, [testData, paginationModel]);
+  }, [AtendeeData, paginationModel]);
 
-  const totalRows = testData?.pages[0]?.TotalCount ?? 0;
+  const totalRows = AtendeeData?.pages[0]?.TotalCount ?? 0;
 
   const handlePaginationModelChange = (newModel) => {
     if (newModel.page > paginationModel.page && hasNextPage) {
@@ -120,6 +131,14 @@ export default function AttendeeList() {
     }
     setPaginationModel(newModel);
     setPageSize(newModel.pageSize);
+  };
+
+  const handleVerifiedFilterChange = (event) => {
+    setVerifiedFilter(event.target.value);
+  };
+
+  const handleSortModelChange = (newModel) => {
+    setSortModel(newModel);
   };
 
   return (
@@ -153,8 +172,9 @@ export default function AttendeeList() {
               value={verifiedFilter}
               onChange={handleVerifiedFilterChange}
             >
-              <MenuItem value={false}>All</MenuItem>
+              <MenuItem value={""}>All</MenuItem>
               <MenuItem value={true}>Only Verified</MenuItem>
+              <MenuItem value={false}>Only Unverified</MenuItem>
             </Select>
           </FormControl>
         </Box>
