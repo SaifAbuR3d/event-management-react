@@ -31,8 +31,6 @@ export function useGetReports(pageNumber, sortType, status) {
 }
 
 export function useGetAllAttendees(pageNumber, sortType, status, eventId) {
-
-  console.log(status);
   let queryString = `${
     import.meta.env.VITE_API_URL
   }/api/Attendees?PageIndex=${pageNumber}&PageSize=6&sortColumn=creationDate&sortOrder=${sortType}`;
@@ -41,7 +39,7 @@ export function useGetAllAttendees(pageNumber, sortType, status, eventId) {
     queryString += `&OnlyVerified=${status}`;
   }
 
-  if(eventId != 0) {
+  if (eventId != 0) {
     queryString += `&EventId=${eventId}`;
   }
 
@@ -53,6 +51,32 @@ export function useGetAllAttendees(pageNumber, sortType, status, eventId) {
       const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
 
       return { Attendees, totalPages };
+    },
+  });
+}
+
+export function useGetAllOrganizers(pageNumber, sortType, status) {
+  const { userToken } = useContext(UserContext);
+
+  let queryString = `${
+    import.meta.env.VITE_API_URL
+  }/api/Organizers?PageIndex=${pageNumber}&PageSize=6&sortColumn=creationDate&sortOrder=${sortType}`;
+
+  if (status !== "All") {
+    queryString += `&OnlyVerified=${status}`;
+  }
+  return useQuery({
+    queryKey: ["Organizers", pageNumber, sortType, status],
+    queryFn: async () => {
+      const { data: Organizers, headers } = await axios.get(queryString, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      
+      const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
+
+      return { Organizers, totalPages };
     },
   });
 }

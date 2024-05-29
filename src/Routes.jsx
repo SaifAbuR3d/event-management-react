@@ -18,6 +18,7 @@ import AttendeeRequestTable from "./components/other/AdminDashboardComponents/At
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
+import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -68,8 +69,12 @@ export const Router = createBrowserRouter([
       },
       {
         path: "attendees",
-        element: <AllAttendeesTable />
-      }
+        element: <AllAttendeesTable />,
+      },
+      {
+        path: "organizers",
+        element: <AllOrganizersTable />,
+      },
     ],
   },
   {

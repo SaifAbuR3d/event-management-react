@@ -22,7 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useGetAllAttendees } from "../../../API/AdminApi";
+import { useGetAllAttendees, useGetAllOrganizers } from "../../../API/AdminApi";
 import {
   Block,
   Edit,
@@ -31,14 +31,12 @@ import {
   Verified,
 } from "@mui/icons-material";
 import DeleteUserDialog from "./DeleteUserDialog";
-import { green } from "@mui/material/colors";
 
-export default function AllAttendeesTable() {
+export default function AllOrganizersTable() {
   const [sortType, setSortType] = useState("desc");
   const [pageNumber, setPageNumber] = useState(1);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("All");
-  const [eventId, setEventId] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleOpen = () => setOpen(true);
@@ -55,17 +53,11 @@ export default function AllAttendeesTable() {
   const handleFilterClose = () => setAnchorEl(null);
   const openFilter = Boolean(anchorEl);
 
-  const handleChangeEventId = (event) => setEventId(event.target.value);
+  const { data, isLoading } = useGetAllOrganizers(pageNumber, sortType, status);
 
-  const { data, isLoading } = useGetAllAttendees(
-    pageNumber,
-    sortType,
-    status,
-    eventId
-  );
+  const { Organizers, totalPages } = data || {};
 
-  const { Attendees, totalPages } = data || {};
-
+  console.log(Organizers);
   const StyledTableCell = ({ content, style }) => (
     <TableCell align="center" sx={{ padding: "14px", ...style }}>
       <Typography fontWeight={400}>{content}</Typography>
@@ -74,7 +66,7 @@ export default function AllAttendeesTable() {
 
   const DESIRED_ROW_COUNT = 6;
   const placeholderRowCount = Math.max(
-    DESIRED_ROW_COUNT - (Attendees?.length || 0),
+    DESIRED_ROW_COUNT - (Organizers?.length || 0),
     0
   );
 
@@ -99,11 +91,11 @@ export default function AllAttendeesTable() {
   function stringAvatar(name) {
     return {
       sx: {
-        backgroundImage: "linear-gradient(to right, #c5cae9 , #f5fffa)",
+        backgroundImage: "linear-gradient(to bottom, #c5cae9 , #f5fffa)",
         color: "black",
         border :"black solid 1px"
       },
-      children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+      children: `${name.split(" ")[0][0]}`,
     };
   }
 
@@ -123,9 +115,9 @@ export default function AllAttendeesTable() {
           <Table>
             <TableHead>
               <TableRow style={{ height: "85px" }}>
-                <TableCell align="left" colSpan={5}>
+                <TableCell align="left" colSpan={4}>
                   <Typography component="h1" variant="h5" fontWeight="600">
-                    All Attendees
+                    All Organizers
                   </Typography>
                 </TableCell>
                 <TableCell align="center" colSpan={1}>
@@ -180,18 +172,6 @@ export default function AllAttendeesTable() {
                             <MenuItem value={"false"}>Not Verified</MenuItem>
                           </Select>
                         </Box>
-
-                        <Box mt={3}>
-                          <Typography>Specific event id:</Typography>
-                          <TextField
-                            value={eventId}
-                            onChange={handleChangeEventId}
-                            variant="standard"
-                            type="number"
-                            inputProps={{ min: 0 }}
-                            sx={{ width: "120px", mt: 1 }}
-                          />
-                        </Box>
                       </Box>
                     </Popover>
                   </Box>
@@ -200,9 +180,8 @@ export default function AllAttendeesTable() {
               <TableRow>
                 {[
                   "",
-                  "Attendee Id",
-                  "Attendee Name",
-                  "Gender",
+                  "Organizer Id",
+                  "Organizer Name",
                   "Status",
                   "Actions",
                 ].map((x, index) => (
@@ -215,7 +194,7 @@ export default function AllAttendeesTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {Attendees?.map((row, index) => (
+              {Organizers?.map((row, index) => (
                 <TableRow
                   key={index}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -233,12 +212,11 @@ export default function AllAttendeesTable() {
                         src={`${import.meta.env.VITE_API_URL}/${row.imageUrl}`}
                       />
                     ) : (
-                      <Avatar {...stringAvatar(row.fullName)} />
+                      <Avatar {...stringAvatar(row.userName)} />
                     )}
                   </TableCell>
                   <StyledTableCell content={row.id} />
                   <StyledTableCell content={row.userName} />
-                  <StyledTableCell content={row.gender} />
 
                   <TableCell align="center" sx={{ padding: "14px" }}>
                     {row.isVerified ? (
@@ -271,7 +249,7 @@ export default function AllAttendeesTable() {
                         height={40}
                       />
                     </TableCell>
-                    {Array.from(new Array(5)).map((_, cellIndex) => (
+                    {Array.from(new Array(4)).map((_, cellIndex) => (
                       <TableCell key={cellIndex} align="center">
                         <Skeleton
                           sx={{ m: "auto" }}
@@ -287,7 +265,7 @@ export default function AllAttendeesTable() {
               {!isLoading &&
                 Array.from(new Array(placeholderRowCount)).map((_, index) => (
                   <TableRow key={`placeholder-${index}`}>
-                    {Array.from(new Array(6)).map((_, index) => (
+                    {Array.from(new Array(5)).map((_, index) => (
                       <StyledTableCell
                         key={`placeholder-cell-${index}`}
                         style={{
