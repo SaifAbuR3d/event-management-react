@@ -31,7 +31,7 @@ import {
   Verified,
 } from "@mui/icons-material";
 import DeleteUserDialog from "./DeleteUserDialog";
-import { green } from "@mui/material/colors";
+import EditUserDialog from "./EditUserDialog";
 
 export default function AllAttendeesTable() {
   const [sortType, setSortType] = useState("desc");
@@ -40,6 +40,8 @@ export default function AllAttendeesTable() {
   const [status, setStatus] = useState("All");
   const [eventId, setEventId] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [user, setUser] = useState({});
 
   const handleOpen = () => setOpen(true);
 
@@ -56,6 +58,13 @@ export default function AllAttendeesTable() {
   const openFilter = Boolean(anchorEl);
 
   const handleChangeEventId = (event) => setEventId(event.target.value);
+
+  const handleOpenEdit = (row) => {
+    setUser(row);
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => setOpenEdit(false);
 
   const { data, isLoading } = useGetAllAttendees(
     pageNumber,
@@ -78,30 +87,12 @@ export default function AllAttendeesTable() {
     0
   );
 
-  function stringToColor(string) {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = "#";
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
-  }
-
   function stringAvatar(name) {
     return {
       sx: {
-        backgroundImage: "linear-gradient(to right, #c5cae9 , #f5fffa)",
+        backgroundImage: "linear-gradient(to bottom, #c5cae9 , #f5fffa)",
         color: "black",
-        border :"black solid 1px"
+        border: "black solid 1px",
       },
       children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
     };
@@ -248,7 +239,10 @@ export default function AllAttendeesTable() {
                     )}
                   </TableCell>
                   <TableCell align="center" sx={{ padding: "14px" }}>
-                    <IconButton color="primary">
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleOpenEdit(row)}
+                    >
                       <Edit />
                     </IconButton>
                     <IconButton color="error" onClick={handleOpen}>
@@ -301,6 +295,11 @@ export default function AllAttendeesTable() {
                 ))}
 
               <DeleteUserDialog open={open} handleClose={handleClose} />
+              <EditUserDialog
+                open={openEdit}
+                handleClose={handleCloseEdit}
+                user={user}
+              />
             </TableBody>
             <TableFooter>
               <TableRow>

@@ -31,6 +31,7 @@ import {
   Verified,
 } from "@mui/icons-material";
 import DeleteUserDialog from "./DeleteUserDialog";
+import EditUserDialog from "./EditUserDialog";
 
 export default function AllOrganizersTable() {
   const [sortType, setSortType] = useState("desc");
@@ -38,6 +39,8 @@ export default function AllOrganizersTable() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("All");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [user, setUser] = useState({});
 
   const handleOpen = () => setOpen(true);
 
@@ -52,6 +55,13 @@ export default function AllOrganizersTable() {
   const handleFilterClick = (event) => setAnchorEl(event.currentTarget);
   const handleFilterClose = () => setAnchorEl(null);
   const openFilter = Boolean(anchorEl);
+
+  const handleOpenEdit = (row) => {
+    setUser(row);
+    setOpenEdit(true);
+  };
+
+  const handleCloseEdit = () => setOpenEdit(false);
 
   const { data, isLoading } = useGetAllOrganizers(pageNumber, sortType, status);
 
@@ -70,30 +80,12 @@ export default function AllOrganizersTable() {
     0
   );
 
-  function stringToColor(string) {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = "#";
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
-  }
-
   function stringAvatar(name) {
     return {
       sx: {
         backgroundImage: "linear-gradient(to bottom, #c5cae9 , #f5fffa)",
         color: "black",
-        border :"black solid 1px"
+        border: "black solid 1px",
       },
       children: `${name.split(" ")[0][0]}`,
     };
@@ -226,7 +218,10 @@ export default function AllOrganizersTable() {
                     )}
                   </TableCell>
                   <TableCell align="center" sx={{ padding: "14px" }}>
-                    <IconButton color="primary">
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleOpenEdit(row)}
+                    >
                       <Edit />
                     </IconButton>
                     <IconButton color="error" onClick={handleOpen}>
@@ -279,6 +274,11 @@ export default function AllOrganizersTable() {
                 ))}
 
               <DeleteUserDialog open={open} handleClose={handleClose} />
+              <EditUserDialog
+                open={openEdit}
+                handleClose={handleCloseEdit}
+                user={user}
+              />
             </TableBody>
             <TableFooter>
               <TableRow>
