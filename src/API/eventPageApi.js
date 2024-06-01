@@ -138,7 +138,7 @@ export function GetOtherEventsMayLike(eventId) {
 
 //--------Report Event--------------------------------
 
-export function useReportEvent(handleClose) {
+export function useReportEvent() {
   const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: (requestData) =>
@@ -152,7 +152,7 @@ export function useReportEvent(handleClose) {
         }
       ),
     onSuccess: () => {
-      handleClose();
+      //
     },
   });
 }
@@ -160,7 +160,7 @@ export function useReportEvent(handleClose) {
 //--------Like event--------------------------------
 
 export function useAddLike(eventId) {
-  const { user, userToken } = useContext(UserContext);
+  const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: () =>
       axios.post(
@@ -182,7 +182,7 @@ export function useAddLike(eventId) {
 }
 
 export function useRemoveLike(eventId) {
-  const { user, userToken } = useContext(UserContext);
+  const { userToken } = useContext(UserContext);
   return useMutation({
     mutationFn: () =>
       axios.delete(
@@ -260,5 +260,50 @@ export function useAddReview(eventId) {
         exact: true,
       });
     },
+  });
+}
+
+//--------booking --------------------------------
+
+export function useCreateRegistrationRequest(eventId) {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationFn: () =>
+      axios.post(
+        `${import.meta.env.VITE_API_URL}/api/events/${eventId}/reg-requests`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["regRequest", eventId],
+        exact: true,
+      });
+    },
+  });
+}
+
+export function useGetRegRequestForEvent(eventId, open) {
+  const { user } = useContext(UserContext);
+
+  return useQuery({
+    queryKey: ["regRequest", eventId],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/events/${eventId}/reg-requests`,
+        {
+          params: {
+            AttendeeId: user?.id,
+          },
+        }
+      );
+      return data[0] || null;
+    },
+    enabled: !!open,
+    staleTime: 20000,
   });
 }

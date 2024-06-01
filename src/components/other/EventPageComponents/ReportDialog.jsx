@@ -12,11 +12,25 @@ import { LoadingButton } from "@mui/lab";
 import { Alert, Snackbar } from "@mui/material";
 
 export default function ReportDialog({ eventId, open, handleClose }) {
+  const [error, setError] = useState("");
   const initialValues = {
     content: "",
   };
 
-  const { mutateAsync, isSuccess, isPending } = useReportEvent(handleClose);
+  const { mutateAsync, isPending } = useReportEvent();
+
+  const handelMutateAsync = (requestData) => {
+    mutateAsync(requestData)
+      .then(() => {
+        handleClose();
+        setSnackbarOpen(true);
+        setTimeout(() => {
+          setSnackbarOpen(false);
+        }, 3000);
+      })
+      .catch((error) => setError(error?.response?.data?.detail));
+  };
+
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const formik = useFormik({
@@ -26,18 +40,9 @@ export default function ReportDialog({ eventId, open, handleClose }) {
         eventId: parseInt(eventId),
         content: values.content,
       };
-      mutateAsync(requestData);
+      handelMutateAsync(requestData);
     },
   });
-
-  useEffect(() => {
-    if (isSuccess) {
-      setSnackbarOpen(true);
-      setTimeout(() => {
-        setSnackbarOpen(false);
-      }, 3000);
-    }
-  }, [isSuccess]);
 
   return (
     <>
@@ -51,6 +56,11 @@ export default function ReportDialog({ eventId, open, handleClose }) {
       >
         <DialogTitle>Report This Event</DialogTitle>
         <DialogContent>
+          {!!error && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              {error}.
+            </Alert>
+          )}
           <DialogContentText>
             {
               "Please help us investigate this event by providing information about why you're reporting it."

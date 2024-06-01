@@ -27,6 +27,7 @@ export function UserContextProvider({ children }) {
       ],
       userName:
         tokenData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+      isVerified: tokenData["isVerified"],
     });
   };
 
@@ -40,6 +41,7 @@ export function UserContextProvider({ children }) {
   const isAdmin = () => user?.role == "Admin";
   const isAttendee = () => user?.role == "Attendee";
   const isAuthenticated = () => userToken != null;
+  const isVerified = () => user?.isVerified == "True";
 
   const isCurrentOrganizer = (userName) =>
     isOrganizer() && user.userName == userName;
@@ -65,6 +67,7 @@ export function UserContextProvider({ children }) {
         isAdmin,
         isCurrentOrganizer,
         isCurrentAttendee,
+        isVerified,
       }}
     >
       {children}

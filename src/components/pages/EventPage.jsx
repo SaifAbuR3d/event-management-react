@@ -36,6 +36,7 @@ import ReportDialog from "../other/EventPageComponents/ReportDialog.jsx";
 import ReviewCard from "../other/EventPageComponents/ReviewCard.jsx";
 import { LoadingButton } from "@mui/lab";
 import AddReviewDialog from "../other/EventPageComponents/AddReviewDialog.jsx";
+import GetOrganizerDashboard from "../other/EventPageComponents/GetOrganizerDashboard.jsx";
 
 export default function EventPage() {
   const [open, setOpen] = useState(false);
@@ -82,7 +83,8 @@ export default function EventPage() {
 
   /* get data api*/
 
-  const { isOrganizer, isAttendee, isAuthenticated } = useContext(UserContext);
+  const { isOrganizer, isAttendee, isAuthenticated, isCurrentOrganizer } =
+    useContext(UserContext);
 
   if (isLoading || eventsMayLikeLoading || status === "loading") {
     return (
@@ -119,7 +121,10 @@ export default function EventPage() {
       minute: "2-digit",
     });
 
-    if (startDate.getDay() === endDate.getDay()) {
+    if (
+      startDate.getDay() === endDate.getDay() &&
+      startDate.getMonth() === endDate.getMonth()
+    ) {
       return formattedStartDate.concat(
         " - ",
         endDate.toLocaleTimeString("en-US", {
@@ -177,7 +182,6 @@ export default function EventPage() {
             sx={{
               display: "flex",
               justifyContent: "center",
-              // alignItems: "center",
             }}
           >
             <Paper
@@ -187,7 +191,6 @@ export default function EventPage() {
                 justifyContent: "center",
                 alignItems: "center",
                 width: "100%",
-                // padding: "0px 8px ",
                 borderRadius: "20px",
                 m: 1,
               }}
@@ -199,6 +202,8 @@ export default function EventPage() {
                   width: "100%",
                   height: "430px",
                   borderRadius: "20px",
+                  objectFit: "fit",
+                  aspectRatio: "16/9",
                 }}
               />
             </Paper>
@@ -419,6 +424,9 @@ export default function EventPage() {
             {!isOrganizer() && (
               <GetTicketsCard ticketsData={data.tickets} data={data} />
             )}
+            {isCurrentOrganizer(data.organizer.userName) && (
+              <GetOrganizerDashboard />
+            )}
           </Grid>
 
           {/* other event you may like */}
@@ -498,6 +506,9 @@ export default function EventPage() {
       >
         {!isOrganizer() && (
           <GetTicketsCard ticketsData={data.tickets} data={data} />
+        )}
+        {isCurrentOrganizer(data.organizer.userName) && (
+          <GetOrganizerDashboard />
         )}
       </Box>
     </>

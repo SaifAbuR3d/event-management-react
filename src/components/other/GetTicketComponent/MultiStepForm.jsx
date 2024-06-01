@@ -34,20 +34,16 @@ export default function MultiStepForm({
   };
 
   const isLastStep = stepNumber === totalSteps - 1;
+  const isPenultimateStep = stepNumber === totalSteps - 2;
 
   const handelSubmit = async (values, actions) => {
     if (step.props.onSubmit) {
       await step.props.onSubmit(values);
     }
-    /*The condition if (step.props.onSubmit)
-     checks if there's a submit handler function (onSubmit) provided as a prop to the current step component.
-If such a function exists (if condition evaluates to true),
- it calls this function passing the values as an argument.
-  The values likely represent the form values collected in the current step. */
     if (isLastStep) {
       return onSubmit(values, actions);
     } else {
-      actions.setTouched({}); // reset the Touched obj  as we navigate from page to page
+      actions.setTouched({});
       next(values);
     }
   };
@@ -78,6 +74,7 @@ If such a function exists (if condition evaluates to true),
               order={order}
               totalAmount={totalAmount}
               isLastStep={isLastStep}
+              isPenultimateStep={isPenultimateStep}
               hasPrevious={stepNumber > 0}
               onBackClick={() => previous(formik.values)}
             />
@@ -88,4 +85,4 @@ If such a function exists (if condition evaluates to true),
   );
 }
 
-export const FormStep = ({ stepName = "", children }) => children; // FormStepComponent to display {step}
+export const FormStep = ({ stepName = "", children }) => children;
