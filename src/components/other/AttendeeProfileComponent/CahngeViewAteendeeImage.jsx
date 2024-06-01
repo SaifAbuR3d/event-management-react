@@ -12,8 +12,12 @@ import { useChangeImageRequest } from "../../../API/organizerProfileApi";
 import { CloudUpload } from "@mui/icons-material";
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
+import { useChangeAttendeeImage } from "../../../API/AttendeeProfileApi";
 
 function ViewImage({ open, handleClose, image }) {
+  const imageUrl = image
+    ? `${import.meta.env.VITE_API_URL}/${image}`
+    : "/static/images/avatar/1.jpg";
   return (
     <Dialog
       open={open}
@@ -27,7 +31,7 @@ function ViewImage({ open, handleClose, image }) {
         <Avatar
           variant="square"
           alt="Profile Image"
-          src={`${import.meta.env.VITE_API_URL}/${image}`}
+          src={imageUrl}
           sx={{ width: "100%", height: "100%" }}
         />
       </DialogContent>
@@ -46,7 +50,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 function ChangeImage({ open, handleClose }) {
-  const { mutateAsync } = useChangeImageRequest(handleClose);
+  const { mutateAsync } = useChangeAttendeeImage(handleClose);
 
   const formik = useFormik({
     initialValues: { newImageUrl: null },
@@ -106,7 +110,7 @@ function ChangeImage({ open, handleClose }) {
   );
 }
 
-export default function ChangeViewProfileImage({
+export default function ChangeViewAttendeeImage({
   open,
   handleClose,
   image,
@@ -115,7 +119,7 @@ export default function ChangeViewProfileImage({
 }) {
   const [openViewImage, setOpenViewImage] = React.useState(false);
 
-  const {isCurrentOrganizer} = useContext(UserContext);
+  const { isCurrentAttendee } = useContext(UserContext);
 
   const handleOpenViewImage = () => {
     handleClose();
@@ -131,15 +135,16 @@ export default function ChangeViewProfileImage({
   };
   const handleCloseChangeImage = () => setOpenChangeImage(false);
 
-  const currentOrganizer = isCurrentOrganizer(ownerData?.imageUrl);
-
+  const currentAttendee = isCurrentAttendee(ownerData?.userName);
   return (
     <Box>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem sx={{ width: "200px" }} onClick={handleOpenViewImage}>
-          <span>View Image</span>
-        </MenuItem>
-        {currentOrganizer && (
+        {image && (
+          <MenuItem sx={{ width: "200px" }} onClick={handleOpenViewImage}>
+            <span>View Image</span>
+          </MenuItem>
+        )}
+        {currentAttendee && (
           <MenuItem sx={{ width: "200px" }} onClick={handleOpenChangeImage}>
             <span>Change Image</span>
           </MenuItem>

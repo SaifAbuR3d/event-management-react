@@ -158,6 +158,7 @@ export function useUnFollowRequest() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries(["profileOwnerData"]);
+      queryClient.invalidateQueries(["Following"]);
     },
   });
 }
