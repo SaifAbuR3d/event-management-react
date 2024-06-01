@@ -31,7 +31,8 @@ import {
   Verified,
 } from "@mui/icons-material";
 import DeleteUserDialog from "./DeleteUserDialog";
-import EditUserDialog from "./EditUserDialog";
+import EditAttendeeDialog from "./EditAttendeeDialog";
+import { useNavigate } from "react-router-dom";
 
 export default function AllAttendeesTable() {
   const [sortType, setSortType] = useState("desc");
@@ -42,6 +43,8 @@ export default function AllAttendeesTable() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
   const [user, setUser] = useState({});
+
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
 
@@ -221,10 +224,18 @@ export default function AllAttendeesTable() {
                   >
                     {row.imageUrl ? (
                       <Avatar
+                        onClick={() =>
+                          navigate(`/attendee-profile/${row.userName}`)
+                        }
                         src={`${import.meta.env.VITE_API_URL}/${row.imageUrl}`}
                       />
                     ) : (
-                      <Avatar {...stringAvatar(row.fullName)} />
+                      <Avatar
+                        onClick={() =>
+                          navigate(`/attendee-profile/${row.userName}`)
+                        }
+                        {...stringAvatar(row.fullName)}
+                      />
                     )}
                   </TableCell>
                   <StyledTableCell content={row.id} />
@@ -295,7 +306,7 @@ export default function AllAttendeesTable() {
                 ))}
 
               <DeleteUserDialog open={open} handleClose={handleClose} />
-              <EditUserDialog
+              <EditAttendeeDialog
                 open={openEdit}
                 handleClose={handleCloseEdit}
                 user={user}

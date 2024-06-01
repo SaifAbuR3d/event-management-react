@@ -73,7 +73,7 @@ export function useGetAllOrganizers(pageNumber, sortType, status) {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      
+
       const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
 
       return { Organizers, totalPages };
@@ -191,6 +191,108 @@ export function useSetReject(handleClose) {
     onSuccess: (data) => {
       queryClient.invalidateQueries(["Reports"]);
       handleClose();
+    },
+  });
+}
+
+export function useGetSpecificAttendee(userName) {
+  const { userToken } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["attendeeFromAdmin", userName],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendees/ad/${userName}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    enabled: !!userName,
+  });
+}
+
+export function useGetSpecificOrganizer(userName) {
+  const { userToken } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["organizerFromAdmin", userName],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/organizers/ad/${userName}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    enabled: !!userName,
+  });
+}
+export function useChangeAttendeeData(userName) {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationFn: async (attendeeData) => {
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/attendees/${userName}`,
+        attendeeData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["attendeeFromAdmin", userName]);
+    },
+  });
+}
+
+export function useChangeOrganizersData(userName) {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationFn: async (attendeeData) => {
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/organizers/${userName}`,
+        attendeeData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["organizerFromAdmin", userName]);
+    },
+  });
+}
+
+export function useSetNewPassword(userName) {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationFn: async (newPassword) => {
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/auth/ad/set-password/${userName}`,
+        {
+          newPassword: newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["attendeeFromAdmin", userName]);
     },
   });
 }

@@ -22,7 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useGetAllAttendees, useGetAllOrganizers } from "../../../API/AdminApi";
+import { useGetAllOrganizers } from "../../../API/AdminApi";
 import {
   Block,
   Edit,
@@ -31,7 +31,8 @@ import {
   Verified,
 } from "@mui/icons-material";
 import DeleteUserDialog from "./DeleteUserDialog";
-import EditUserDialog from "./EditUserDialog";
+import EditOrganizerDialog from "./EditOrganizerDialog";
+import { useNavigate } from "react-router-dom";
 
 export default function AllOrganizersTable() {
   const [sortType, setSortType] = useState("desc");
@@ -41,6 +42,8 @@ export default function AllOrganizersTable() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
   const [user, setUser] = useState({});
+
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
 
@@ -201,10 +204,18 @@ export default function AllOrganizersTable() {
                   >
                     {row.imageUrl ? (
                       <Avatar
+                        onClick={() =>
+                          navigate(`/organizer-profile/${row.userName}`)
+                        }
                         src={`${import.meta.env.VITE_API_URL}/${row.imageUrl}`}
                       />
                     ) : (
-                      <Avatar {...stringAvatar(row.userName)} />
+                      <Avatar
+                        onClick={() =>
+                          navigate(`/organizer-profile/${row.userName}`)
+                        }
+                        {...stringAvatar(row.userName)}
+                      />
                     )}
                   </TableCell>
                   <StyledTableCell content={row.id} />
@@ -274,7 +285,7 @@ export default function AllOrganizersTable() {
                 ))}
 
               <DeleteUserDialog open={open} handleClose={handleClose} />
-              <EditUserDialog
+              <EditOrganizerDialog
                 open={openEdit}
                 handleClose={handleCloseEdit}
                 user={user}
