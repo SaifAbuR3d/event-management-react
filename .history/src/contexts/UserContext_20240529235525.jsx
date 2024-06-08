@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useGetOrganizerById } from "../API/organizerProfileApi";
 
 export const UserContext = createContext(null);
 
@@ -42,6 +43,8 @@ export function UserContextProvider({ children }) {
   const isAttendee = () => user?.role == "Attendee";
   const isAuthenticated = () => userToken != null;
   const isVerified = () => user?.isVerified == "True";
+
+  const { data: organizer } = useGetOrganizerById(user.id);
 
   const isCurrentOrganizer = (userName = null, id = null) => {
     return isOrganizer() && (user.userName === userName || user.id === id);

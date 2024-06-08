@@ -20,8 +20,6 @@ import VerificationRequest from "./components/pages/VerificationRequestPage.jsx"
 import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
-import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
-import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -42,11 +40,7 @@ export const Router = createBrowserRouter([
       },
       {
         path: "events/create",
-        element: (
-          <OrganizerProtectedRoute>
-            <CreateEvetnPage />
-          </OrganizerProtectedRoute>
-        ),
+        element: <CreateEvetnPage />,
       },
       {
         path: "verification",
@@ -74,11 +68,7 @@ export const Router = createBrowserRouter([
   },
   {
     path: "admin-dashboard",
-    element: (
-      <AdminProtectedRoute>
-        <AdminLayout />
-      </AdminProtectedRoute>
-    ),
+    element: <AdminLayout />,
     children: [
       {
         path: "reports",

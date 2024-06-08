@@ -21,7 +21,6 @@ import ReportTable from "./components/other/AdminDashboardComponents/ReportTable
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
-import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -42,11 +41,7 @@ export const Router = createBrowserRouter([
       },
       {
         path: "events/create",
-        element: (
-          <OrganizerProtectedRoute>
-            <CreateEvetnPage />
-          </OrganizerProtectedRoute>
-        ),
+        element: <CreateEvetnPage />,
       },
       {
         path: "verification",
@@ -82,15 +77,27 @@ export const Router = createBrowserRouter([
     children: [
       {
         path: "reports",
-        element: <ReportTable />,
+        element: (
+          <AdminProtectedRoute>
+            <ReportTable />
+          </AdminProtectedRoute>
+        ),
       },
       {
         path: "iv-request/attendee",
-        element: <AttendeeRequestTable />,
+        element: (
+          <AdminProtectedRoute>
+            <AttendeeRequestTable />
+          </AdminProtectedRoute>
+        ),
       },
       {
         path: "iv-request/organizer",
-        element: <OrganizerRequestsData />,
+        element: (
+          <AdminProtectedRoute>
+            <OrganizerRequestsData />
+          </AdminProtectedRoute>
+        ),
       },
     ],
   },

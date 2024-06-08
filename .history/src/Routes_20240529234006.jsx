@@ -22,6 +22,7 @@ import AttendeeRequestTable from "./components/other/AdminDashboardComponents/At
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
 import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
+import CurrentOrganizerProtectedRoute from "./shared/auth/permissions/CurrentOrganizerProtectedRoute.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -56,7 +57,11 @@ export const Router = createBrowserRouter([
   },
   {
     path: "event-dashboard/:eventId",
-    element: <EventDashboardLayout />,
+    element: (
+      <CurrentOrganizerProtectedRoute>
+        <EventDashboardLayout />
+      </CurrentOrganizerProtectedRoute>
+    ),
     children: [
       {
         index: true,
