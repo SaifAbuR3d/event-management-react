@@ -199,6 +199,7 @@ export function useRemoveLike(eventId) {
         queryKey: ["event", eventId],
         exact: true,
       });
+      queryClient.invalidateQueries(["Favorites"]);
     },
   });
 }

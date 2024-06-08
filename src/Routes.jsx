@@ -22,6 +22,9 @@ import AttendeeRequestTable from "./components/other/AdminDashboardComponents/At
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
 import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
+import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
+import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
+import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -37,8 +40,12 @@ export const Router = createBrowserRouter([
         element: <EventPage />,
       },
       {
-        path: "profile/:userName",
+        path: "organizer-profile/:userName",
         element: <OrganizerProfile />,
+      },
+      {
+        path: "attendee-profile/:userName",
+        element: <AttendeeProfilePage />,
       },
       {
         path: "events/create",
@@ -91,6 +98,14 @@ export const Router = createBrowserRouter([
       {
         path: "iv-request/organizer",
         element: <OrganizerRequestsData />,
+      },
+      {
+        path: "attendees",
+        element: <AllAttendeesTable />,
+      },
+      {
+        path: "organizers",
+        element: <AllOrganizersTable />,
       },
     ],
   },

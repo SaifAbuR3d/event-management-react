@@ -20,6 +20,13 @@ import { useContext } from "react";
 import { RegisterContext } from "../context/Register";
 import axios from "axios";
 import { useState } from "react";
+import Sideimage from "../../../assets/images/registerImges/Sideimage.jpg";
+import Sideimage1 from "../../../assets/images/registerImges/Sideimage1.jpg";
+import Sideimage2 from "../../../assets/images/registerImges/Sideimage2.jpg";
+import Sideimage3 from "../../../assets/images/registerImges/Sideimage3.jpg";
+import Sideimage4 from "../../../assets/images/registerImges/Sideimage4.jpg";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object().shape({
   gender: yup.string().required("Gender is required"),
@@ -28,9 +35,25 @@ const validationSchema = yup.object().shape({
 
 export default function SignUpAttendee() {
   const [error, setError] = useState("");
+  const [randomSideImage, setRandomSideImage] = useState("");
+  const navigate = useNavigate();
 
   const { basicData, setBasicData } = useContext(RegisterContext);
 
+  const sideImages = [
+    Sideimage,
+    Sideimage1,
+    Sideimage2,
+    Sideimage3,
+    Sideimage4,
+  ];
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * sideImages.length);
+    const randomImage = sideImages[randomIndex];
+
+    setRandomSideImage(`url(${randomImage})`);
+  }, []);
   const initialValues = {
     gender: "",
     dateOfBirth: null,
@@ -44,7 +67,7 @@ export default function SignUpAttendee() {
         "https://localhost:8080/api/auth/register-attendee",
         mergedData
       );
-      console.log(data);
+      navigate("/login");
     } catch (err) {
       alert(err.response.data.detail);
     }
@@ -161,7 +184,7 @@ export default function SignUpAttendee() {
         xs={false}
         md={5}
         sx={{
-          backgroundImage: "url(/Sideimage1.jpg)",
+          backgroundImage: randomSideImage,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundPosition: "center",

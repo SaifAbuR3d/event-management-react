@@ -253,7 +253,6 @@ export default function OrganizerProfile() {
           />
 
           <ChangeViewProfileImage
-            isCurrentOrganizer={currentOrganizer}
             ownerData={profileOwnerData}
             anchorEl={anchorEl}
             image={imageUrl}
