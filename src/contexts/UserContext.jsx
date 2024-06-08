@@ -43,8 +43,9 @@ export function UserContextProvider({ children }) {
   const isAuthenticated = () => userToken != null;
   const isVerified = () => user?.isVerified == "True";
 
-  const isCurrentOrganizer = (userName) =>
-    isOrganizer() && user.userName == userName;
+  const isCurrentOrganizer = (userName = null, id = null) => {
+    return isOrganizer() && (user.userName === userName || user.id === id);
+  };
   const isCurrentAttendee = (userName) =>
     isAttendee() && user.userName == userName;
 

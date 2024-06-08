@@ -20,6 +20,8 @@ import VerificationRequest from "./components/pages/VerificationRequestPage.jsx"
 import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
+import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
+import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
 import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
@@ -47,7 +49,11 @@ export const Router = createBrowserRouter([
       },
       {
         path: "events/create",
-        element: <CreateEvetnPage />,
+        element: (
+          <OrganizerProtectedRoute>
+            <CreateEvetnPage />
+          </OrganizerProtectedRoute>
+        ),
       },
       {
         path: "verification",
@@ -75,7 +81,11 @@ export const Router = createBrowserRouter([
   },
   {
     path: "admin-dashboard",
-    element: <AdminLayout />,
+    element: (
+      <AdminProtectedRoute>
+        <AdminLayout />
+      </AdminProtectedRoute>
+    ),
     children: [
       {
         path: "reports",
