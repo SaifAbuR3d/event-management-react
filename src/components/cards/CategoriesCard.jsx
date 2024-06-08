@@ -48,7 +48,7 @@ export default function CategoriesCard({ name }) {
           height: isFullScreen ? "90px" : "130px",
           border: "#bdbdbd solid 1px",
           mb: 2,
-          p: 3,
+          p: 4,
         }}
       />
       <Typography>{name}</Typography>

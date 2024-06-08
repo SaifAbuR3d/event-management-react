@@ -15,3 +15,17 @@ export function useGetAllCategories() {
     },
   });
 }
+
+export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
+  return useQuery({
+    queryKey: ["topRatedEvents"],
+    queryFn: async () => {
+      const { data: TopRatedEvents } = await axios.get(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/events/most-rated?days=${numberOfDays}&numberOfEvents=${numberOfEvents}`
+      );
+      return TopRatedEvents;
+    },
+  });
+}
