@@ -4,7 +4,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { Box, Paper } from "@mui/material";
+import { Avatar, Box, Paper } from "@mui/material";
 import {
   ConfirmationNumberOutlined,
   ConfirmationNumberSharp,
@@ -28,10 +28,12 @@ const EventCard = React.memo(function EventCard({
   startTime,
   organizerName,
   numberOfFollers,
+  organizerImageUrl,
   imageUrl,
   isLikedByCurrentUser,
   customStyle,
   isBooking,
+  isHome,
 }) {
   const [open, setOpen] = useState(false);
   const [openTickets, setOpenTickets] = useState(false);
@@ -70,7 +72,7 @@ const EventCard = React.memo(function EventCard({
     event.stopPropagation();
     setOpenTickets(true);
   };
-  
+
   const handleCloseTickets = () => {
     setOpenTickets(false);
   };
@@ -173,17 +175,29 @@ const EventCard = React.memo(function EventCard({
           {isOnline ? "Online" : "On Site"}
         </Typography>
 
-        {organizerName && (
-          <Typography variant="h6" color="#283593" mt={2}>
-            {organizerName}
-          </Typography>
-        )}
-
-        {numberOfFollers && (
-          <Typography variant="body2" color="#283593" display="flex">
-            <PeopleOutlineTwoTone fontSize="small" />
-            {numberOfFollers}
-          </Typography>
+        {isHome && (
+          <>
+            <Box
+              mt={2}
+              display="flex"
+              justifyContent="start"
+              alignItems="center"
+            >
+              <Avatar
+                src={`${import.meta.env.VITE_API_URL}/${organizerImageUrl}`}
+                sx={{ mr: 1, width: "50px", height: "50px" }}
+              />
+              <Box>
+                <Typography variant="h6" color="#283593">
+                  Mr. Sameeh Co.
+                </Typography>
+                <Typography variant="body2" color="#283593" display="flex">
+                  <PeopleOutlineTwoTone fontSize="small" />
+                  3.5k Followers
+                </Typography>
+              </Box>
+            </Box>
+          </>
         )}
       </CardContent>
       <ShareCard
