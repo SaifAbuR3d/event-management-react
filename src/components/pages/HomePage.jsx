@@ -3,10 +3,13 @@ import React from "react";
 import intro from "../../assets/images/intro5.jpg";
 import {
   useGetAllCategories,
+  useGetEventMayLike,
   useGetTopRatedEvents,
 } from "../../API/HomePageApi";
 import CategoriesCard from "../cards/CategoriesCard";
 import EventCard from "../cards/EventCard";
+import { useState } from "react";
+import { useEffect } from "react";
 
 export default function Home() {
   const isFullScreen = useMediaQuery("(max-width: 700px)");
@@ -17,11 +20,30 @@ export default function Home() {
   const { data: TopRatedEvents, isLoading: TopRatedLoading } =
     useGetTopRatedEvents(7, 4);
 
+  const { data: EventMayLike, isLoading: MayLikeLoading } =
+    useGetEventMayLike();
+
   const renderCategories = Categories?.map((c, index) => {
     return <CategoriesCard key={index} name={c.name} />;
   });
 
   const renderTopRatedEvents = TopRatedEvents?.map((event, index) => {
+    return (
+      <EventCard
+        key={index}
+        id={event.id}
+        imageUrl={event.thumbnailUrl}
+        name={event.name}
+        isOnline={event.isOnline}
+        startDate={event.startDate}
+        startTime={event.startTime}
+        customStyle={cardStyle}
+        isLikedByCurrentUser={event.isLikedByCurrentUser}
+      />
+    );
+  });
+
+  const renderEventMayLike = EventMayLike?.map((event, index) => {
     return (
       <EventCard
         key={index}
@@ -158,10 +180,7 @@ export default function Home() {
             gap: 2,
           }}
         >
-          <EventCard customStyle={cardStyle} />
-          <EventCard customStyle={cardStyle} />
-          <EventCard customStyle={cardStyle} />
-          <EventCard customStyle={cardStyle} />
+          {renderEventMayLike}
         </Box>
       </Grid>
 

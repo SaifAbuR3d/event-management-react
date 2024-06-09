@@ -29,3 +29,22 @@ export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
     },
   });
 }
+
+
+export function useGetEventMayLike() {
+  const { userToken } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["eventMayLike"],
+    queryFn: async () => {
+      const { data: EventMayLike } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/events/i-may-like`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      return EventMayLike;
+    },
+  });
+}
