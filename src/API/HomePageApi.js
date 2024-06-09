@@ -30,7 +30,6 @@ export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
   });
 }
 
-
 export function useGetEventMayLike() {
   const { userToken } = useContext(UserContext);
   return useQuery({
@@ -45,6 +44,20 @@ export function useGetEventMayLike() {
         }
       );
       return EventMayLike;
+    },
+  });
+}
+
+export function useGetEventNearYou(lat, lon, distance, numberOfEvent) {
+  return useQuery({
+    queryKey: ["eventNearYou"],
+    queryFn: async () => {
+      const { data: EventNearYou } = await axios.get(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/events/near?Latitude=${lat}&Longitude=${lon}&MaximumDistanceInKM=${distance}&NumberOfEvents=${numberOfEvent}`
+      );
+      return EventNearYou;
     },
   });
 }

@@ -4,6 +4,7 @@ import intro from "../../assets/images/intro5.jpg";
 import {
   useGetAllCategories,
   useGetEventMayLike,
+  useGetEventNearYou,
   useGetTopRatedEvents,
 } from "../../API/HomePageApi";
 import CategoriesCard from "../cards/CategoriesCard";
@@ -12,6 +13,26 @@ import { useState } from "react";
 import { useEffect } from "react";
 
 export default function Home() {
+  const [defaultPosition, setDefaultPosition] = useState([31.8996, 35.2042]);
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setDefaultPosition([latitude, longitude]);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
+  console.log(defaultPosition);
+  
   const isFullScreen = useMediaQuery("(max-width: 700px)");
 
   const { data: Categories, isLoading: CategoryLoading } =
@@ -22,6 +43,9 @@ export default function Home() {
 
   const { data: EventMayLike, isLoading: MayLikeLoading } =
     useGetEventMayLike();
+
+  const { data: EventNearYou, isLoading: EventNearLoading } =
+    useGetEventNearYou(defaultPosition[0], defaultPosition[1], 8000, 4);
 
   const renderCategories = Categories?.map((c, index) => {
     return <CategoriesCard key={index} name={c.name} />;
@@ -44,6 +68,22 @@ export default function Home() {
   });
 
   const renderEventMayLike = EventMayLike?.map((event, index) => {
+    return (
+      <EventCard
+        key={index}
+        id={event.id}
+        imageUrl={event.thumbnailUrl}
+        name={event.name}
+        isOnline={event.isOnline}
+        startDate={event.startDate}
+        startTime={event.startTime}
+        customStyle={cardStyle}
+        isLikedByCurrentUser={event.isLikedByCurrentUser}
+      />
+    );
+  });
+
+  const renderEventNear = EventNearYou?.map((event, index) => {
     return (
       <EventCard
         key={index}
@@ -198,19 +238,7 @@ export default function Home() {
             gap: 2,
           }}
         >
-          <EventCard
-            customStyle={cardStyle}
-            isHome={true}
-            isOnline={true}
-            startTime={"13:45:42"}
-            startDate={"2025-03-20"}
-            imageUrl={"images/events/8/thumbnail.jpg"}
-            name={"Mr Sameeh Event"}
-            organizerImageUrl={"images/users/9/thumbnail.jpg"}
-          />
-          <EventCard customStyle={cardStyle} isHome={true} />
-          <EventCard customStyle={cardStyle} isHome={true} />
-          <EventCard customStyle={cardStyle} isHome={true} />
+          {renderEventNear}
         </Box>
       </Grid>
     </Grid>
