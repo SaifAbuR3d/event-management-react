@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
 import { useContext } from "react";
@@ -59,5 +59,35 @@ export function useGetEventNearYou(lat, lon, distance, numberOfEvent) {
       );
       return EventNearYou;
     },
+  });
+}
+
+export function userGetAllFollowingEvents() {
+  const { userToken } = useContext(UserContext);
+  return useInfiniteQuery({
+    queryKey: ["followingEvents"],
+    queryFn: async ({ pageParam }) => {
+      const { data: FollowingEvents, headers } = await axios.get(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/events/home-feedback?PageIndex=${pageParam}&PageSize=8&sortColumn=creationDate&sortOrder=desc`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      const pagination = JSON.parse(headers["x-pagination"]);
+
+      return {
+        data: [...FollowingEvents],
+        currentPage: pageParam,
+        TotalCount: pagination.TotalCount,
+        nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
+      };
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
   });
 }
