@@ -25,6 +25,7 @@ import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtecte
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
 import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
+import SearchPage from "./components/pages/SearchPage.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ export const Router = createBrowserRouter([
         element: <VerificationRequest />,
       },
     ],
+  },
+  {
+    path: "search",
+    element: <SearchPage />,
   },
   {
     path: "event-dashboard/:eventId",

@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
 import { useContext } from "react";
@@ -305,5 +310,113 @@ export function useGetRegRequestForEvent(eventId, open) {
     },
     enabled: !!open,
     staleTime: 20000,
+  });
+}
+
+// export function useSearch({
+//   pageSize,
+//   categoryId,
+//   searchTerm,
+//   eventFilter,
+//   mangedEvent,
+//   priceFilter,
+// }) {
+//   return useInfiniteQuery({
+//     queryKey: [
+//       [
+//         "Search",
+//         pageSize,
+//         categoryId,
+//         searchTerm,
+//         eventFilter,
+//         mangedEvent,
+//         priceFilter,
+//       ],
+//     ],
+//     queryFn: async ({ pageParam }) => {
+//       const params = {
+//         pageSize: pageSize,
+//         pageIndex: pageParam,
+//         categoryId: categoryId,
+//         searchTerm: searchTerm,
+//         ...(eventFilter && { [eventFilter]: true }),
+//         ...(mangedEvent && { OnlyManagedEvents: true }),
+//         ...(priceFilter[0] !== 0 ||
+//           (priceFilter[1] !== 0 && {
+//             minPrice: priceFilter[0],
+//             maxPrice: priceFilter[1],
+//           })),
+//       };
+
+//       const response = await axios.get(
+//         `${import.meta.env.VITE_API_URL}/api/events`,
+//         {
+//           params: params,
+//         }
+//       );
+//       const pagination = JSON.parse(response.headers["x-pagination"]);
+//       return {
+//         data: [...response.data],
+//         currentPage: pageParam,
+//         TotalCount: pagination.TotalCount,
+//         nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
+//         previousPage: pagination.HasPreviousPage
+//           ? pagination.PageIndex - 1
+//           : null,
+//       };
+//     },
+//     initialPageParam: 1,
+//     getNextPageParam: (lastPage) => lastPage.nextPage,
+//     getPreviousPageParam: (lastPage) => lastPage.previousPage,
+//     enabled: searchTerm != null,
+//   });
+// }
+
+export function useSearch({
+  pageIndex,
+  categoryId,
+  searchTermDebounce,
+  eventFilter,
+  mangedEvent,
+  priceFilterDebounce,
+}) {
+  return useQuery({
+    queryKey: [
+      [
+        "Search",
+        pageIndex,
+        categoryId,
+        searchTermDebounce,
+        eventFilter,
+        mangedEvent,
+        priceFilterDebounce,
+      ],
+    ],
+    queryFn: async () => {
+      const params = {
+        pageSize: 5,
+        pageIndex: pageIndex,
+        categoryId: categoryId,
+        searchTerm: searchTermDebounce,
+        ...(eventFilter && { [eventFilter]: true }),
+        ...(mangedEvent && { OnlyManagedEvents: true }),
+        ...(priceFilterDebounce[0] > 0 && { minPrice: priceFilterDebounce[0] }),
+        ...(priceFilterDebounce[1] > 0 && { maxPrice: priceFilterDebounce[1] }),
+      };
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/events`,
+        {
+          params: params,
+        }
+      );
+      const pagination = JSON.parse(response.headers["x-pagination"]);
+      return {
+        data: [...response.data],
+        TotalCount: pagination.TotalCount,
+        nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
+      };
+    },
+    placeholderData: keepPreviousData,
   });
 }

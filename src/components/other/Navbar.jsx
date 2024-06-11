@@ -15,6 +15,8 @@ import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext.jsx";
+import Tooltip from "@mui/material/Tooltip";
+import { Avatar } from "@mui/material";
 
 //--------------------- Search styles --------------------
 
@@ -46,6 +48,7 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   width: "100%",
+
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
@@ -57,40 +60,68 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         width: "90%",
       },
     },
+    cursor: "pointer",
   },
 }));
 
 //---------------------------------------------------------
 
-const pages = [
-  { name: "Find Events", path: "/events/create" },
-  { name: "Create Event", path: "/events/create" },
-];
 const auth = ["Login", "Register"];
-// const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 export default function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
-  // const [anchorElUser, setAnchorElUser] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
   const navigate = useNavigate();
-  // ----------------------------------------
+
+  const { isAuthenticated, removeCurrentUser, isOrganizer, isAttendee, user } =
+    useContext(UserContext);
+
+  const settings = [
+    {
+      name: "Profile",
+      OnClick: () => {
+        navigate(
+          isOrganizer()
+            ? `organizer-profile/${user?.userName}`
+            : `attendee-profile/${user?.userName}`
+        );
+        handleCloseUserMenu();
+      },
+    },
+    {
+      name: "Log out",
+      OnClick: () => {
+        logout();
+        navigate("/login");
+        handleCloseUserMenu();
+      },
+    },
+  ];
+
+  const pages = [{ name: "Find Events", path: "/#" }];
+
+  if (isOrganizer()) {
+    pages.push({ name: "Create Event", path: "/events/create" });
+  }
+
+  if (isAttendee()) {
+    pages.push({ name: "Likes", path: `organizer-profile/${user?.userName}` });
+  }
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  // const handleOpenUserMenu = (event) => {
-  //   setAnchorElUser(event.currentTarget);
-  // };
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  // const handleCloseUserMenu = () => {
-  //   setAnchorElUser(null);
-  // };
-
-  const { isAuthenticated, removeCurrentUser, isOrganizer } =
-    useContext(UserContext);
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
 
   const logout = () => {
     removeCurrentUser();
@@ -159,13 +190,19 @@ export default function Navbar() {
         </Box>
 
         {/*---------search--------------*/}
-        <Box sx={{ flexGrow: 1 }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+          }}
+        >
           <Search
             sx={{
               borderRadius: 5,
               bgcolor: "#f8f7fa",
               border: "3px solid #dbdae3",
+              cursor: "pointer",
             }}
+            onClick={() => navigate("/search")}
           >
             <SearchIconWrapper>
               <SearchIcon />
@@ -204,27 +241,37 @@ export default function Navbar() {
             </Button>
           ))}
         </Box>
+        {(isOrganizer() || isAttendee()) && (
+          <Box sx={{ flexGrow: 0, ml: 2 }}>
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+            </IconButton>
 
-        {/*Logout button */}
-        {isAuthenticated() && (
-          <Button
-            key={"Logout"}
-            onClick={() => logout()}
-            sx={{
-              my: 2,
-              color: "#39364f",
-              display: "block",
-              borderRadius: 5,
-              p: 1,
-              fontSize: "14px",
-              fontWeight: "500",
-              textTransform: "capitalize",
-              textWrap: "nowrap",
-            }}
-          >
-            Logout
-          </Button>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting, index) => (
+                <MenuItem key={index} onClick={setting.OnClick}>
+                  <Typography textAlign="center">{setting.name}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
         )}
+        {/*---------settings-------------*/}
 
         {/*---------auth-- "Login", "Register"------------*/}
         {!isAuthenticated() && (
