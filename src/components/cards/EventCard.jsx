@@ -19,6 +19,7 @@ import ShareCard from "./ShareCard";
 import { UserContext } from "../../contexts/UserContext";
 import { useAddLike, useRemoveLike } from "../../API/eventPageApi";
 import ShowTicketsDialog from "../other/AttendeeProfileComponent/ShowTicketsDialog";
+import { useContext } from "react";
 
 const EventCard = React.memo(function EventCard({
   name,
@@ -40,9 +41,19 @@ const EventCard = React.memo(function EventCard({
 
   const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
   const navigate = useNavigate();
-  const { isOrganizer, isAuthenticated } = React.useContext(UserContext);
+  const { isOrganizer, isAuthenticated } = useContext(UserContext);
 
   const { mutateAsync: mutateLike, isPending: isPendingLike } = useAddLike(id);
+
+  const formatNumber = (number) => {
+    if (number >= 1000000) {
+      return (number / 1000000).toFixed(1) + "M";
+    } else if (number >= 1000) {
+      return (number / 1000).toFixed(1) + "K";
+    } else {
+      return number.toString();
+    }
+  };
 
   const handelMutateLike = () =>
     mutateLike()
@@ -128,9 +139,18 @@ const EventCard = React.memo(function EventCard({
             alignItems="center"
           >
             {isBooking ? (
-              <IconButton onClick={handleOpenTickets}>
-                <ConfirmationNumberOutlined fontSize="large" />
-              </IconButton>
+              <>
+                <IconButton onClick={handleOpenTickets}>
+                  <ConfirmationNumberOutlined fontSize="large" />
+                </IconButton>
+
+                <ShowTicketsDialog
+                  open={openTickets}
+                  handleClose={handleCloseTickets}
+                  eventId={id}
+                  eventName={name}
+                />
+              </>
             ) : (
               <>
                 {!isOrganizer() && (
@@ -157,13 +177,6 @@ const EventCard = React.memo(function EventCard({
                 </IconButton>
               </>
             )}
-
-            <ShowTicketsDialog
-              open={openTickets}
-              handleClose={handleCloseTickets}
-              eventId={id}
-              eventName={name}
-            />
           </Box>
         </Box>
 
@@ -189,11 +202,11 @@ const EventCard = React.memo(function EventCard({
               />
               <Box>
                 <Typography variant="h6" color="#283593">
-                  Mr. Sameeh Co.
+                  {organizerName}
                 </Typography>
                 <Typography variant="body2" color="#283593" display="flex">
                   <PeopleOutlineTwoTone fontSize="small" />
-                  3.5k Followers
+                  {formatNumber(numberOfFollers)} Followers
                 </Typography>
               </Box>
             </Box>

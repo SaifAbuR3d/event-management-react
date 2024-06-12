@@ -1,6 +1,7 @@
 import { Grid, Box, Typography, Button, useMediaQuery } from "@mui/material";
 import React, { Fragment, useState, useEffect } from "react";
 import intro from "../../assets/images/intro5.jpg";
+import near from "../../assets/images/near.jpg";
 import {
   useGetAllCategories,
   useGetEventMayLike,
@@ -12,6 +13,7 @@ import CategoriesCard from "../cards/CategoriesCard";
 import EventCard from "../cards/EventCard";
 import { useInView } from "react-intersection-observer";
 import EventCardLoading from "../looding/EventCardLoading";
+import AttendeeFeed from "../other/HomePageComponent/AttendeeFeed";
 
 export default function Home() {
   const [defaultPosition, setDefaultPosition] = useState([31.8996, 35.2042]);
@@ -178,7 +180,6 @@ export default function Home() {
             <Box
               pl={isFullScreen ? 2 : 10}
               pr={isFullScreen ? 2 : 4}
-           
               width={isFullScreen ? "45vw" : { sm: "40%", md: "30%" }}
               height="100%"
               sx={{ backgroundColor: "rgba(255, 255, 255, 0.50)" }}
@@ -230,22 +231,19 @@ export default function Home() {
         </Box>
       </Grid>
 
-      <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
-        <Typography variant="h5" ml={1}>
-          Event you may like
-        </Typography>
+      <Grid component="section" width="100%" mt={4}>
         <Box
-          display="flex"
-          justifyContent="center"
-          flexWrap="wrap"
-          mb={3}
-          mt={4}
+          width="100%"
+          maxHeight="400px"
           sx={{
-            gap: 2,
+            position: "relative",
+            backgroundImage: `url(${near})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            aspectRatio: "16/9",
           }}
-        >
-          {renderEventMayLike}
-        </Box>
+        />
       </Grid>
 
       <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
@@ -268,7 +266,7 @@ export default function Home() {
 
       <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
         <Typography variant="h5" ml={1}>
-          Your Following Events
+          Event you may like
         </Typography>
         <Box
           display="flex"
@@ -280,15 +278,11 @@ export default function Home() {
             gap: 2,
           }}
         >
-          {renderFollowingEvents}
-
-          {isFetchingNextPage &&
-            Array.from(new Array(8)).map((_, index) => (
-              <EventCardLoading key={index} customStyle={cardStyle} />
-            ))}
-          <div ref={ref}></div>
+          {renderEventMayLike}
         </Box>
       </Grid>
+
+      <AttendeeFeed />
     </Grid>
   );
 }
