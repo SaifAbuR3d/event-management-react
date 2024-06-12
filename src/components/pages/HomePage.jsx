@@ -1,43 +1,28 @@
 import { Grid, Box, Typography, useMediaQuery } from "@mui/material";
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import intro from "../../assets/images/intro5.jpg";
 import near from "../../assets/images/near.jpg";
 import {
   useGetAllCategories,
   useGetEventMayLike,
   useGetEventNearYou,
-  useGetTopRatedEvents,
-  userGetAllFollowingEvents,
 } from "../../API/HomePageApi";
 import CategoriesCard from "../cards/CategoriesCard";
 import EventCard from "../cards/EventCard";
-import { useInView } from "react-intersection-observer";
 import AttendeeFeed from "../other/HomePageComponent/AttendeeFeed";
 import { useContext } from "react";
 import { UserContext } from "../../contexts/UserContext";
 import TopRatedEvent from "../other/HomePageComponent/TopRatedEvent";
 import EventCardLoading from "../looding/EventCardLoading";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/bundle";
+import { useTheme } from "@emotion/react";
+import SwiperButton from "../other/EventPageComponents/SwiperButton";
+import EventNearYou from "../other/HomePageComponent/EventNearYou";
 
 export default function Home() {
-  const [defaultPosition, setDefaultPosition] = useState([31.8996, 35.2042]);
-
   const { isAttendee } = useContext(UserContext);
-
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setDefaultPosition([latitude, longitude]);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
-      );
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  }, []);
 
   const isFullScreen = useMediaQuery("(max-width: 700px)");
 
@@ -46,9 +31,6 @@ export default function Home() {
 
   const { data: EventMayLike, isLoading: MayLikeLoading } =
     useGetEventMayLike();
-
-  const { data: EventNearYou, isLoading: EventNearLoading } =
-    useGetEventNearYou(defaultPosition[0], defaultPosition[1], 8000, 4);
 
   const cardStyle = {
     width: {
@@ -64,22 +46,6 @@ export default function Home() {
   });
 
   const renderEventMayLike = EventMayLike?.map((event, index) => {
-    return (
-      <EventCard
-        key={index}
-        id={event.id}
-        imageUrl={event.thumbnailUrl}
-        name={event.name}
-        isOnline={event.isOnline}
-        startDate={event.startDate}
-        startTime={event.startTime}
-        customStyle={cardStyle}
-        isLikedByCurrentUser={event.isLikedByCurrentUser}
-      />
-    );
-  });
-
-  const renderEventNear = EventNearYou?.map((event, index) => {
     return (
       <EventCard
         key={index}
@@ -177,28 +143,7 @@ export default function Home() {
         />
       </Grid>
 
-      <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
-        <Typography variant="h5" ml={1}>
-          Event near you
-        </Typography>
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexWrap="wrap"
-          mb={3}
-          mt={4}
-          sx={{
-            gap: 2,
-          }}
-        >
-          {renderEventNear}
-
-          {EventNearLoading &&
-            Array.from(new Array(4)).map((_, index) => (
-              <EventCardLoading key={index} customStyle={cardStyle} />
-            ))}
-        </Box>
-      </Grid>
+      <EventNearYou />
 
       <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
         <Typography variant="h5" ml={1}>
