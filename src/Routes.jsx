@@ -63,7 +63,7 @@ export const Router = createBrowserRouter([
     ],
   },
   {
-    path: "search",
+    path: "search/:categoryId?",
     element: <SearchPage />,
   },
   {
@@ -95,6 +95,7 @@ export const Router = createBrowserRouter([
       {
         path: "reports",
         element: <ReportTable />,
+        index: true,
       },
       {
         path: "iv-request/attendee",

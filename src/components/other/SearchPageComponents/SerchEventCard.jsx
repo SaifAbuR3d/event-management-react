@@ -5,9 +5,11 @@ import ShareCard from "../../cards/ShareCard";
 import { useContext, useState } from "react";
 import { useAddLike, useRemoveLike } from "../../../API/eventPageApi";
 import { UserContext } from "../../../contexts/UserContext";
+import dayjs from "dayjs";
 
 export default function SerchEventCard({ eventData }) {
   const [open, setOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(eventData.isLikedByCurrentUser);
   const host = window.location.host;
   const navigate = useNavigate();
 
@@ -17,8 +19,20 @@ export default function SerchEventCard({ eventData }) {
     eventData.id
   );
 
+  const handelMutateLike = () =>
+    mutateLike()
+      .then(setIsLiked(true))
+      .catch((error) => {
+        console.log(error?.response?.data?.detail);
+      });
   const { mutateAsync: mutateDislike, isPending: isPendingDisLike } =
     useRemoveLike(eventData.id);
+  const handelMutateDislike = () =>
+    mutateDislike()
+      .then(setIsLiked(false))
+      .catch((error) => {
+        console.log(error?.response?.data?.detail);
+      });
 
   const handleOpenShareDialog = (e) => {
     e.stopPropagation();
@@ -30,12 +44,19 @@ export default function SerchEventCard({ eventData }) {
 
   const handelLikeClick = (e) => {
     e.stopPropagation();
-    if (eventData.isLiked) {
-      mutateDislike();
+    if (isLiked) {
+      handelMutateDislike();
     } else {
-      mutateLike();
+      handelMutateLike();
     }
   };
+
+  const handelPrice = () => {
+    const prices = eventData.tickets.map((item) => item.price);
+    return Math.min(...prices);
+  };
+
+  handelPrice();
 
   return (
     <Paper
@@ -60,7 +81,7 @@ export default function SerchEventCard({ eventData }) {
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "fill",
+            borderRadius: "15px",
           }}
         />
       </Box>
@@ -83,10 +104,15 @@ export default function SerchEventCard({ eventData }) {
           {eventData.name}
         </Typography>
         <Typography variant="body1" color="initial">
-          {eventData.startDate}
+          {dayjs(
+            new Date(`${eventData.startDate}T${eventData.startTime}z`)
+          ).format("DD MMM YYYY, hh:mm A")}
         </Typography>
         <Typography variant="body1" color="initial">
-          From ${eventData.tickets[0].price}
+          {eventData.organizer.displayName}
+        </Typography>
+        <Typography variant="body1" color="initial" fontWeight={"bold"}>
+          From ${handelPrice()}
         </Typography>
       </Box>
       <Box sx={{ alignSelf: "flex-end" }}>
@@ -96,12 +122,15 @@ export default function SerchEventCard({ eventData }) {
         <ShareCard
           open={open}
           handleClose={handleCloseShareDialog}
-          url={`${host}/${eventData.id}`}
+          url={`${host}/event/${eventData.id}`}
           label={"Event URL"}
         />
         {isAttendee() && (
-          <IconButton onClick={handelLikeClick}>
-            {eventData.isLikedByCurrentUser ? <Favorite /> : <FavoriteBorder />}
+          <IconButton
+            onClick={handelLikeClick}
+            disabled={isPendingLike || isPendingDisLike}
+          >
+            {isLiked ? <Favorite /> : <FavoriteBorder />}
           </IconButton>
         )}
       </Box>

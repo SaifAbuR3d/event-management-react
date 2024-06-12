@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   width: "100%",
-  backgroundColor: "#f8f7fa",
+  backgroundColor: "#ffffff",
   height: "100%",
   padding: "5px",
   display: "flex",
@@ -30,7 +30,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",

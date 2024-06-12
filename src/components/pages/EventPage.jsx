@@ -271,11 +271,9 @@ export default function EventPage() {
 
             <Paper elevation={0} sx={{ ml: 0, width: "95%", p: 2, mb: "30px" }}>
               <Typography
-                variant="h1"
+                variant="h3"
                 sx={{
-                  fontBold: "900",
                   textTransform: "capitalize",
-                  fontSize: "60px",
                 }}
               >
                 {data.name}

@@ -51,7 +51,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     [theme.breakpoints.up("sm")]: {
@@ -105,7 +104,7 @@ export default function Navbar() {
   }
 
   if (isAttendee()) {
-    pages.push({ name: "Likes", path: `organizer-profile/${user?.userName}` });
+    pages.push({ name: "Likes", path: `attendee-profile/${user?.userName}` });
   }
 
   const handleOpenNavMenu = (event) => {
@@ -244,7 +243,14 @@ export default function Navbar() {
         {(isOrganizer() || isAttendee()) && (
           <Box sx={{ flexGrow: 0, ml: 2 }}>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              <Avatar
+                alt=""
+                src={
+                  user?.userImage
+                    ? `${import.meta.env.VITE_API_URL}/${user?.userImage}`
+                    : null
+                }
+              />
             </IconButton>
 
             <Menu

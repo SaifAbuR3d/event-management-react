@@ -12,8 +12,13 @@ import Slider from "@mui/material/Slider";
 export default function FiltersComponents({
   categories,
   setCategoryId,
+  categoryId,
   setEventFilter,
+  eventFilter,
+  setLocationFilter,
+  locationFilter,
   setMangedEvent,
+  mangedEvent,
   setPriceFilter,
   priceFilter,
 }) {
@@ -22,12 +27,21 @@ export default function FiltersComponents({
     { name: "Upcoming Events", value: "UpcomingEvents" },
     { name: "Running Events", value: "RunningEvents" },
   ];
+
+  const locationFilters = [
+    { name: "Online", value: "OnlyOnlineEvents" },
+    { name: "Offline", value: "OnlyOfflineEvents" },
+  ];
   const handleCategoryIdChange = (event) => {
     setCategoryId(event.target.value);
   };
 
   const handleEventFilterChange = (event) => {
     setEventFilter(event.target.value);
+  };
+
+  const handleLocationFiltersChange = (event) => {
+    setLocationFilter(event.target.value);
   };
 
   const handleMangedEventrChange = (event) => {
@@ -47,7 +61,7 @@ export default function FiltersComponents({
       sx={{
         display: "flex",
         flexDirection: { xs: "row", md: "column" },
-        rowGap: "80px",
+        rowGap: "60px",
         justifyContent: { xs: "space-around", md: "flex-start" },
       }}
     >
@@ -56,7 +70,11 @@ export default function FiltersComponents({
           Category
         </Typography>
         <FormControl>
-          <RadioGroup name="categoryId" onChange={handleCategoryIdChange}>
+          <RadioGroup
+            name="categoryId"
+            onChange={handleCategoryIdChange}
+            value={categoryId}
+          >
             {categories.map((category) => (
               <FormControlLabel
                 value={category.id}
@@ -72,8 +90,12 @@ export default function FiltersComponents({
         <Typography variant="body1" color="initial" fontWeight={"bold"}>
           Event
         </Typography>
-        <FormControl>
-          <RadioGroup name="eventFilter" onChange={handleEventFilterChange}>
+        <FormControl sx={{ mb: 2 }}>
+          <RadioGroup
+            name="eventFilter"
+            onChange={handleEventFilterChange}
+            value={eventFilter}
+          >
             {eventFilters.map((filter, index) => (
               <FormControlLabel
                 value={filter.value}
@@ -84,22 +106,54 @@ export default function FiltersComponents({
             ))}
           </RadioGroup>
         </FormControl>
+        <FormControl sx={{ mb: 2 }}>
+          <RadioGroup
+            name="LocationFilter"
+            onChange={handleLocationFiltersChange}
+            value={locationFilter}
+          >
+            {locationFilters.map((filter, index) => (
+              <FormControlLabel
+                value={filter.value}
+                control={<Radio />}
+                label={filter.name}
+                key={index}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+
         <FormControlLabel
-          label="Manged Event Only"
-          control={<Checkbox onChange={handleMangedEventrChange} />}
+          label="Manged Event"
+          control={
+            <Checkbox
+              onChange={handleMangedEventrChange}
+              checked={mangedEvent}
+            />
+          }
         />
       </Box>
       <Box>
         <Typography variant="body1" color="initial" fontWeight={"bold"}>
           Price
         </Typography>
-        <Box sx={{ width: { xs: "90px", md: "70%" }, m: "auto" }}>
+        <Box sx={{ width: { xs: "100px", md: "85%" } }}>
           <Slider
-            value={priceFilter}
+            value={priceFilter || [0, 0]}
             onChange={handlePriceFilterChange}
-            valueLabelDisplay="auto"
             getAriaValueText={valuetext}
-            max={1000}
+            max={2000}
+            step={50}
+            // marks
+            valueLabelDisplay={"auto"}
+            sx={{
+              "& .MuiSlider-thumb": {
+                height: 17,
+                width: 17,
+                backgroundColor: "#fff",
+                border: "2px solid currentColor",
+              },
+            }}
           />
         </Box>
       </Box>

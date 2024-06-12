@@ -5,7 +5,6 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 export default function SearchMap({ handleEventLocations }) {
   const [defaultPosition, setDefaultPosition] = useState([31.900692, 35.20387]); // Default position before geolocation
   const positions = handleEventLocations();
-  console.log(positions);
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -49,11 +48,3 @@ export default function SearchMap({ handleEventLocations }) {
     </Box>
   );
 }
-
-// function LocationMarker({ position }) {
-//   return (
-//     <Marker position={position} key={position.id}>
-//       <Popup>{position.name}</Popup>
-//     </Marker>
-//   );
-// }

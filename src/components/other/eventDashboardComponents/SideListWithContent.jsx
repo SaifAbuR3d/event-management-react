@@ -21,7 +21,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../../../contexts/UserContext";
 import { useGetProfileOwnerData } from "../../../API/organizerProfileApi";
 import MainLoding from "../../looding/MainLoding";
@@ -75,7 +75,12 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function SideListWithContent({ open, setOpen, children }) {
+export default function SideListWithContent({
+  open,
+  setOpen,
+  setIsCurrentOrganizer,
+  children,
+}) {
   const navigate = useNavigate();
 
   const { user, removeCurrentUser } = useContext(UserContext);
@@ -86,11 +91,25 @@ export default function SideListWithContent({ open, setOpen, children }) {
 
   const { eventId } = useParams();
 
-  const { data: ProfileOwnerData, isLoading } = useGetProfileOwnerData(
-    user?.userName
-  );
   const { data: eventData, isLoading: isLoadingEventData } =
     useGetEventData(eventId);
+
+  const {
+    data: ProfileOwnerData,
+    isLoading,
+    isSuccess,
+  } = useGetProfileOwnerData(eventData?.organizer?.userName);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setIsCurrentOrganizer(ProfileOwnerData?.userName == user?.userName);
+    }
+  }, [
+    ProfileOwnerData?.userName,
+    isSuccess,
+    setIsCurrentOrganizer,
+    user?.userName,
+  ]);
 
   if (isLoading || isLoadingEventData) {
     return <MainLoding isLoading={isLoading || isLoadingEventData} />;

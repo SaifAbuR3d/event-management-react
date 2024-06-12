@@ -42,7 +42,7 @@ export default function Login() {
   const [randomSideImage, setRandomSideImage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { isAuthenticated, saveCurrentUser } = useContext(UserContext);
+  const { isAdmin, saveCurrentUser } = useContext(UserContext);
 
   const navigate = useNavigate();
 
