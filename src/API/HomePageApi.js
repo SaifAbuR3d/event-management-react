@@ -91,13 +91,3 @@ export function userGetAllFollowingEvents() {
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });
 }
-
-export async function useGetNumberOfFollowers(organizerId) {
-  const { headers } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/Organizers/${organizerId}/followers`
-  );
-
-  const NumberOfFollowers = JSON.parse(headers["x-pagination"]).TotalCount;
-
-  return NumberOfFollowers;
-}

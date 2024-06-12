@@ -1,4 +1,4 @@
-import { Grid, Box, Typography, Button, useMediaQuery } from "@mui/material";
+import { Grid, Box, Typography, useMediaQuery } from "@mui/material";
 import React, { Fragment, useState, useEffect } from "react";
 import intro from "../../assets/images/intro5.jpg";
 import near from "../../assets/images/near.jpg";
@@ -12,11 +12,16 @@ import {
 import CategoriesCard from "../cards/CategoriesCard";
 import EventCard from "../cards/EventCard";
 import { useInView } from "react-intersection-observer";
-import EventCardLoading from "../looding/EventCardLoading";
 import AttendeeFeed from "../other/HomePageComponent/AttendeeFeed";
+import { useContext } from "react";
+import { UserContext } from "../../contexts/UserContext";
+import TopRatedEvent from "../other/HomePageComponent/TopRatedEvent";
+import EventCardLoading from "../looding/EventCardLoading";
 
 export default function Home() {
   const [defaultPosition, setDefaultPosition] = useState([31.8996, 35.2042]);
+
+  const { isAttendee } = useContext(UserContext);
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -39,34 +44,11 @@ export default function Home() {
   const { data: Categories, isLoading: CategoryLoading } =
     useGetAllCategories();
 
-  const { data: TopRatedEvents, isLoading: TopRatedLoading } =
-    useGetTopRatedEvents(7, 4);
-
   const { data: EventMayLike, isLoading: MayLikeLoading } =
     useGetEventMayLike();
 
   const { data: EventNearYou, isLoading: EventNearLoading } =
     useGetEventNearYou(defaultPosition[0], defaultPosition[1], 8000, 4);
-
-  const {
-    data: FollowingEvents,
-    isLoading: FollowingEventLoading,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = userGetAllFollowingEvents();
-
-  console.log(FollowingEvents);
-
-  const { ref, inView } = useInView({
-    threshold: 1.0,
-  });
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [fetchNextPage, inView, hasNextPage]);
 
   const cardStyle = {
     width: {
@@ -79,22 +61,6 @@ export default function Home() {
 
   const renderCategories = Categories?.map((c, index) => {
     return <CategoriesCard key={index} name={c.name} />;
-  });
-
-  const renderTopRatedEvents = TopRatedEvents?.map((event, index) => {
-    return (
-      <EventCard
-        key={index}
-        id={event.id}
-        imageUrl={event.thumbnailUrl}
-        name={event.name}
-        isOnline={event.isOnline}
-        startDate={event.startDate}
-        startTime={event.startTime}
-        customStyle={cardStyle}
-        isLikedByCurrentUser={event.isLikedByCurrentUser}
-      />
-    );
   });
 
   const renderEventMayLike = EventMayLike?.map((event, index) => {
@@ -129,26 +95,7 @@ export default function Home() {
     );
   });
 
-  const renderFollowingEvents = FollowingEvents?.pages?.map((page) => (
-    <Fragment key={page.currentPage}>
-      {page.data.map((event) => (
-        <EventCard
-          key={event.id}
-          id={event.id}
-          imageUrl={event.thumbnailUrl}
-          name={event.name}
-          isOnline={event.isOnline}
-          startDate={event.startDate}
-          startTime={event.startTime}
-          customStyle={cardStyle}
-          isLikedByCurrentUser={event.isLikedByCurrentUser}
-          isHome={true}
-          organizerName={event.organizer.displayName}
-          organizerImageUrl={event.organizer.imageUrl}
-        />
-      ))}
-    </Fragment>
-  ));
+  const attendee = isAttendee();
 
   return (
     <Grid container>
@@ -213,23 +160,7 @@ export default function Home() {
         {renderCategories}
       </Grid>
 
-      <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
-        <Typography variant="h5" ml={1}>
-          Top rated events
-        </Typography>
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexWrap="wrap"
-          mb={3}
-          mt={4}
-          sx={{
-            gap: 2,
-          }}
-        >
-          {renderTopRatedEvents}
-        </Box>
-      </Grid>
+      <TopRatedEvent />
 
       <Grid component="section" width="100%" mt={4}>
         <Box
@@ -261,6 +192,11 @@ export default function Home() {
           }}
         >
           {renderEventNear}
+
+          {EventNearLoading &&
+            Array.from(new Array(4)).map((_, index) => (
+              <EventCardLoading key={index} customStyle={cardStyle} />
+            ))}
         </Box>
       </Grid>
 
@@ -282,7 +218,7 @@ export default function Home() {
         </Box>
       </Grid>
 
-      <AttendeeFeed />
+      {attendee && <AttendeeFeed />}
     </Grid>
   );
 }

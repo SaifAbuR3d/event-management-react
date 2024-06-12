@@ -12,6 +12,7 @@ import {
   FavoriteBorder,
   IosShare,
   PeopleOutlineTwoTone,
+  StarRateRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +36,7 @@ const EventCard = React.memo(function EventCard({
   customStyle,
   isBooking,
   isHome,
+  rating,
 }) {
   const [open, setOpen] = useState(false);
   const [openTickets, setOpenTickets] = useState(false);
@@ -114,8 +116,25 @@ const EventCard = React.memo(function EventCard({
         },
         cursor: "pointer",
         ...customStyle,
+        position: "relative",
       }}
     >
+      {rating && rating !== -1 && (
+        <Paper
+          sx={{
+            position: "absolute",
+            top: 4,
+            right: 4,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h6" component="span" ml={1}>
+            4.5
+          </Typography>
+          <StarRateRounded sx={{ color: "gold", fontSize: 40 }} />
+        </Paper>
+      )}
       <CardMedia
         component="img"
         height="194"
