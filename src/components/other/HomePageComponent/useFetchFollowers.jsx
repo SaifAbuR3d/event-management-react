@@ -1,26 +1,41 @@
-import { useState, useEffect } from "react";
-import { useGetNumberOfFollowers } from "../../../API/HomePageApi";
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+
+const useGetNumberOfFollowers = async (organizerId) => {
+  const { headers } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/Organizers/${organizerId}/followers`
+  );
+  const NumberOfFollowers = JSON.parse(headers["x-pagination"]).TotalCount;
+  return NumberOfFollowers;
+};
 
 const useFetchFollowers = (events) => {
   const [followers, setFollowers] = useState({});
+  const followersRef = useRef({});
 
   useEffect(() => {
     const fetchFollowers = async () => {
+      if (events.length === 0) return;
       const newFollowers = {};
-      for (const event of events) {
-        if (!newFollowers[event.organizer.id]) {
-          const numberOfFollowers = await useGetNumberOfFollowers(
-            event.organizer.id
-          );
+      const promises = events.map(async (event) => {
+        if (!followersRef.current[event.organizer.id]) {
+          const numberOfFollowers = await useGetNumberOfFollowers(event.organizer.id);
           newFollowers[event.organizer.id] = numberOfFollowers;
+          followersRef.current[event.organizer.id] = numberOfFollowers;
+        } else {
+          newFollowers[event.organizer.id] = followersRef.current[event.organizer.id];
         }
-      }
-      setFollowers(newFollowers);
+      });
+
+      await Promise.all(promises);
+
+      setFollowers((prevFollowers) => ({
+        ...prevFollowers,
+        ...newFollowers,
+      }));
     };
 
-    if (events.length > 0) {
-      fetchFollowers();
-    }
+    fetchFollowers();
   }, [events]);
 
   return followers;

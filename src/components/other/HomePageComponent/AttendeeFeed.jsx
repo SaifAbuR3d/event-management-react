@@ -1,9 +1,6 @@
 import React, { Fragment } from "react";
 import { useInView } from "react-intersection-observer";
-import {
-  useGetNumberOfFollowers,
-  userGetAllFollowingEvents,
-} from "../../../API/HomePageApi";
+import { userGetAllFollowingEvents } from "../../../API/HomePageApi";
 import EventCard from "../../cards/EventCard";
 import { Box, Grid, Typography } from "@mui/material";
 import EventCardLoading from "../../looding/EventCardLoading";
@@ -45,7 +42,6 @@ export default function AttendeeFeed() {
   const renderFollowingEvents = FollowingEvents?.pages?.map((page) => (
     <Fragment key={page.currentPage}>
       {page.data.map((event) => {
-
         const numberOfFollowers = followers[event.organizer.id] || 0;
 
         return (
@@ -68,6 +64,7 @@ export default function AttendeeFeed() {
       })}
     </Fragment>
   ));
+
   return (
     <>
       <Grid component="section" width="100%" mt={4}>
