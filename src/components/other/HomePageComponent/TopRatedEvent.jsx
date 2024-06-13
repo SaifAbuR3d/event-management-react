@@ -1,9 +1,6 @@
 import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
-import {
-  useFetchRatings,
-  useGetTopRatedEvents,
-} from "../../../API/HomePageApi";
+import { useGetTopRatedEvents } from "../../../API/HomePageApi";
 import EventCard from "../../cards/EventCard";
 import EventCardLoading from "../../looding/EventCardLoading";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -29,9 +26,6 @@ export default function TopRatedEvent() {
       return 2.6;
     }
   };
-
-  const allEvents = TopRatedEvents || [];
-  const ratings = useFetchRatings(allEvents);
 
   const cardStyle = {
     width: {
@@ -94,7 +88,6 @@ export default function TopRatedEvent() {
 
             <Box>
               {TopRatedEvents?.map((event) => {
-                const rating = ratings[event.id] || 0;
                 return (
                   <SwiperSlide key={event.id}>
                     <EventCard
@@ -107,7 +100,7 @@ export default function TopRatedEvent() {
                       startTime={event.startTime}
                       customStyle={cardStyle}
                       isLikedByCurrentUser={event.isLikedByCurrentUser}
-                      rating={rating}
+                      rating={event.rateAvg}
                     />
                   </SwiperSlide>
                 );

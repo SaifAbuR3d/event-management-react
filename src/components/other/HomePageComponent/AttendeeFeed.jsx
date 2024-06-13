@@ -1,9 +1,6 @@
 import React, { Fragment } from "react";
 import { useInView } from "react-intersection-observer";
-import {
-  useFetchFollowers,
-  userGetAllFollowingEvents,
-} from "../../../API/HomePageApi";
+import { userGetAllFollowingEvents } from "../../../API/HomePageApi";
 import EventCard from "../../cards/EventCard";
 import { Box, Grid, Typography } from "@mui/material";
 import EventCardLoading from "../../looding/EventCardLoading";
@@ -28,9 +25,6 @@ export default function AttendeeFeed() {
     }
   }, [fetchNextPage, inView, hasNextPage]);
 
-  const allEvents = FollowingEvents?.pages?.flatMap((page) => page.data) || [];
-  const followers = useFetchFollowers(allEvents);
-
   const cardStyle = {
     width: {
       xs: "70vw",
@@ -42,27 +36,23 @@ export default function AttendeeFeed() {
 
   const renderFollowingEvents = FollowingEvents?.pages?.map((page) => (
     <Fragment key={page.currentPage}>
-      {page.data.map((event) => {
-        const numberOfFollowers = followers[event.organizer.id] || 0;
-
-        return (
-          <EventCard
-            key={event.id}
-            id={event.id}
-            imageUrl={event.thumbnailUrl}
-            name={event.name}
-            isOnline={event.isOnline}
-            startDate={event.startDate}
-            startTime={event.startTime}
-            customStyle={cardStyle}
-            isLikedByCurrentUser={event.isLikedByCurrentUser}
-            isHome={true}
-            organizerName={event.organizer.displayName}
-            organizerImageUrl={event.organizer.imageUrl}
-            numberOfFollers={numberOfFollowers}
-          />
-        );
-      })}
+      {page.data.map((event) => (
+        <EventCard
+          key={event.id}
+          id={event.id}
+          imageUrl={event.thumbnailUrl}
+          name={event.name}
+          isOnline={event.isOnline}
+          startDate={event.startDate}
+          startTime={event.startTime}
+          customStyle={cardStyle}
+          isLikedByCurrentUser={event.isLikedByCurrentUser}
+          isHome={true}
+          organizerName={event.organizer.displayName}
+          organizerImageUrl={event.organizer.imageUrl}
+          numberOfFollers={event.organizer.followersCount}
+        />
+      ))}
     </Fragment>
   ));
 

@@ -1,10 +1,7 @@
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { queryClient } from "../main";
 import { useContext, useRef } from "react";
 import { UserContext } from "../contexts/UserContext";
-import { useState } from "react";
-import { useEffect } from "react";
 
 export function useGetAllCategories() {
   return useQuery({
@@ -18,6 +15,13 @@ export function useGetAllCategories() {
   });
 }
 
+const useGetRate = async (eventId) => {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/events/${eventId}/avg`
+  );
+  return data;
+};
+
 export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
   return useQuery({
     queryKey: ["topRatedEvents"],
@@ -27,7 +31,18 @@ export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
           import.meta.env.VITE_API_URL
         }/api/events/most-rated?days=${numberOfDays}&numberOfEvents=${numberOfEvents}`
       );
-      return TopRatedEvents;
+
+      const eventsWithRate = await Promise.all(
+        TopRatedEvents.map(async (event) => {
+          const rateAvg = await useGetRate(event.id);
+          return {
+            ...event,
+            rateAvg,
+          };
+        })
+      );
+
+      return eventsWithRate;
     },
   });
 }
@@ -64,36 +79,6 @@ export function useGetEventNearYou(lat, lon, distance, numberOfEvent) {
   });
 }
 
-export function userGetAllFollowingEvents() {
-  const { userToken } = useContext(UserContext);
-  return useInfiniteQuery({
-    queryKey: ["followingEvents"],
-    queryFn: async ({ pageParam }) => {
-      const { data: FollowingEvents, headers } = await axios.get(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/events/home-feedback?PageIndex=${pageParam}&PageSize=8&sortColumn=creationDate&sortOrder=desc`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-
-      const pagination = JSON.parse(headers["x-pagination"]);
-
-      return {
-        data: [...FollowingEvents],
-        currentPage: pageParam,
-        TotalCount: pagination.TotalCount,
-        nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
-      };
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-  });
-}
-
 const useGetNumberOfFollowers = async (organizerId) => {
   const { headers } = await axios.get(
     `${import.meta.env.VITE_API_URL}/api/Organizers/${organizerId}/followers`
@@ -102,71 +87,44 @@ const useGetNumberOfFollowers = async (organizerId) => {
   return NumberOfFollowers;
 };
 
-export const useFetchFollowers = (events) => {
-  const [followers, setFollowers] = useState({});
-  const followersRef = useRef({});
+export function userGetAllFollowingEvents() {
+  const { userToken } = useContext(UserContext);
 
-  useEffect(() => {
-    const fetchFollowers = async () => {
-      if (events.length === 0) return;
-      const newFollowers = {};
-      const promises = events.map(async (event) => {
-        if (!followersRef.current[event.organizer.id]) {
-          const numberOfFollowers = await useGetNumberOfFollowers(
-            event.organizer.id
-          );
-          newFollowers[event.organizer.id] = numberOfFollowers;
-          followersRef.current[event.organizer.id] = numberOfFollowers;
-        } else {
-          newFollowers[event.organizer.id] =
-            followersRef.current[event.organizer.id];
-        }
-      });
+  const fetchEventsWithFollowers = async ({ pageParam = 1 }) => {
+    const { data: FollowingEvents, headers } = await axios.get(
+      `${
+        import.meta.env.VITE_API_URL
+      }/api/events/home-feedback?PageIndex=${pageParam}&PageSize=8&sortColumn=creationDate&sortOrder=desc`,
+      {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
 
-      await Promise.all(promises);
+    const pagination = JSON.parse(headers["x-pagination"]);
 
-      setFollowers((prevFollowers) => ({
-        ...prevFollowers,
-        ...newFollowers,
-      }));
+    const eventsWithFollowers = await Promise.all(
+      FollowingEvents.map(async (event) => {
+        const followersCount = await useGetNumberOfFollowers(
+          event.organizer.id
+        );
+        return { ...event, organizer: { ...event.organizer, followersCount } };
+      })
+    );
+
+    return {
+      data: eventsWithFollowers,
+      currentPage: pageParam,
+      TotalCount: pagination.TotalCount,
+      nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
     };
+  };
 
-    fetchFollowers();
-  }, [events]);
-
-  return followers;
-};
-
-const useGetRate = async (eventId) => {
-  const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/events/${eventId}/avg`
-  );
-  return data;
-};
-
-export const useFetchRatings = (events) => {
-  const [ratings, setRatings] = useState({});
-
-  useEffect(() => {
-    const fetchRatings = async () => {
-      const newRatings = {};
-      const promises = events.map(async (event) => {
-        if (!ratings[event.id]) {
-          const rating = await useGetRate(event.id);
-          newRatings[event.id] = rating;
-        }
-      });
-      await Promise.all(promises);
-      setRatings((prevRatings) => ({
-        ...prevRatings,
-        ...newRatings,
-      }));
-    };
-
-    if (events.length > 0) {
-      fetchRatings();
-    }
-  }, [events]);
-
-  return ratings;
-};
+  return useInfiniteQuery({
+    queryKey: ["followingEvents"],
+    queryFn: fetchEventsWithFollowers,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+  });
+}
