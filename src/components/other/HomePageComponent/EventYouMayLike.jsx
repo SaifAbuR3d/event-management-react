@@ -37,22 +37,6 @@ export default function EventYouMayLike() {
     mb: 1,
   };
 
-  const renderEventMayLike = EventMayLike?.map((event, index) => {
-    return (
-      <EventCard
-        key={index}
-        id={event.id}
-        imageUrl={event.thumbnailUrl}
-        name={event.name}
-        isOnline={event.isOnline}
-        startDate={event.startDate}
-        startTime={event.startTime}
-        customStyle={cardStyle}
-        isLikedByCurrentUser={event.isLikedByCurrentUser}
-      />
-    );
-  });
-
   return (
     <>
       {EventMayLike?.length === 0 ? (

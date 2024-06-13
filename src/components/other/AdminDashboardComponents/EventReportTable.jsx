@@ -19,11 +19,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useGetReports, useSetStatusSeen } from "../../../API/AdminApi";
+import { useGetEventReports, useSetStatusSeen } from "../../../API/AdminApi";
 import ReportDialog from "./ReportDialog";
 import { FilterListSharp } from "@mui/icons-material";
 
-export default function ReportTable() {
+export default function EventReportTable() {
   const [sortType, setSortType] = useState("desc");
   const [pageNumber, setPageNumber] = useState(1);
   const [open, setOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function ReportTable() {
   const handleFilterClose = () => setAnchorEl(null);
   const openFilter = Boolean(anchorEl);
 
-  const { data, isLoading } = useGetReports(pageNumber, sortType, status);
+  const { data, isLoading } = useGetEventReports(pageNumber, sortType, status);
 
   const { Reports, totalPages } = data || {};
 

@@ -17,12 +17,13 @@ import AttendeeList from "./components/pages/EventDashboard/views/AttendeeList.j
 import RegistrationRequest from "./components/pages/EventDashboard/views/RegistrationRequest.jsx";
 import EventDashboardLayout from "./components/layouts/EventDashboardLayout.jsx";
 import VerificationRequest from "./components/pages/VerificationRequestPage.jsx";
-import ReportTable from "./components/other/AdminDashboardComponents/ReportTable.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
 import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
+import EventReportTable from "./components/other/AdminDashboardComponents/EventReportTable.jsx";
+import ReviewReportTable from "./components/other/AdminDashboardComponents/ReviewReportTable.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -78,8 +79,12 @@ export const Router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       {
-        path: "reports",
-        element: <ReportTable />,
+        path: "event-reports",
+        element: <EventReportTable />,
+      },
+      {
+        path: "review-reports",
+        element: <ReviewReportTable />
       },
       {
         path: "iv-request/attendee",
