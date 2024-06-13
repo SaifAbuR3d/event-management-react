@@ -11,7 +11,6 @@ import useFetchFollowers from "./useFetchFollowers";
 export default function AttendeeFeed() {
   const {
     data: FollowingEvents,
-    isLoading: FollowingEventLoading,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -83,7 +82,7 @@ export default function AttendeeFeed() {
       </Grid>
 
       <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
-        <Typography variant="h5" ml={1}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", marginRight: 2 }}>
           Your Feed
         </Typography>
         <Box
