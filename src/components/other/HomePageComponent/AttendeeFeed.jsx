@@ -1,12 +1,14 @@
 import React, { Fragment } from "react";
 import { useInView } from "react-intersection-observer";
-import { userGetAllFollowingEvents } from "../../../API/HomePageApi";
+import {
+  useFetchFollowers,
+  userGetAllFollowingEvents,
+} from "../../../API/HomePageApi";
 import EventCard from "../../cards/EventCard";
 import { Box, Grid, Typography } from "@mui/material";
 import EventCardLoading from "../../looding/EventCardLoading";
 import { useEffect } from "react";
 import feed from "../../../assets/images/feed.jpg";
-import useFetchFollowers from "./useFetchFollowers";
 
 export default function AttendeeFeed() {
   const {

@@ -1,8 +1,10 @@
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { UserContext } from "../contexts/UserContext";
+import { useState } from "react";
+import { useEffect } from "react";
 
 export function useGetAllCategories() {
   return useQuery({
@@ -91,3 +93,80 @@ export function userGetAllFollowingEvents() {
     getNextPageParam: (lastPage) => lastPage.nextPage,
   });
 }
+
+const useGetNumberOfFollowers = async (organizerId) => {
+  const { headers } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/Organizers/${organizerId}/followers`
+  );
+  const NumberOfFollowers = JSON.parse(headers["x-pagination"]).TotalCount;
+  return NumberOfFollowers;
+};
+
+export const useFetchFollowers = (events) => {
+  const [followers, setFollowers] = useState({});
+  const followersRef = useRef({});
+
+  useEffect(() => {
+    const fetchFollowers = async () => {
+      if (events.length === 0) return;
+      const newFollowers = {};
+      const promises = events.map(async (event) => {
+        if (!followersRef.current[event.organizer.id]) {
+          const numberOfFollowers = await useGetNumberOfFollowers(
+            event.organizer.id
+          );
+          newFollowers[event.organizer.id] = numberOfFollowers;
+          followersRef.current[event.organizer.id] = numberOfFollowers;
+        } else {
+          newFollowers[event.organizer.id] =
+            followersRef.current[event.organizer.id];
+        }
+      });
+
+      await Promise.all(promises);
+
+      setFollowers((prevFollowers) => ({
+        ...prevFollowers,
+        ...newFollowers,
+      }));
+    };
+
+    fetchFollowers();
+  }, [events]);
+
+  return followers;
+};
+
+const useGetRate = async (eventId) => {
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/events/${eventId}/avg`
+  );
+  return data;
+};
+
+export const useFetchRatings = (events) => {
+  const [ratings, setRatings] = useState({});
+
+  useEffect(() => {
+    const fetchRatings = async () => {
+      const newRatings = {};
+      const promises = events.map(async (event) => {
+        if (!ratings[event.id]) {
+          const rating = await useGetRate(event.id);
+          newRatings[event.id] = rating;
+        }
+      });
+      await Promise.all(promises);
+      setRatings((prevRatings) => ({
+        ...prevRatings,
+        ...newRatings,
+      }));
+    };
+
+    if (events.length > 0) {
+      fetchRatings();
+    }
+  }, [events]);
+
+  return ratings;
+};

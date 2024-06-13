@@ -1,8 +1,10 @@
 import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
-import { useGetTopRatedEvents } from "../../../API/HomePageApi";
+import {
+  useFetchRatings,
+  useGetTopRatedEvents,
+} from "../../../API/HomePageApi";
 import EventCard from "../../cards/EventCard";
-import useFetchRatings from "./useFetchRatings";
 import EventCardLoading from "../../looding/EventCardLoading";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -12,7 +14,7 @@ import { useTheme } from "@emotion/react";
 
 export default function TopRatedEvent() {
   const { data: TopRatedEvents, isLoading: TopRatedLoading } =
-    useGetTopRatedEvents(7, 4);
+    useGetTopRatedEvents(7, 8);
 
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
