@@ -298,6 +298,16 @@ export default function EventPage() {
                     {page.reviews.map((review) => (
                       <ReviewCard key={review.id} data={review} />
                     ))}
+                    {reviewsData?.pages[0]?.reviews?.length == 0 && (
+                      <Typography
+                        variant="body2"
+                        fontWeight={"bold"}
+                        sx={{ mb: 1 }}
+                        color="initial"
+                      >
+                        {"There's No Review Yet"}
+                      </Typography>
+                    )}
                   </Fragment>
                 ))}
 

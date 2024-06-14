@@ -20,7 +20,7 @@ import { useSearch } from "../../API/eventPageApi";
 import SkeletonLoadingCard from "../other/SearchPageComponents/SkeletonLoadingCard";
 import { useDebounce } from "@uidotdev/usehooks";
 import BreadcrumbHome from "../other/SearchPageComponents/BreadcrumbHome";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Clear } from "@mui/icons-material";
 export default function SearchPage() {
   const [eventFilter, setEventFilter] = useState(null);
@@ -29,8 +29,10 @@ export default function SearchPage() {
   const [priceFilter, setPriceFilter] = useState([0, 0]);
   const [searchTerm, setSearchTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
-  const { categoryId: catId } = useParams();
-  const [categoryId, setCategoryId] = useState(catId ?? null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [categoryId, setCategoryId] = useState(
+    searchParams.get("categoryId") ?? null
+  );
 
   const theme = useTheme();
 
@@ -77,15 +79,34 @@ export default function SearchPage() {
     }, []);
   };
 
+  const removeCategoryIdFromParams = () => {
+    searchParams.delete("categoryId");
+    setSearchParams(searchParams);
+  };
+
   const handelClearChoices = () => {
     setCategoryId(null);
+    removeCategoryIdFromParams();
     setEventFilter("");
     setLocationFilter("");
     setMangedEvent(false);
     setPriceFilter([0, 0]);
   };
 
-  console.log(searchResult);
+  const filterProps = {
+    categories,
+    setCategoryId,
+    categoryId,
+    setEventFilter,
+    eventFilter,
+    setMangedEvent,
+    mangedEvent,
+    setPriceFilter,
+    priceFilter,
+    setLocationFilter,
+    locationFilter,
+    setSearchParams,
+  };
 
   return (
     <Box sx={{ bgcolor: "#f7f7fa" }}>
@@ -113,7 +134,6 @@ export default function SearchPage() {
             <Box
               sx={{
                 width: `${matches ? "49%" : "100%"}`,
-                // m: `${matches ? "0" : "auto"}`,
                 flexGrow: `${matches ? "0" : "1"}`,
               }}
             >
@@ -136,23 +156,17 @@ export default function SearchPage() {
             <Typography variant="h5" color="initial" mb={2} fontWeight={"bold"}>
               Filters
             </Typography>
-            <FiltersComponents
-              categories={categories}
-              setCategoryId={setCategoryId}
-              categoryId={categoryId}
-              setEventFilter={setEventFilter}
-              eventFilter={eventFilter}
-              setMangedEvent={setMangedEvent}
-              mangedEvent={mangedEvent}
-              setPriceFilter={setPriceFilter}
-              priceFilter={priceFilter}
-              setLocationFilter={setLocationFilter}
-              locationFilter={locationFilter}
-            />
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <FiltersComponents {...filterProps} />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: { md: "flex-start", xs: "center" },
+                mt: 4,
+              }}
+            >
               <Button
                 variant="outlined"
-                sx={{ flexBasis: { md: "70%", xs: "30%" } }}
+                sx={{ flexBasis: { md: "100%", xs: "40%" } }}
                 endIcon={<Clear />}
                 onClick={handelClearChoices}
               >

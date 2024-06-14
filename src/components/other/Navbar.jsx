@@ -6,7 +6,6 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
@@ -15,8 +14,13 @@ import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext.jsx";
-import Tooltip from "@mui/material/Tooltip";
-import { Avatar } from "@mui/material";
+import { Avatar, Stack } from "@mui/material";
+import {
+  Add,
+  ConfirmationNumberOutlined,
+  Dashboard,
+  FavoriteBorder,
+} from "@mui/icons-material";
 
 //--------------------- Search styles --------------------
 
@@ -63,17 +67,20 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-//---------------------------------------------------------
-
 const auth = ["Login", "Register"];
 
 export default function Navbar() {
-  const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const navigate = useNavigate();
 
-  const { isAuthenticated, removeCurrentUser, isOrganizer, isAttendee, user } =
-    useContext(UserContext);
+  const {
+    isAuthenticated,
+    removeCurrentUser,
+    isOrganizer,
+    isAttendee,
+    isAdmin,
+    user,
+  } = useContext(UserContext);
 
   const settings = [
     {
@@ -97,25 +104,43 @@ export default function Navbar() {
     },
   ];
 
-  const pages = [{ name: "Find Events", path: "/#" }];
+  if (isAdmin()) {
+    settings.shift();
+  }
+
+  const pages = [];
 
   if (isOrganizer()) {
-    pages.push({ name: "Create Event", path: "/events/create" });
+    pages.push({
+      name: "Create Event",
+      path: "/events/create",
+      icon: <Add fontSize="small" />,
+    });
   }
 
   if (isAttendee()) {
-    pages.push({ name: "Likes", path: `attendee-profile/${user?.userName}` });
+    pages.push({
+      name: "Likes",
+      path: `attendee-profile/${user?.userName}`,
+      icon: <FavoriteBorder fontSize="small" />,
+    });
+    pages.push({
+      name: "Tickets",
+      path: `attendee-profile/${user?.userName}`,
+      icon: <ConfirmationNumberOutlined fontSize="small" />,
+    });
   }
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  if (isAdmin()) {
+    pages.push({
+      name: "Dashboard",
+      path: "/admin-dashboard",
+      icon: <Dashboard fontSize="small" />,
+    });
+  }
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -150,48 +175,12 @@ export default function Navbar() {
           Eventbrite
         </Typography>
 
-        {/*---------Menu just dispaly on {xs} Breakpoint ------------*/}
-        <Box sx={{ order: 1, display: { xs: "flex", md: "none" } }}>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleOpenNavMenu}
-            color="inherit"
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorElNav}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-            open={Boolean(anchorElNav)}
-            onClose={handleCloseNavMenu}
-            sx={{
-              display: { xs: "block", md: "none" },
-            }}
-          >
-            {pages.map((page, i) => (
-              <MenuItem key={i} onClick={() => navigate(page.path)}>
-                <Typography textAlign="center">{page.name}</Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-        </Box>
-
         {/*---------search--------------*/}
         <Box
           sx={{
-            flexGrow: 1,
+            flexGrow: 0,
+            flexBasis: "70%",
+            m: "auto",
           }}
         >
           <Search
@@ -213,11 +202,13 @@ export default function Navbar() {
           </Search>
         </Box>
 
-        {/*---------pages-- "Find Events", "Create Event"------------*/}
+        {/*---------pages (md)--------------*/}
         <Box
           sx={{
-            display: { xs: "none", md: "flex" },
-            ml: 3,
+            display: { xs: "none", md: "flex", gap: "10px" },
+            // ml: 3
+            ml: "auto",
+            mr: "15px",
           }}
         >
           {pages.map((page) => (
@@ -234,14 +225,26 @@ export default function Navbar() {
                 fontWeight: "500",
                 textTransform: "capitalize",
                 textWrap: "nowrap",
+                "&:hover": { bgcolor: "inherit", color: "#000000" },
               }}
             >
-              {page.name}
+              <Stack
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {page.icon}
+                <Typography variant="caption" fontWeight={"bold"}>
+                  {page.name}
+                </Typography>
+              </Stack>
             </Button>
           ))}
         </Box>
-        {(isOrganizer() || isAttendee()) && (
-          <Box sx={{ flexGrow: 0, ml: 2 }}>
+        {(isOrganizer() || isAttendee() || isAdmin()) && (
+          <Box sx={{ order: "2", flexGrow: 0, ml: 2 }}>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Avatar
                 alt=""
@@ -269,6 +272,11 @@ export default function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
+              {pages.map((page, i) => (
+                <MenuItem key={i} onClick={() => navigate(page.path)}>
+                  <Typography textAlign="center">{page.name}</Typography>
+                </MenuItem>
+              ))}
               {settings.map((setting, index) => (
                 <MenuItem key={index} onClick={setting.OnClick}>
                   <Typography textAlign="center">{setting.name}</Typography>
@@ -277,7 +285,6 @@ export default function Navbar() {
             </Menu>
           </Box>
         )}
-        {/*---------settings-------------*/}
 
         {/*---------auth-- "Login", "Register"------------*/}
         {!isAuthenticated() && (

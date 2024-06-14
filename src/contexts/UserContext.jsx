@@ -56,10 +56,6 @@ export function UserContextProvider({ children }) {
     }
   }, [userToken]);
 
-  useEffect(() => {
-    console.log("Use", user);
-  }, [user]);
-
   return (
     <UserContext.Provider
       value={{

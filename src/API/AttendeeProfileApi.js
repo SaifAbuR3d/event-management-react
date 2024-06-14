@@ -80,7 +80,7 @@ export function useGetFollowing(attendeeId) {
           import.meta.env.VITE_API_URL
         }/api/attendees/${attendeeId}/follows?pageSize=6&pageIndex=${pageParam}&sortColumn=creationDate&sortOrder=desc`
       );
-      
+
       const pagination = JSON.parse(headers["x-pagination"]);
 
       return {

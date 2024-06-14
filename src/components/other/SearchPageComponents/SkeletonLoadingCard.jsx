@@ -12,12 +12,27 @@ export default function SkeletonLoadingCard() {
         gap: 3,
       }}
     >
-      <Skeleton variant="rounded" sx={{ flexBasis: "30%", height: "100px" }} />
-      <Box sx={{ display: "flex", flexDirection: "column", flexBasis: "70%" }}>
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
-        <Skeleton variant="text" />
+      <Skeleton
+        variant="rounded"
+        animation="wave"
+        sx={{ flexBasis: "30%", height: "150px" }}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flexBasis: "70%",
+          gap: "7px",
+        }}
+      >
+        {Array.from({ length: 4 }, (_, index) => (
+          <Skeleton
+            key={index}
+            animation="wave"
+            variant="text"
+            sx={{ height: "30px" }}
+          />
+        ))}
       </Box>
     </Box>
   );

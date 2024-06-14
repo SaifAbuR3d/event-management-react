@@ -21,6 +21,7 @@ export default function FiltersComponents({
   mangedEvent,
   setPriceFilter,
   priceFilter,
+  setSearchParams,
 }) {
   const eventFilters = [
     { name: "Previous Events", value: "PreviousEvents" },
@@ -34,6 +35,7 @@ export default function FiltersComponents({
   ];
   const handleCategoryIdChange = (event) => {
     setCategoryId(event.target.value);
+    setSearchParams({ categoryId: event.target.value });
   };
 
   const handleEventFilterChange = (event) => {
