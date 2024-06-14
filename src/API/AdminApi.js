@@ -4,14 +4,14 @@ import { queryClient } from "../main";
 import { useContext } from "react";
 import { UserContext } from "../contexts/UserContext";
 
-export function useGetReports(pageNumber, sortType, status) {
+export function useGetEventReports(pageNumber, sortType, status) {
   const { userToken } = useContext(UserContext);
   return useQuery({
-    queryKey: ["Reports", pageNumber, sortType, status],
+    queryKey: ["EventReports", pageNumber, sortType, status],
     queryFn: async () => {
       let queryString = `${
         import.meta.env.VITE_API_URL
-      }/api/reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`;
+      }/api/event-reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`;
 
       if (status !== "All") {
         queryString += `&status=${status}`;
@@ -25,6 +25,31 @@ export function useGetReports(pageNumber, sortType, status) {
 
       const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
 
+      return { Reports, totalPages };
+    },
+  });
+}
+
+export function useGetReviewReports(pageNumber, sortType, status) {
+  const { userToken } = useContext(UserContext);
+  return useQuery({
+    queryKey: ["ReviewReports", pageNumber, sortType, status],
+    queryFn: async () => {
+      let queryString = `${
+        import.meta.env.VITE_API_URL
+      }/api/review-reports?pageSize=6&pageIndex=${pageNumber}&sortColumn=creationDate&sortOrder=${sortType}`;
+
+      if (status !== "All") {
+        queryString += `&status=${status}`;
+      }
+
+      const { data: Reports, headers } = await axios.get(queryString, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const totalPages = JSON.parse(headers["x-pagination"]).TotalPages;
       return { Reports, totalPages };
     },
   });

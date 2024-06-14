@@ -197,7 +197,7 @@ export default function AllAttendeesTable() {
                   "Attendee Id",
                   "Attendee Name",
                   "Gender",
-                  "Status",
+                  "Verification",
                   "Actions",
                 ].map((x, index) => (
                   <TableCell key={index} align="center">
