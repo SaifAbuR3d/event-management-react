@@ -28,6 +28,7 @@ export function UserContextProvider({ children }) {
       userName:
         tokenData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
       isVerified: tokenData["isVerified"],
+      userImage: tokenData["userImage"],
     });
   };
 

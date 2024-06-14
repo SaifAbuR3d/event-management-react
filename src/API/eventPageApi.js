@@ -1,4 +1,9 @@
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { queryClient } from "../main";
 import { useContext } from "react";
@@ -143,7 +148,7 @@ export function useReportEvent() {
   return useMutation({
     mutationFn: (requestData) =>
       axios.post(
-        `${import.meta.env.VITE_API_URL}/api/reports`,
+        `${import.meta.env.VITE_API_URL}/api/event-reports`,
         { ...requestData },
         {
           headers: {
@@ -151,9 +156,22 @@ export function useReportEvent() {
           },
         }
       ),
-    onSuccess: () => {
-      //
-    },
+  });
+}
+
+export function useReportReview() {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationFn: (requestData) =>
+      axios.post(
+        `${import.meta.env.VITE_API_URL}/api/review-reports`,
+        { ...requestData },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      ),
   });
 }
 
@@ -199,7 +217,10 @@ export function useRemoveLike(eventId) {
         queryKey: ["event", eventId],
         exact: true,
       });
-      queryClient.invalidateQueries(["Favorites"]);
+      queryClient.invalidateQueries({
+        queryKey: ["Favorites"],
+        exact: true,
+      });
     },
   });
 }
@@ -305,5 +326,63 @@ export function useGetRegRequestForEvent(eventId, open) {
     },
     enabled: !!open,
     staleTime: 20000,
+  });
+}
+
+export function useSearch({
+  pageIndex,
+  categoryId,
+  searchTermDebounce,
+  eventFilter,
+  mangedEvent,
+  priceFilterDebounce,
+  locationFilter,
+}) {
+  const { userToken } = useContext(UserContext);
+  return useQuery({
+    queryKey: [
+      [
+        "Search",
+        pageIndex,
+        categoryId,
+        searchTermDebounce,
+        eventFilter,
+        mangedEvent,
+        priceFilterDebounce,
+        locationFilter,
+      ],
+    ],
+    queryFn: async () => {
+      const params = {
+        pageSize: 5,
+        pageIndex: pageIndex,
+        categoryId: categoryId,
+        searchTerm: searchTermDebounce,
+        ...(eventFilter && { [eventFilter]: true }),
+        ...(mangedEvent && { OnlyManagedEvents: true }),
+        ...(locationFilter && { [locationFilter]: true }),
+        ...(priceFilterDebounce[0] > 0 && { minPrice: priceFilterDebounce[0] }),
+        ...(priceFilterDebounce[1] > 0 && { maxPrice: priceFilterDebounce[1] }),
+      };
+
+      const headers = {
+        ...(!!userToken && { Authorization: `Bearer ${userToken}` }),
+      };
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/events`,
+        {
+          params: params,
+          headers: headers,
+        }
+      );
+      const pagination = JSON.parse(response.headers["x-pagination"]);
+      return {
+        data: [...response.data],
+        TotalCount: pagination.TotalCount,
+        nextPage: pagination.HasNextPage ? pagination.PageIndex + 1 : null,
+      };
+    },
+    placeholderData: keepPreviousData,
   });
 }

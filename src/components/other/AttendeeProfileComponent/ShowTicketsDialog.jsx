@@ -17,16 +17,13 @@ export default function ShowTicketsDialog({
 
   const { data: Tickets, isLoading } = useGetTickets(eventId);
 
-  if(isLoading){
-    return <div>not found ...</div>
+  if (isLoading) {
+    return <div>not found ...</div>;
   }
 
-  const ticketsOnly = Tickets?.flatMap(t => t.tickets);
-
-  console.log(ticketsOnly);
+  const ticketsOnly = Tickets?.flatMap((t) => t.tickets);
 
   const renderTickets = ticketsOnly?.map((t, index) => {
-    console.log(t);
     return (
       <TicketWithQRCard
         key={index}

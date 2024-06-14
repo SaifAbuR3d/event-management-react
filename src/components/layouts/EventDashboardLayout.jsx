@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
@@ -32,6 +32,14 @@ const AppBar = styled(MuiAppBar, {
 
 export default function EventDashboardLayout() {
   const [open, setOpen] = useState(false);
+  const [isCurrentOrganizer, setIsCurrentOrganizer] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isCurrentOrganizer) {
+      navigate("/");
+    }
+  }, [isCurrentOrganizer, navigate]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -59,7 +67,11 @@ export default function EventDashboardLayout() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <SideListWithContent open={open} setOpen={setOpen}>
+      <SideListWithContent
+        open={open}
+        setOpen={setOpen}
+        setIsCurrentOrganizer={setIsCurrentOrganizer}
+      >
         <Outlet />
       </SideListWithContent>
     </Box>

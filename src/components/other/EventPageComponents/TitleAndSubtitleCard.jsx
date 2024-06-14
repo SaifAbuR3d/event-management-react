@@ -95,6 +95,9 @@ export default function TitleAndSubtitleCard({
     const { allowedGender, minAge, maxAge } = subtitle;
     return (
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <Typography variant="body2" color="initial" sx={{ fontWeight: "bold" }}>
+          This Event is Privete !
+        </Typography>
         {allowedGender && (
           <Typography variant="body2" sx={{ fontWeight: "bold" }}>
             Gender : {allowedGender} is allowed

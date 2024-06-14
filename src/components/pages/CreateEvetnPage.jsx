@@ -44,19 +44,16 @@ const MainTitle = styled(Typography)(({ theme }) =>
 );
 
 export default function CreateEvetnPage() {
-  const [error, setError] = useState("");
   const [isManged, setIsManged] = useState(false);
   const navigate = useNavigate();
   const { data, isLoading } = useGetCategories();
 
-  const { mutateAsync, isPending, isError } = useCreateEvent();
+  const { mutateAsync, isPending, isError, error } = useCreateEvent();
 
   const handelMutateAsync = (values) => {
-    mutateAsync(values)
-      .then(({ eventId }) => {
-        setTimeout(() => navigate(`/event/${eventId}`));
-      })
-      .catch((error) => setError(error));
+    mutateAsync(values).then(({ eventId }) => {
+      setTimeout(() => navigate(`/event/${eventId}`));
+    });
   };
 
   const handelValues = (values) => {
@@ -153,7 +150,7 @@ export default function CreateEvetnPage() {
           </Typography>
           {isError && (
             <Alert variant="standard" severity="error" sx={{ mb: 2 }}>
-              {error?.response?.data?.destail}
+              {error?.response?.data?.detail}
             </Alert>
           )}
           <MultiStepForm
@@ -258,14 +255,14 @@ export default function CreateEvetnPage() {
                       <DateField
                         name="startDate"
                         label={"Start Date"}
-                        minDate={dayjs().add(2, "day")}
+                        minDate={dayjs().add(1, "day")}
                       />
                     </Grid>
                     <Grid item xs={11.8} sm={5.8}>
                       <DateField
                         name="endDate"
                         label={"End Date"}
-                        minDate={dayjs().add(2, "day")}
+                        minDate={dayjs().add(1, "day")}
                       />
                     </Grid>
                     <Grid item xs={12}>
