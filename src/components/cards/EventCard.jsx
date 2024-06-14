@@ -4,7 +4,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { Box, Paper } from "@mui/material";
+import { Avatar, Box, Paper, Rating } from "@mui/material";
 import {
   ConfirmationNumberOutlined,
   ConfirmationNumberSharp,
@@ -12,6 +12,7 @@ import {
   FavoriteBorder,
   IosShare,
   PeopleOutlineTwoTone,
+  StarRateRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,7 @@ import ShareCard from "./ShareCard";
 import { UserContext } from "../../contexts/UserContext";
 import { useAddLike, useRemoveLike } from "../../API/eventPageApi";
 import ShowTicketsDialog from "../other/AttendeeProfileComponent/ShowTicketsDialog";
+import { useContext } from "react";
 
 const EventCard = React.memo(function EventCard({
   name,
@@ -28,19 +30,32 @@ const EventCard = React.memo(function EventCard({
   startTime,
   organizerName,
   numberOfFollers,
+  organizerImageUrl,
   imageUrl,
   isLikedByCurrentUser,
   customStyle,
   isBooking,
+  isHome,
+  rating,
 }) {
   const [open, setOpen] = useState(false);
   const [openTickets, setOpenTickets] = useState(false);
 
   const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
   const navigate = useNavigate();
-  const { isOrganizer, isAuthenticated } = React.useContext(UserContext);
+  const { isOrganizer, isAuthenticated } = useContext(UserContext);
 
   const { mutateAsync: mutateLike, isPending: isPendingLike } = useAddLike(id);
+
+  const formatNumber = (number) => {
+    if (number >= 1000000) {
+      return (number / 1000000).toFixed(1) + "M";
+    } else if (number >= 1000) {
+      return (number / 1000).toFixed(1) + "K";
+    } else {
+      return number.toString();
+    }
+  };
 
   const handelMutateLike = () =>
     mutateLike()
@@ -70,7 +85,7 @@ const EventCard = React.memo(function EventCard({
     event.stopPropagation();
     setOpenTickets(true);
   };
-  
+
   const handleCloseTickets = () => {
     setOpenTickets(false);
   };
@@ -101,8 +116,29 @@ const EventCard = React.memo(function EventCard({
         },
         cursor: "pointer",
         ...customStyle,
+        position: "relative",
       }}
     >
+      {rating && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 4,
+            right: 4,
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.55)",
+          }}
+        >
+          <Rating
+            name="half-rating-read"
+            precision={0.5}
+            sx={{ p: 0.3 }}
+            value={rating?.average}
+            readOnly
+          />
+        </Box>
+      )}
       <CardMedia
         component="img"
         height="194"
@@ -126,9 +162,18 @@ const EventCard = React.memo(function EventCard({
             alignItems="center"
           >
             {isBooking ? (
-              <IconButton onClick={handleOpenTickets}>
-                <ConfirmationNumberOutlined fontSize="large" />
-              </IconButton>
+              <>
+                <IconButton onClick={handleOpenTickets}>
+                  <ConfirmationNumberOutlined fontSize="large" />
+                </IconButton>
+
+                <ShowTicketsDialog
+                  open={openTickets}
+                  handleClose={handleCloseTickets}
+                  eventId={id}
+                  eventName={name}
+                />
+              </>
             ) : (
               <>
                 {!isOrganizer() && (
@@ -155,13 +200,6 @@ const EventCard = React.memo(function EventCard({
                 </IconButton>
               </>
             )}
-
-            <ShowTicketsDialog
-              open={openTickets}
-              handleClose={handleCloseTickets}
-              eventId={id}
-              eventName={name}
-            />
           </Box>
         </Box>
 
@@ -173,17 +211,29 @@ const EventCard = React.memo(function EventCard({
           {isOnline ? "Online" : "On Site"}
         </Typography>
 
-        {organizerName && (
-          <Typography variant="h6" color="#283593" mt={2}>
-            {organizerName}
-          </Typography>
-        )}
-
-        {numberOfFollers && (
-          <Typography variant="body2" color="#283593" display="flex">
-            <PeopleOutlineTwoTone fontSize="small" />
-            {numberOfFollers}
-          </Typography>
+        {isHome && (
+          <>
+            <Box
+              mt={2}
+              display="flex"
+              justifyContent="start"
+              alignItems="center"
+            >
+              <Avatar
+                src={`${import.meta.env.VITE_API_URL}/${organizerImageUrl}`}
+                sx={{ mr: 1, width: "50px", height: "50px" }}
+              />
+              <Box>
+                <Typography variant="h6" color="#283593">
+                  {organizerName}
+                </Typography>
+                <Typography variant="body2" color="#283593" display="flex">
+                  <PeopleOutlineTwoTone fontSize="small" />
+                  {formatNumber(numberOfFollers)} Followers
+                </Typography>
+              </Box>
+            </Box>
+          </>
         )}
       </CardContent>
       <ShareCard

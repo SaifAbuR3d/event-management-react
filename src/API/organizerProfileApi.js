@@ -28,7 +28,8 @@ const getOwnersEvents = async (
   upcomingList,
   setUpcomingList,
   previousList,
-  setPreviousList
+  setPreviousList,
+  userToken
 ) => {
   const isUpcoming = alignment === "upcoming";
 
@@ -43,6 +44,9 @@ const getOwnersEvents = async (
         organizerId: id,
         upcomingEvents: isUpcoming,
         previousEvents: !isUpcoming,
+      },
+      headers: {
+        Authorization: `Bearer ${userToken}`,
       },
     }
   );
@@ -88,7 +92,6 @@ export function useGetProfileOwnerData(userName) {
   return useQuery({
     queryKey: ["profileOwnerData", userName],
     queryFn: () => getProfileOwnersData(userName),
-    enabled: !!userName,
   });
 }
 
@@ -101,6 +104,8 @@ export function useGetOwnerEvents(
   upcomingList,
   setUpcomingList
 ) {
+  const { userToken } = useContext(UserContext);
+
   return useQuery({
     queryKey: ["OnwerEvents", alignment, page, id],
     queryFn: () =>
@@ -111,7 +116,8 @@ export function useGetOwnerEvents(
         upcomingList,
         setUpcomingList,
         previousList,
-        setPreviousList
+        setPreviousList,
+        userToken
       ),
     enabled: !!id,
   });

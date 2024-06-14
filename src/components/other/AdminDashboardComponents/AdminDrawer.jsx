@@ -74,12 +74,14 @@ export default function AdminDrawer() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openVerification, setOpenVerification] = useState(false);
   const [openUsers, setOpenUsers] = useState(false);
-  
+  const [openReports, setOpenReports] = useState(false);
+
   const handleDrawerOpen = () => setDrawerOpen(true);
 
   const handleDrawerClose = () => {
     setDrawerOpen(false);
     setOpenUsers(false);
+    setOpenReports(false);
     setOpenVerification(false);
   };
 
@@ -88,7 +90,10 @@ export default function AdminDrawer() {
 
   const handleVerificationClick = () =>
     setOpenVerification(drawerOpen && !openVerification);
+
   const handleUsersOnClick = () => setOpenUsers(drawerOpen && !openUsers);
+
+  const handleReportsOnClick = () => setOpenReports(drawerOpen && !openReports);
 
   const handleLogOut = () => {
     removeCurrentUser();
@@ -132,17 +137,14 @@ export default function AdminDrawer() {
           </ListItem>
         </DrawerHeader>
         <List>
-          <ListItem
-            disablePadding
-            sx={{ display: "block" }}
-            onClick={() => navigate(`/admin-dashboard/reports`)}
-          >
+          <ListItem disablePadding sx={{ display: "block" }}>
             <ListItemButton
               sx={{
                 minHeight: 48,
                 justifyContent: drawerOpen ? "initial" : "center",
                 px: 2.5,
               }}
+              onClick={handleReportsOnClick}
             >
               <ListItemIcon
                 sx={{
@@ -153,11 +155,39 @@ export default function AdminDrawer() {
               >
                 <FlagOutlined />
               </ListItemIcon>
+
               <ListItemText
                 primary={"Reports"}
                 sx={{ opacity: drawerOpen ? 1 : 0 }}
               />
             </ListItemButton>
+
+            <Collapse in={openReports} timeout="auto" unmountOnExit>
+              <List
+                component="div"
+                disablePadding
+                sx={{ opacity: drawerOpen ? 1 : 0 }}
+              >
+                <ListItemButton
+                  sx={{ pl: 8 }}
+                  onClick={() => navigate(`/admin-dashboard/event-reports`)}
+                >
+                  <ListItemIcon>
+                    <Remove />
+                  </ListItemIcon>
+                  <ListItemText primary="Events" />
+                </ListItemButton>
+                <ListItemButton
+                  sx={{ pl: 8 }}
+                  onClick={() => navigate(`/admin-dashboard/review-reports`)}
+                >
+                  <ListItemIcon>
+                    <Remove />
+                  </ListItemIcon>
+                  <ListItemText primary="Reviews" />
+                </ListItemButton>
+              </List>
+            </Collapse>
           </ListItem>
 
           <ListItem disablePadding sx={{ display: "block" }}>

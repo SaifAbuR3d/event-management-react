@@ -24,7 +24,6 @@ export default function MangedEventStep({
   const handelCreateRegistration = () => mutateAsync();
 
   const [, meta, helpers] = useField("RegistrationRequest");
-  console.log(isNotVerified);
   return (
     <>
       {!!meta.error && (

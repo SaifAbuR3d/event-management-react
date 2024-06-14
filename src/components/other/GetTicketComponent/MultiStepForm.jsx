@@ -11,10 +11,9 @@ export default function MultiStepForm({
   onSubmit,
   totalAmount,
   order,
-  fromRegister,
   fromGetTicket,
-  fromCreateEvent,
   clearOrder,
+  submitPending,
 }) {
   const [stepNumber, setStepNumber] = useState(0);
   const [snapShot, setSnapShot] = useState(initialValues);
@@ -70,6 +69,7 @@ export default function MultiStepForm({
           {step}
           {fromGetTicket && (
             <FormNavigation
+              submitPending={submitPending}
               clearOrder={clearOrder}
               order={order}
               totalAmount={totalAmount}
