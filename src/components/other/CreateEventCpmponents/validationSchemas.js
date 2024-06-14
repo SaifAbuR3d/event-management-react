@@ -12,6 +12,13 @@ function isValidFileType(fileName, fileType) {
   );
 }
 
+const tomorrow = dayjs()
+  .add(1, "day")
+  .hour(0)
+  .minute(0)
+  .second(0)
+  .millisecond(0);
+
 export const validationSchemaStepOne = yup.object({
   name: yup
     .string()
@@ -35,7 +42,7 @@ export const validationSchemaStepOne = yup.object({
     .required("Start date is required")
     .typeError("Invalid date")
     .min(
-      dayjs().add(1, "day"),
+      tomorrow,
       "Please set the start date to at least one day ahead of today."
     ),
 
@@ -44,33 +51,75 @@ export const validationSchemaStepOne = yup.object({
     .required("End date is required")
     .typeError("Invalid date")
     .min(
-      dayjs().add(1, "day"),
+      tomorrow,
       "Please set the start date to at least one day ahead of today."
     )
     .min(yup.ref("startDate"), "End date must be before start date"),
 
   startTime: yup
     .date()
+    .required("Start time is required")
     .typeError("Invalid date")
-    .required("Start time is required"),
+    .when(["startDate", "endDate"], {
+      is: (startDate, endDate) => !!startDate && !!endDate, // only apply the following test if all fields are truthy
+      then: () =>
+        yup
+          .date()
+          .test(
+            "is-after-start-time-e",
+            "Start time must be after 24 hours",
+            function (value) {
+              const { startDate, endDate } = this.parent;
+
+              if (!value) {
+                return true; // skipping validation if endTime or startTime is not provided
+              }
+
+              const startDateString = startDate.toISOString().split("T")[0];
+              const endDateString = endDate.toISOString().split("T")[0];
+
+              if (startDateString === endDateString) {
+                return dayjs(value)
+                  .add(1, "day")
+                  .isAfter(dayjs().add(1, "day"));
+              }
+              return true;
+            }
+          ),
+      otherwise: () => yup.date(), // If the condition is not met, just return the basic date validation
+    }),
   endTime: yup
     .date()
-    .typeError("Invalid date")
     .required("End time is required")
-    .when("startTime", (startTime, schema) => {
-      return (
-        startTime &&
-        schema.test({
-          name: "afterStart",
-          exclusive: true,
-          test: function (endTime) {
-            const { startTime } = this.parent;
-            if (!startTime || !endTime) return true;
-            return endTime > startTime;
-          },
-          message: "End time must be after start time and not equal to it",
-        })
-      );
+    .typeError("Invalid time")
+    .when(["startDate", "endDate", "startTime"], {
+      is: (startDate, endDate, startTime) =>
+        !!startDate && !!endDate && !!startTime, // only apply the following test if all fields are truthy
+      then: () =>
+        yup
+          .date()
+          .test(
+            "is-after-start-time",
+            "End time must be after start time on the same day, or equal/greater on different days.",
+            function (endTime) {
+              const { startDate, endDate, startTime } = this.parent;
+
+              if (!endTime || !startTime) {
+                return true; // skipping validation if endTime or startTime is not provided
+              }
+
+              const startDateString = startDate.toISOString().split("T")[0];
+              const endDateString = endDate.toISOString().split("T")[0];
+              const startTimeString = startTime.toISOString();
+              const endTimeString = endTime.toISOString();
+
+              if (startDateString === endDateString) {
+                return new Date(endTimeString) > new Date(startTimeString);
+              }
+              return true;
+            }
+          ),
+      otherwise: () => yup.date(), // If the condition is not met, just return the basic date validation
     }),
   categoryId: yup.number().required(" category type is required"),
 
