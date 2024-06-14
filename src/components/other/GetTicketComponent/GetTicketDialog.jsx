@@ -107,6 +107,7 @@ export default function GetTicketDialog({ open, handleClose, data }) {
         addToOrder={addToOrder}
         removeFromOrder={removeFromOrder}
         isManaged={isManaged}
+        orders={orders}
       />
     );
   });
@@ -154,7 +155,12 @@ export default function GetTicketDialog({ open, handleClose, data }) {
 
   const { userToken } = React.useContext(UserContext);
 
-  const { mutateAsync } = useMutation({
+  const {
+    mutateAsync,
+    isPending: submitPending,
+    isError,
+    error,
+  } = useMutation({
     mutationFn: async (values) => {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/events/${eventId}/bookings`,
@@ -280,7 +286,13 @@ export default function GetTicketDialog({ open, handleClose, data }) {
               </Typography>
             </Box>
 
+            {isError && (
+              <Alert variant="standard" severity="error" sx={{ mb: 2 }}>
+                {error?.response?.data?.detail}
+              </Alert>
+            )}
             <MultiStepForm
+              submitPending={submitPending}
               initialValues={initialValues}
               onSubmit={mutateAsync}
               totalAmount={total}

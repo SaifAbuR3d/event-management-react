@@ -177,7 +177,7 @@ export default function AllOrganizersTable() {
                   "",
                   "Organizer Id",
                   "Organizer Name",
-                  "Status",
+                  "Verification",
                   "Actions",
                 ].map((x, index) => (
                   <TableCell key={index} align="center">

@@ -14,11 +14,9 @@ export default function TicketCard({
   addToOrder,
   removeFromOrder,
   isManaged,
-  ticketsSalesEnded,
-  ticketsSalesRunning,
-  ticketsSalesStarted,
+  orders,
 }) {
-  const [count, setCount] = useState(isManaged ? 1 : 0);
+  const [count, setCount] = useState(0);
 
   const addTicket = (name, price, id) => {
     addToOrder(name, price, id);
@@ -38,15 +36,25 @@ export default function TicketCard({
   };
 
   const handelStartSaleDate = () => {
-    const startDate = new Date(`${endSale}z`);
+    const startDate = new Date(`${startSale}z`);
     const date = dayjs(startDate);
     const formattedDate = date.format("D MMM YYYY [at] h:mm A");
     return formattedDate;
   };
 
-  const isStarted = () => ticketsSalesStarted;
+  const isStarted = () => {
+    const startDate = dayjs(new Date(`${startSale}z`));
+    const date = dayjs();
 
-  const isEnded = () => ticketsSalesEnded;
+    return date.isAfter(startDate);
+  };
+
+  const isEnded = () => {
+    const endDate = dayjs(new Date(`${endSale}z`));
+    const date = dayjs();
+
+    return date.isAfter(endDate);
+  };
 
   return (
     <Paper
@@ -64,7 +72,6 @@ export default function TicketCard({
         </Typography>
         <Box display="flex" justifyContent="center" gap={1}>
           <IconButton
-            sx={{ visibility: isManaged ? "hidden" : "" }}
             color="primary"
             onClick={() => removeTicket(name, price, id)}
             disabled={count == 0}
@@ -74,14 +81,20 @@ export default function TicketCard({
               sx={{ border: "gray solid 1.5px", borderRadius: "20%" }}
             />
           </IconButton>
+
           <Typography variant="h6" display="flex" alignItems="center">
             {count}
           </Typography>
+
           <IconButton
-            sx={{ visibility: isManaged ? "hidden" : "" }}
             color="primary"
             onClick={() => addTicket(name, price, id)}
-            disabled={quantity - count <= 0 || isEnded() || !isStarted()}
+            disabled={
+              (isManaged && orders?.size >= 1) ||
+              quantity - count <= 0 ||
+              isEnded() ||
+              !isStarted()
+            }
           >
             <Add
               fontSize="large"
@@ -102,34 +115,46 @@ export default function TicketCard({
         <Typography variant="h6" fontWeight={500} pl={{ xs: 2, sm: 3 }} pt={2}>
           ${price}
         </Typography>
-        {!isEnded() ? (
-          <Paper
-            sx={{ mr: 1, bgcolor: "#f5f5f5", width: "114px" }}
-            elevation={0}
-          >
-            <Typography
-              p={0.6}
-              align="center"
-              color={quantity - count > 0 ? "inherit" : "red"}
+
+        {isStarted() ? (
+          !isEnded() ? (
+            <Paper
+              sx={{ mr: 1, bgcolor: "#f5f5f5", width: "114px" }}
+              elevation={0}
             >
-              {quantity - count > 0
-                ? `${quantity - count} remaining`
-                : "Soled Out"}
-            </Typography>
-          </Paper>
+              <Typography
+                p={0.6}
+                align="center"
+                color={quantity - count > 0 ? "inherit" : "red"}
+              >
+                {quantity - count > 0
+                  ? `${quantity - count} remaining`
+                  : "Soled Out"}
+              </Typography>
+            </Paper>
+          ) : (
+            <Paper
+              sx={{ mr: 1, bgcolor: "#f5f5f5", width: "114px" }}
+              elevation={0}
+            >
+              <Typography p={0.6} align="center" color="red">
+                Sales Ended
+              </Typography>
+            </Paper>
+          )
         ) : (
           <Paper
             sx={{ mr: 1, bgcolor: "#f5f5f5", width: "114px" }}
             elevation={0}
           >
             <Typography p={0.6} align="center" color="red">
-              Sales Ended
+              Not Started
             </Typography>
           </Paper>
         )}
       </Box>
       {isStarted() ? (
-        !isEnded() && (
+        !isEnded() ? (
           <Typography
             variant="body1"
             fontWeight={400}
@@ -138,6 +163,16 @@ export default function TicketCard({
             pb={2}
           >
             Sales end on {handelEndSaleDate()}
+          </Typography>
+        ) : (
+          <Typography
+            variant="body1"
+            fontWeight={400}
+            pl={{ xs: 2, sm: 3 }}
+            pt={1}
+            pb={2}
+          >
+            Sales ended on {handelEndSaleDate()}
           </Typography>
         )
       ) : (
