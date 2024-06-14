@@ -11,7 +11,7 @@ import { useTheme } from "@emotion/react";
 
 export default function TopRatedEvent() {
   const { data: TopRatedEvents, isLoading: TopRatedLoading } =
-    useGetTopRatedEvents(7, 8);
+    useGetTopRatedEvents(50, 8);
 
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down("sm"));
@@ -89,20 +89,22 @@ export default function TopRatedEvent() {
             <Box>
               {TopRatedEvents?.map((event) => {
                 return (
-                  <SwiperSlide key={event.id}>
-                    <EventCard
-                      key={event.id}
-                      id={event.id}
-                      imageUrl={event.thumbnailUrl}
-                      name={event.name}
-                      isOnline={event.isOnline}
-                      startDate={event.startDate}
-                      startTime={event.startTime}
-                      customStyle={cardStyle}
-                      isLikedByCurrentUser={event.isLikedByCurrentUser}
-                      rating={event.rateAvg}
-                    />
-                  </SwiperSlide>
+                  event?.rateAvg?.average >= 0.5 && (
+                    <SwiperSlide key={event.id}>
+                      <EventCard
+                        key={event.id}
+                        id={event.id}
+                        imageUrl={event.thumbnailUrl}
+                        name={event.name}
+                        isOnline={event.isOnline}
+                        startDate={event.startDate}
+                        startTime={event.startTime}
+                        customStyle={cardStyle}
+                        isLikedByCurrentUser={event.isLikedByCurrentUser}
+                        rating={event.rateAvg}
+                      />
+                    </SwiperSlide>
+                  )
                 );
               })}
               {TopRatedLoading && (

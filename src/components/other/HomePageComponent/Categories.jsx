@@ -8,7 +8,7 @@ export default function Categories() {
     useGetAllCategories();
 
   const renderCategories = Categories?.map((c, index) => {
-    return <CategoriesCard key={index} name={c.name} />;
+    return <CategoriesCard key={index} name={c.name} id={c.id} />;
   });
 
   const scrollbarStyles = {

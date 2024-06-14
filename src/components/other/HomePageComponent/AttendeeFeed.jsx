@@ -73,29 +73,51 @@ export default function AttendeeFeed() {
         />
       </Grid>
 
-      <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
-        <Typography variant="h5" sx={{ fontWeight: "bold", marginRight: 2 }}>
-          Your Feed
-        </Typography>
-        <Box
-          display="flex"
-          justifyContent="center"
-          flexWrap="wrap"
-          mb={3}
-          mt={4}
-          sx={{
-            gap: 2,
-          }}
-        >
-          {renderFollowingEvents}
+      {FollowingEvents?.pages?.[0]?.data.length === 0 ? (
+        <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
+          <Typography variant="h5" sx={{ fontWeight: "bold", marginRight: 2 }}>
+            Your Feed
+          </Typography>
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            flexWrap="wrap"
+            height="40vh"
+            sx={{
+              gap: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ color: "gray" }}>
+              No events available at the moment.
+            </Typography>
+          </Box>
+        </Grid>
+      ) : (
+        <Grid component="section" width="100%" maxWidth="90%" m="auto" mt={4}>
+          <Typography variant="h5" sx={{ fontWeight: "bold", marginRight: 2 }}>
+            Your Feed
+          </Typography>
+          <Box
+            display="flex"
+            justifyContent="center"
+            flexWrap="wrap"
+            mb={3}
+            mt={4}
+            sx={{
+              gap: 2,
+            }}
+          >
+            {renderFollowingEvents}
 
-          {isFetchingNextPage &&
-            Array.from(new Array(8)).map((_, index) => (
-              <EventCardLoading key={index} customStyle={cardStyle} />
-            ))}
-          <div ref={ref}></div>
-        </Box>
-      </Grid>
+            {isFetchingNextPage &&
+              Array.from(new Array(8)).map((_, index) => (
+                <EventCardLoading key={index} customStyle={cardStyle} />
+              ))}
+            <div ref={ref}></div>
+          </Box>
+        </Grid>
+      )}
     </>
   );
 }

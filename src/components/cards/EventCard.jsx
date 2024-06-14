@@ -4,7 +4,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { Avatar, Box, Paper } from "@mui/material";
+import { Avatar, Box, Paper, Rating } from "@mui/material";
 import {
   ConfirmationNumberOutlined,
   ConfirmationNumberSharp,
@@ -119,21 +119,25 @@ const EventCard = React.memo(function EventCard({
         position: "relative",
       }}
     >
-      {rating && rating !== -1 && (
-        <Paper
+      {rating && (
+        <Box
           sx={{
             position: "absolute",
             top: 4,
             right: 4,
             display: "flex",
             alignItems: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.55)",
           }}
         >
-          <Typography variant="h6" component="span" ml={1}>
-            4.5
-          </Typography>
-          <StarRateRounded sx={{ color: "gold", fontSize: 40 }} />
-        </Paper>
+          <Rating
+            name="half-rating-read"
+            precision={0.5}
+            sx={{ p: 0.3 }}
+            value={rating?.average}
+            readOnly
+          />
+        </Box>
       )}
       <CardMedia
         component="img"

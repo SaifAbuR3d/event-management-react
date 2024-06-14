@@ -7,9 +7,12 @@ import Enter from "../../assets/images/CategoriesImage/Enter.jpeg";
 import Helth from "../../assets/images/CategoriesImage/Helth.jpeg";
 import sport from "../../assets/images/CategoriesImage/sport.jpeg";
 import Tech from "../../assets/images/CategoriesImage/Tech.jpeg";
+import { useNavigate } from "react-router-dom";
 
-export default function CategoriesCard({ name }) {
+export default function CategoriesCard({ name, id }) {
   const isFullScreen = useMediaQuery("(max-width: 700px)");
+
+  const navigate = useNavigate();
 
   const selectImage = (name) => {
     switch (name) {
@@ -43,12 +46,14 @@ export default function CategoriesCard({ name }) {
     >
       <Avatar
         src={selectImage(name)}
+        onClick={() => navigate(`/search?categoryId=${id}`)}
         sx={{
           width: isFullScreen ? "90px" : "130px",
           height: isFullScreen ? "90px" : "130px",
           border: "#bdbdbd solid 1px",
           mb: 2,
-          p: isFullScreen ? 2 :  4,
+          p: isFullScreen ? 2 : 4,
+          cursor: "pointer",
         }}
       />
       <Typography>{name}</Typography>
