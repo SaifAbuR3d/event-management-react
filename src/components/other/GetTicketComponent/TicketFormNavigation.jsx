@@ -1,5 +1,4 @@
 import { Box, Button, Typography, IconButton } from "@mui/material";
-import PropTypes from "prop-types";
 import { KeyboardArrowDownOutlined } from "@mui/icons-material";
 import { useState } from "react";
 import ShowOrderDialog from "./ShowOrderDialog";
@@ -59,7 +58,10 @@ export default function FormNavigation(props) {
         />
         <Button
           variant="contained"
-          disabled={props.isPenultimateStep && props.totalAmount === 0}
+          disabled={
+            (props.isPenultimateStep && props.totalAmount === 0) ||
+            props.submitPending
+          }
           type="submit"
           sx={{ p: 1, width: "150px" }}
         >
