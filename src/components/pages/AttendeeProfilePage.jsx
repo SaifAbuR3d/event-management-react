@@ -8,7 +8,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import FavorietesList from "../other/AttendeeProfileComponent/FavorietesList";
 import FollowingList from "../other/AttendeeProfileComponent/FollowingList";
@@ -16,20 +16,25 @@ import { Favorite, LocalActivity, People } from "@mui/icons-material";
 import UpcomingBookingsList from "../other/AttendeeProfileComponent/UpcomingBookingsList";
 import PreviousBookingsList from "../other/AttendeeProfileComponent/PreviousBookingsList";
 import { useGetAttendeeData } from "../../API/AttendeeProfileApi";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import MainLoding from "../looding/MainLoding";
 import ChangeViewAttendeeImage from "../other/AttendeeProfileComponent/CahngeViewAteendeeImage";
 import { useContext } from "react";
 import { UserContext } from "../../contexts/UserContext";
 
 export default function AttendeeProfilePage() {
-  const [value, setValue] = useState("1");
   const [alignment, setAlignment] = useState("upcoming");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const { isCurrentAttendee } = useContext(UserContext);
 
-  const handleChange = (event, newValue) => setValue(newValue);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const value = useMemo(() => searchParams.get("tabId") ?? "1", [searchParams]);
+
+  const handleChange = (event, newValue) => {
+    setSearchParams({ tabId: newValue }, { replace: true });
+  };
 
   const handleClickListItem = (event) => setAnchorEl(event.currentTarget);
 

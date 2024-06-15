@@ -121,12 +121,12 @@ export default function Navbar() {
   if (isAttendee()) {
     pages.push({
       name: "Likes",
-      path: `attendee-profile/${user?.userName}`,
+      path: `attendee-profile/${user?.userName}?tabId=1`,
       icon: <FavoriteBorder fontSize="small" />,
     });
     pages.push({
       name: "Tickets",
-      path: `attendee-profile/${user?.userName}`,
+      path: `attendee-profile/${user?.userName}?tabId=2`,
       icon: <ConfirmationNumberOutlined fontSize="small" />,
     });
   }

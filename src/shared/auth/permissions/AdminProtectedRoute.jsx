@@ -1,9 +1,8 @@
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function AdminProtectedRoute({ children }) {
   const { isAdmin } = useContext(UserContext);
-  const navigate = useNavigate();
-  return isAdmin() ? <>{children}</> : navigate("/");
+  return isAdmin() ? <>{children}</> : <Navigate to={"/"} />;
 }
