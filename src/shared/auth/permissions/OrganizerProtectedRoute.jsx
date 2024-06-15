@@ -1,10 +1,9 @@
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function OrganizerProtectedRoute({ children }) {
   const { isOrganizer } = useContext(UserContext);
-  const navigate = useNavigate();
 
-  return isOrganizer() ? <>{children}</> : navigate("/");
+  return isOrganizer() ? <>{children}</> : <Navigate to={"/"} />;
 }

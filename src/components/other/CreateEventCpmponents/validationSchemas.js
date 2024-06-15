@@ -61,7 +61,7 @@ export const validationSchemaStepOne = yup.object({
     .required("Start time is required")
     .typeError("Invalid date")
     .when(["startDate", "endDate"], {
-      is: (startDate, endDate) => !!startDate && !!endDate, // only apply the following test if all fields are truthy
+      is: (startDate, endDate) => !!startDate && !!endDate,
       then: () =>
         yup
           .date()
@@ -72,7 +72,7 @@ export const validationSchemaStepOne = yup.object({
               const { startDate, endDate } = this.parent;
 
               if (!value) {
-                return true; // skipping validation if endTime or startTime is not provided
+                return true;
               }
 
               const startDateString = startDate.toISOString().split("T")[0];
@@ -86,7 +86,7 @@ export const validationSchemaStepOne = yup.object({
               return true;
             }
           ),
-      otherwise: () => yup.date(), // If the condition is not met, just return the basic date validation
+      otherwise: () => yup.date(),
     }),
   endTime: yup
     .date()
@@ -94,7 +94,7 @@ export const validationSchemaStepOne = yup.object({
     .typeError("Invalid time")
     .when(["startDate", "endDate", "startTime"], {
       is: (startDate, endDate, startTime) =>
-        !!startDate && !!endDate && !!startTime, // only apply the following test if all fields are truthy
+        !!startDate && !!endDate && !!startTime,
       then: () =>
         yup
           .date()
@@ -105,7 +105,7 @@ export const validationSchemaStepOne = yup.object({
               const { startDate, endDate, startTime } = this.parent;
 
               if (!endTime || !startTime) {
-                return true; // skipping validation if endTime or startTime is not provided
+                return true;
               }
 
               const startDateString = startDate.toISOString().split("T")[0];
@@ -119,7 +119,7 @@ export const validationSchemaStepOne = yup.object({
               return true;
             }
           ),
-      otherwise: () => yup.date(), // If the condition is not met, just return the basic date validation
+      otherwise: () => yup.date(),
     }),
   categoryId: yup.number().required(" category type is required"),
 
