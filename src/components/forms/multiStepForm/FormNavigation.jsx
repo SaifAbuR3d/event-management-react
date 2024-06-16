@@ -1,6 +1,5 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Button } from "@mui/material";
-import PropTypes from "prop-types";
 export default function FormNavigation(props) {
   return (
     <Box
@@ -33,9 +32,3 @@ export default function FormNavigation(props) {
     </Box>
   );
 }
-
-// FormNavigation.propTypes = {
-//   hasPrevious: PropTypes.bool.isRequired,
-//   onBackClick: PropTypes.func.isRequired,
-//   isLastStep: PropTypes.bool.isRequired,
-// };
