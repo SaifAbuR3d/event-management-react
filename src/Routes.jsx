@@ -1,5 +1,5 @@
 import SignUp from "./shared/auth/register/SignUp";
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import SignUpAttendee from "./shared/auth/register/SignUpAttendee";
 import SignUpOrganizer from "./shared/auth/register/SignUpOrganizer";
 import RegisterContextProvider from "./shared/auth/context/Register";
@@ -76,15 +76,24 @@ export const Router = createBrowserRouter([
   },
   {
     path: "admin-dashboard",
-    element: <AdminLayout />,
+    element: (
+      <AdminProtectedRoute>
+        <AdminLayout />
+      </AdminProtectedRoute>
+    ),
     children: [
+      {
+        path: "",
+        element: <Navigate to="event-reports" />,
+        index: true,
+      },
       {
         path: "event-reports",
         element: <EventReportTable />,
       },
       {
         path: "review-reports",
-        element: <ReviewReportTable />
+        element: <ReviewReportTable />,
       },
       {
         path: "iv-request/attendee",
