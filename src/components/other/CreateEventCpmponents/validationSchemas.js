@@ -141,14 +141,11 @@ export const validationSchemaStepTwo = yup.object({
           .string()
           .required("Name is required")
           .min(3, "ticket name must be at least 3 characters"),
-
         price: yup.string().required("Price is required"),
-
         quantity: yup
           .number()
           .required("Quantity is required")
           .typeError("Quantity must be a number"),
-
         startSale: yup
           .date()
           .typeError("Invalid date")
@@ -156,27 +153,28 @@ export const validationSchemaStepTwo = yup.object({
           .min(
             dayjs().subtract(1, "day"),
             "Start Sale date must be in the future"
+          )
+          .min(
+            yup.ref("$startDate"),
+            "start Sale date must be after the main event start date"
           ),
-
         endSale: yup
           .date()
           .typeError("Invalid date")
-          .required("end Sale date is required")
+          .required("End Sale date is required")
           .min(
             dayjs().subtract(1, "day"),
             "End Sale date must be in the future"
           )
-          .min(yup.ref("startSale"), "end Sale date must be after start date"),
-
+          .min(yup.ref("startSale"), "End Sale date must be after start date"),
         startSaleTime: yup
           .date()
           .typeError("invalid time")
-          .required("time is required"),
-
+          .required("Time is required"),
         endSaleTime: yup
           .date()
           .typeError("invalid time")
-          .required("time is required"),
+          .required("Time is required"),
       })
     )
     .test(

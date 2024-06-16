@@ -5,7 +5,6 @@ import {
   Paper,
   Typography,
   useMediaQuery,
-  IconButton,
   Button,
 } from "@mui/material";
 import { useState } from "react";
