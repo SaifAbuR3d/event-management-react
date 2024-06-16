@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useGetReviewReports, useSetStatusSeen } from "../../../API/AdminApi";
-import ReportDialog from "./ReportDialog";
+import ReportDialog from "./ReviewReportDialog";
 import { FilterListSharp } from "@mui/icons-material";
 
 export default function ReviewReportTable() {
@@ -171,10 +171,10 @@ export default function ReviewReportTable() {
               </TableRow>
               <TableRow>
                 {[
+                  "Report Id",
                   "Event Id",
-                  "Event Name",
-                  "Attendee Name",
-                  "Organizer Name",
+                  "Reporter",
+                  "Review writer",
                   "Status",
                 ].map((x, index) => (
                   <TableCell key={index} align="center">
@@ -193,10 +193,10 @@ export default function ReviewReportTable() {
                   onClick={() => handleOpen(row)}
                   style={{ cursor: "pointer" }}
                 >
+                  <StyledTableCell content={row.id} />
                   <StyledTableCell content={row.eventId} />
-                  <StyledTableCell content={row.eventName} />
-                  <StyledTableCell content={row.attendeeUserName} />
-                  <StyledTableCell content={row.organizerUserName} />
+                  <StyledTableCell content={row.reportWriterUserName} />
+                  <StyledTableCell content={row.reviewWriterUserName} />
                   <TableCell align="center" sx={{ padding: "14px" }}>
                     <Button
                       sx={

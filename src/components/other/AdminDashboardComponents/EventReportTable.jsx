@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useGetEventReports, useSetStatusSeen } from "../../../API/AdminApi";
-import ReportDialog from "./ReportDialog";
+import ReportDialog from "./EventReportDialog";
 import { FilterListSharp } from "@mui/icons-material";
 
 export default function EventReportTable() {
