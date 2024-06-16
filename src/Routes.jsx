@@ -19,11 +19,15 @@ import EventDashboardLayout from "./components/layouts/EventDashboardLayout.jsx"
 import VerificationRequest from "./components/pages/VerificationRequestPage.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
+import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
+import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
 import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
+import SearchPage from "./components/pages/SearchPage.jsx";
 import EventReportTable from "./components/other/AdminDashboardComponents/EventReportTable.jsx";
 import ReviewReportTable from "./components/other/AdminDashboardComponents/ReviewReportTable.jsx";
+
 
 export const Router = createBrowserRouter([
   {
@@ -48,13 +52,21 @@ export const Router = createBrowserRouter([
       },
       {
         path: "events/create",
-        element: <CreateEvetnPage />,
+        element: (
+          <OrganizerProtectedRoute>
+            <CreateEvetnPage />
+          </OrganizerProtectedRoute>
+        ),
       },
       {
         path: "verification",
         element: <VerificationRequest />,
       },
     ],
+  },
+  {
+    path: "search",
+    element: <SearchPage />,
   },
   {
     path: "event-dashboard/:eventId",

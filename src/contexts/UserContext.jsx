@@ -28,6 +28,7 @@ export function UserContextProvider({ children }) {
       userName:
         tokenData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
       isVerified: tokenData["isVerified"],
+      userImage: tokenData["userImage"],
     });
   };
 
@@ -43,8 +44,9 @@ export function UserContextProvider({ children }) {
   const isAuthenticated = () => userToken != null;
   const isVerified = () => user?.isVerified == "True";
 
-  const isCurrentOrganizer = (userName) =>
-    isOrganizer() && user.userName == userName;
+  const isCurrentOrganizer = (userName = null, id = null) => {
+    return isOrganizer() && (user.userName === userName || user.id === id);
+  };
   const isCurrentAttendee = (userName) =>
     isAttendee() && user.userName == userName;
 

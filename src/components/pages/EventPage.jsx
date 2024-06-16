@@ -271,11 +271,9 @@ export default function EventPage() {
 
             <Paper elevation={0} sx={{ ml: 0, width: "95%", p: 2, mb: "30px" }}>
               <Typography
-                variant="h1"
+                variant="h3"
                 sx={{
-                  fontBold: "900",
                   textTransform: "capitalize",
-                  fontSize: "60px",
                 }}
               >
                 {data.name}
@@ -300,6 +298,16 @@ export default function EventPage() {
                     {page.reviews.map((review) => (
                       <ReviewCard key={review.id} data={review} />
                     ))}
+                    {reviewsData?.pages[0]?.reviews?.length == 0 && (
+                      <Typography
+                        variant="body2"
+                        fontWeight={"bold"}
+                        sx={{ mb: 1 }}
+                        color="initial"
+                      >
+                        {"There's No Review Yet"}
+                      </Typography>
+                    )}
                   </Fragment>
                 ))}
 

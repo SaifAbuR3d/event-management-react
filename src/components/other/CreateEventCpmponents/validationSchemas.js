@@ -12,6 +12,13 @@ function isValidFileType(fileName, fileType) {
   );
 }
 
+const tomorrow = dayjs()
+  .add(1, "day")
+  .hour(0)
+  .minute(0)
+  .second(0)
+  .millisecond(0);
+
 export const validationSchemaStepOne = yup.object({
   name: yup
     .string()
@@ -35,7 +42,7 @@ export const validationSchemaStepOne = yup.object({
     .required("Start date is required")
     .typeError("Invalid date")
     .min(
-      dayjs().add(1, "day"),
+      tomorrow,
       "Please set the start date to at least one day ahead of today."
     ),
 
@@ -44,33 +51,75 @@ export const validationSchemaStepOne = yup.object({
     .required("End date is required")
     .typeError("Invalid date")
     .min(
-      dayjs().add(1, "day"),
+      tomorrow,
       "Please set the start date to at least one day ahead of today."
     )
     .min(yup.ref("startDate"), "End date must be before start date"),
 
   startTime: yup
     .date()
+    .required("Start time is required")
     .typeError("Invalid date")
-    .required("Start time is required"),
+    .when(["startDate", "endDate"], {
+      is: (startDate, endDate) => !!startDate && !!endDate,
+      then: () =>
+        yup
+          .date()
+          .test(
+            "is-after-start-time-e",
+            "Start time must be after 24 hours",
+            function (value) {
+              const { startDate, endDate } = this.parent;
+
+              if (!value) {
+                return true;
+              }
+
+              const startDateString = startDate.toISOString().split("T")[0];
+              const endDateString = endDate.toISOString().split("T")[0];
+
+              if (startDateString === endDateString) {
+                return dayjs(value)
+                  .add(1, "day")
+                  .isAfter(dayjs().add(1, "day"));
+              }
+              return true;
+            }
+          ),
+      otherwise: () => yup.date(),
+    }),
   endTime: yup
     .date()
-    .typeError("Invalid date")
     .required("End time is required")
-    .when("startTime", (startTime, schema) => {
-      return (
-        startTime &&
-        schema.test({
-          name: "afterStart",
-          exclusive: true,
-          test: function (endTime) {
-            const { startTime } = this.parent;
-            if (!startTime || !endTime) return true;
-            return endTime > startTime;
-          },
-          message: "End time must be after start time and not equal to it",
-        })
-      );
+    .typeError("Invalid time")
+    .when(["startDate", "endDate", "startTime"], {
+      is: (startDate, endDate, startTime) =>
+        !!startDate && !!endDate && !!startTime,
+      then: () =>
+        yup
+          .date()
+          .test(
+            "is-after-start-time",
+            "End time must be after start time on the same day, or equal/greater on different days.",
+            function (endTime) {
+              const { startDate, endDate, startTime } = this.parent;
+
+              if (!endTime || !startTime) {
+                return true;
+              }
+
+              const startDateString = startDate.toISOString().split("T")[0];
+              const endDateString = endDate.toISOString().split("T")[0];
+              const startTimeString = startTime.toISOString();
+              const endTimeString = endTime.toISOString();
+
+              if (startDateString === endDateString) {
+                return new Date(endTimeString) > new Date(startTimeString);
+              }
+              return true;
+            }
+          ),
+      otherwise: () => yup.date(),
     }),
   categoryId: yup.number().required(" category type is required"),
 
@@ -92,14 +141,11 @@ export const validationSchemaStepTwo = yup.object({
           .string()
           .required("Name is required")
           .min(3, "ticket name must be at least 3 characters"),
-
         price: yup.string().required("Price is required"),
-
         quantity: yup
           .number()
           .required("Quantity is required")
           .typeError("Quantity must be a number"),
-
         startSale: yup
           .date()
           .typeError("Invalid date")
@@ -107,27 +153,28 @@ export const validationSchemaStepTwo = yup.object({
           .min(
             dayjs().subtract(1, "day"),
             "Start Sale date must be in the future"
+          )
+          .min(
+            yup.ref("$startDate"),
+            "start Sale date must be after the main event start date"
           ),
-
         endSale: yup
           .date()
           .typeError("Invalid date")
-          .required("end Sale date is required")
+          .required("End Sale date is required")
           .min(
             dayjs().subtract(1, "day"),
             "End Sale date must be in the future"
           )
-          .min(yup.ref("startSale"), "end Sale date must be after start date"),
-
+          .min(yup.ref("startSale"), "End Sale date must be after start date"),
         startSaleTime: yup
           .date()
           .typeError("invalid time")
-          .required("time is required"),
-
+          .required("Time is required"),
         endSaleTime: yup
           .date()
           .typeError("invalid time")
-          .required("time is required"),
+          .required("Time is required"),
       })
     )
     .test(

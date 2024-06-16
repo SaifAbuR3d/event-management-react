@@ -253,3 +253,16 @@ export function useIsFollowing(organizerId) {
     enabled: !!organizerId && isAttendee(),
   });
 }
+
+export function useGetOrganizerById(organizerId) {
+  return useQuery({
+    queryKey: ["organizerById", organizerId],
+    queryFn: async () => {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/Organizers/${organizerId}`
+      );
+      return data;
+    },
+    enabled: !!organizerId,
+  });
+}

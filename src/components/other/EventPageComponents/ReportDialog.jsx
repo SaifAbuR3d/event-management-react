@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -7,20 +7,25 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
-import { useReportEvent } from "../../../API/eventPageApi";
+import { useReportEvent, useReportReview } from "../../../API/eventPageApi";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Snackbar } from "@mui/material";
 
-export default function ReportDialog({ eventId, open, handleClose }) {
+export default function ReportDialog({ eventId, reviewId, open, handleClose }) {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [error, setError] = useState("");
   const initialValues = {
     content: "",
   };
 
-  const { mutateAsync, isPending } = useReportEvent();
+  const { mutateAsync: mutateReportEvent, isPending: pendingEvent } =
+    useReportEvent();
 
-  const handelMutateAsync = (requestData) => {
-    mutateAsync(requestData)
+  const { mutateAsync: mutateReportReview, isPending: pendingReview } =
+    useReportReview();
+
+  const handelEventMutateAsync = (MutateFun, requestData) => {
+    MutateFun(requestData)
       .then(() => {
         handleClose();
         setSnackbarOpen(true);
@@ -31,16 +36,19 @@ export default function ReportDialog({ eventId, open, handleClose }) {
       .catch((error) => setError(error?.response?.data?.detail));
   };
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-
   const formik = useFormik({
     initialValues,
     onSubmit: (values) => {
       const requestData = {
         eventId: parseInt(eventId),
+        ...(eventId && { eventId: parseInt(eventId) }),
+        ...(reviewId && { reviewId: parseInt(reviewId) }),
         content: values.content,
       };
-      handelMutateAsync(requestData);
+
+      eventId
+        ? handelEventMutateAsync(mutateReportEvent, requestData)
+        : handelEventMutateAsync(mutateReportReview, requestData);
     },
   });
 
@@ -54,7 +62,7 @@ export default function ReportDialog({ eventId, open, handleClose }) {
           component: "form",
         }}
       >
-        <DialogTitle>Report This Event</DialogTitle>
+        <DialogTitle>Report This {eventId ? "Event" : "Review"}</DialogTitle>
         <DialogContent>
           {!!error && (
             <Alert severity="error" sx={{ mb: 1 }}>
@@ -62,9 +70,9 @@ export default function ReportDialog({ eventId, open, handleClose }) {
             </Alert>
           )}
           <DialogContentText>
-            {
-              "Please help us investigate this event by providing information about why you're reporting it."
-            }
+            {`Please help us investigate this ${
+              eventId ? "Event" : "Review"
+            } by providing information about why you're reporting it.`}
           </DialogContentText>
           <TextField
             autoFocus
@@ -83,12 +91,16 @@ export default function ReportDialog({ eventId, open, handleClose }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <LoadingButton loading={isPending} type="submit">
+          <LoadingButton loading={pendingEvent || pendingReview} type="submit">
             Submit Report
           </LoadingButton>
         </DialogActions>
       </Dialog>
-      <Snackbar open={snackbarOpen} autoHideDuration={3000}>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        sx={{ zIndex: "1000000000000000000" }}
+      >
         <Alert severity="success" variant="standard" sx={{ width: "100%" }}>
           The report has been sent successfully
         </Alert>
