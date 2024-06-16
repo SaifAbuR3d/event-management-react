@@ -1,7 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, IconButton, Paper, Typography } from "@mui/material";
@@ -30,13 +29,13 @@ export default function ReportDialog({ open, handleClose, report }) {
         position="relative"
         width="100%"
       >
-        <Typography variant="h5">Report Details</Typography>
+        <Typography fontSize="28px">Report Details</Typography>
         <IconButton
           sx={{ position: "absolute", right: "5px", top: "5px" }}
           onClick={handleClose}
         >
           <Close fontSize="medium" />
-        </IconButton>{" "}
+        </IconButton>
       </DialogTitle>
       <DialogContent>
         <Box>
@@ -66,7 +65,7 @@ export default function ReportDialog({ open, handleClose, report }) {
           <Button
             variant="outlined"
             sx={{ ...cuctomStyle }}
-            onClick={() => navigate(`/profile/${report.organizerUserName}`)}
+            onClick={() => navigate(`/organizer-profile/${report.organizerUserName}`)}
           >
             View Organizer
           </Button>
@@ -74,7 +73,7 @@ export default function ReportDialog({ open, handleClose, report }) {
           <Button
             variant="outlined"
             sx={{ ...cuctomStyle }}
-            onClick={() => navigate(`/profile/${report.attendeeUserName}`)}
+            onClick={() => navigate(`/attendee-profile/${report.attendeeUserName}`)}
           >
             View Attendee
           </Button>

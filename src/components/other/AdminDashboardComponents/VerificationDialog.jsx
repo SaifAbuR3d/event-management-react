@@ -70,7 +70,7 @@ export default function VerificationDialog({ open, handleClose, request }) {
         position="relative"
         width="100%"
       >
-        <Typography variant="h5">Request Details</Typography>
+        <Typography fontSize="28px">Request Details</Typography>
         <IconButton
           sx={{ position: "absolute", right: "5px", top: "5px" }}
           onClick={handleClose}
