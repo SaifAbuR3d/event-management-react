@@ -55,6 +55,24 @@ export function useGetReviewReports(pageNumber, sortType, status) {
   });
 }
 
+export function useDeleteReview() {
+  const { userToken } = useContext(UserContext);
+  return useMutation({
+    mutationKey: ["DeleteReview"],
+    mutationFn: async (eventId, reviewId) => {
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/api/events/${eventId}/reviews/${reviewId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+      queryClient.invalidateQueries("ReviewReports");
+    },
+  });
+}
+
 export function useGetAllAttendees(pageNumber, sortType, status, eventId) {
   let queryString = `${
     import.meta.env.VITE_API_URL
