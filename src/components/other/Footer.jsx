@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Typography, Link, IconButton } from "@mui/material";
+import { Box, Typography, Link, IconButton, Avatar } from "@mui/material";
+import logo from "../../assets/images/logo1.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -13,36 +14,20 @@ export default function Footer() {
         py: 3,
         px: 2,
         mt: "auto",
-        backgroundColor: (theme) =>
-          theme.palette.mode === "light"
-            ? theme.palette.grey[200]
-            : theme.palette.grey[800],
+        backgroundColor: "#c5cae9",
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          © {new Date().getFullYear()} Your Company. All rights reserved.
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Avatar
+          src={logo}
+          variant="square"
+          sx={{ width: "130px", height: "130px" }}
+        />
+
+        <Typography mb={3} mt={3} variant="body1" color="text.secondary">
+          Home | Search
         </Typography>
-        <Box>
-          <Link
-            href="/privacy"
-            variant="body2"
-            color="text.secondary"
-            sx={{ mr: 2 }}
-          >
-            Privacy Policy
-          </Link>
-          <Link href="/terms" variant="body2" color="text.secondary">
-            Terms of Service
-          </Link>
-        </Box>
+
         <Box>
           <IconButton
             component="a"
@@ -77,6 +62,10 @@ export default function Footer() {
             <LinkedInIcon />
           </IconButton>
         </Box>
+
+        <Typography mt={3} variant="body2" color="text.secondary">
+          © {new Date().getFullYear()} Event Aura. All rights reserved.
+        </Typography>
       </Box>
     </Box>
   );
