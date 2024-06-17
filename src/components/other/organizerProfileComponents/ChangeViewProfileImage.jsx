@@ -131,7 +131,7 @@ export default function ChangeViewProfileImage({
   };
   const handleCloseChangeImage = () => setOpenChangeImage(false);
 
-  const currentOrganizer = isCurrentOrganizer(ownerData?.imageUrl);
+  const currentOrganizer = isCurrentOrganizer(ownerData?.userName);
 
   return (
     <Box>
