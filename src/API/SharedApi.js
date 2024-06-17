@@ -22,3 +22,12 @@ export function useSendVerificationRequest() {
     },
   });
 }
+
+export function useRegister(isAttendee) {
+  const url = `${import.meta.env.VITE_API_URL}/api/auth/${
+    isAttendee ? "register-attendee" : "register-organizer"
+  }`;
+  return useMutation({
+    mutationFn: async (formValues) => await axios.post(url, formValues),
+  });
+}

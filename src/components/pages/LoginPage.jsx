@@ -19,15 +19,14 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
-import Sideimage from "../../../assets/images/registerImges/Sideimage.jpg";
-import Sideimage1 from "../../../assets/images/registerImges/Sideimage1.jpg";
-import Sideimage2 from "../../../assets/images/registerImges/Sideimage2.jpg";
-import Sideimage3 from "../../../assets/images/registerImges/Sideimage3.jpg";
-import Sideimage4 from "../../../assets/images/registerImges/Sideimage4.jpg";
+import Sideimage from "../../assets/images/registerImges/Sideimage.jpg";
+import Sideimage1 from "../../assets/images/registerImges/Sideimage1.jpg";
+import Sideimage2 from "../../assets/images/registerImges/Sideimage2.jpg";
+import Sideimage3 from "../../assets/images/registerImges/Sideimage3.jpg";
+import Sideimage4 from "../../assets/images/registerImges/Sideimage4.jpg";
 
 import axios from "axios";
-
-import { UserContext } from "../../../contexts/UserContext.jsx";
+import { UserContext } from "../../contexts/UserContext";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -37,14 +36,12 @@ const validationSchema = yup.object().shape({
     .required("Password is required"),
 });
 
-export default function Login() {
+export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [randomSideImage, setRandomSideImage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { isAdmin, saveCurrentUser } = useContext(UserContext);
-
-  const navigate = useNavigate();
+  const { saveCurrentUser } = useContext(UserContext);
 
   // Choose Random Side Image*/
   const sideImages = [
@@ -197,22 +194,6 @@ export default function Login() {
               disabled={!formik.isValid}
             >
               Continue
-            </Button>
-
-            <Typography ml={"auto"} mr={"auto"}>
-              Or
-            </Typography>
-
-            {/*Google Button*/}
-            <Button
-              type="submit"
-              fullWidth
-              variant="outlined"
-              color="secondary"
-              sx={{ height: "7vh" }}
-              startIcon={<Google />}
-            >
-              Continue with google
             </Button>
           </Box>
         </Box>

@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { UserContext } from "../../../contexts/UserContext.jsx";
+import { UserContext } from "../contexts/UserContext";
 
-export default function ProtectedLogin({ children }) {
+export default function AuthenticationProtectedRoute({ children }) {
   const { isAuthenticated, isAdmin } = useContext(UserContext);
 
   if (isAdmin()) {
