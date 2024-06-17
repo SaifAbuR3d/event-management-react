@@ -1,10 +1,11 @@
 import React from "react";
-import { Box, Typography, Link, IconButton, Avatar } from "@mui/material";
+import { Box, Typography, IconButton, Avatar } from "@mui/material";
 import logo from "../../assets/images/logo1.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -25,7 +26,13 @@ export default function Footer() {
         />
 
         <Typography mb={3} mt={3} variant="body1" color="text.secondary">
-          Home | Search
+          <Link to={"/"} style={{ textDecoration: "none" }}>
+            Home
+          </Link>
+           {" | "} 
+          <Link to={"/search"} style={{ textDecoration: "none" }}>
+            Search
+          </Link>
         </Typography>
 
         <Box>
