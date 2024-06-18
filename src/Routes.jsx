@@ -1,8 +1,4 @@
-import SignUp from "./shared/auth/register/SignUp";
-import { Navigate, createBrowserRouter } from "react-router-dom";
-import SignUpAttendee from "./shared/auth/register/SignUpAttendee";
-import SignUpOrganizer from "./shared/auth/register/SignUpOrganizer";
-import RegisterContextProvider from "./shared/auth/context/Register";
+import { createBrowserRouter } from "react-router-dom";
 import Home from "./components/pages/HomePage";
 import AdminLayout from "./components/layouts/AdminLayout";
 import MainLayout from "./components/layouts/MainLayout";
@@ -10,8 +6,6 @@ import NotFoundPage from "./components/pages/NotFoundPage";
 import EventPage from "./components/pages/EventPage";
 import OrganizerProfile from "./components/pages/OrganizerProfilePage.jsx";
 import CreateEvetnPage from "./components/pages/CreateEvetnPage";
-import Login from "./shared/auth/login/Login.jsx";
-import ProtectedLogin from "./shared/auth/login/protectedLogin.jsx";
 import EventDashboardHome from "./components/pages/EventDashboard/views/EventDashboardHome.jsx";
 import AttendeeList from "./components/pages/EventDashboard/views/AttendeeList.jsx";
 import RegistrationRequest from "./components/pages/EventDashboard/views/RegistrationRequest.jsx";
@@ -19,15 +13,17 @@ import EventDashboardLayout from "./components/layouts/EventDashboardLayout.jsx"
 import VerificationRequest from "./components/pages/VerificationRequestPage.jsx";
 import AttendeeRequestTable from "./components/other/AdminDashboardComponents/AttendeeRequestTable.jsx";
 import OrganizerRequestsData from "./components/other/AdminDashboardComponents/OrganizerRequestsData.jsx";
-import AdminProtectedRoute from "./shared/auth/permissions/AdminProtectedRoute.jsx";
-import OrganizerProtectedRoute from "./shared/auth/permissions/OrganizerProtectedRoute.jsx";
 import AttendeeProfilePage from "./components/pages/AttendeeProfilePage.jsx";
 import AllAttendeesTable from "./components/other/AdminDashboardComponents/AllAttendeesTable.jsx";
 import AllOrganizersTable from "./components/other/AdminDashboardComponents/AllOrganizersTable.jsx";
 import SearchPage from "./components/pages/SearchPage.jsx";
 import EventReportTable from "./components/other/AdminDashboardComponents/EventReportTable.jsx";
 import ReviewReportTable from "./components/other/AdminDashboardComponents/ReviewReportTable.jsx";
-
+import AuthenticationProtectedRoute from "./permissions/AuthenticationProtectedRoute.jsx";
+import AdminProtectedRoute from "./permissions/AdminProtectedRoute.jsx";
+import OrganizerProtectedRoute from "./permissions/OrganizerProtectedRoute.jsx";
+import LoginPage from "./components/pages/LoginPage.jsx";
+import SignUpPage from "./components/pages/SignUpPage.jsx";
 
 export const Router = createBrowserRouter([
   {
@@ -128,35 +124,20 @@ export const Router = createBrowserRouter([
   {
     path: "register",
     element: (
-      <RegisterContextProvider>
-        <SignUp />
-      </RegisterContextProvider>
+      <AuthenticationProtectedRoute>
+        <SignUpPage />
+      </AuthenticationProtectedRoute>
     ),
   },
   {
     path: "login",
     element: (
-      <ProtectedLogin>
-        <Login />
-      </ProtectedLogin>
+      <AuthenticationProtectedRoute>
+        <LoginPage />
+      </AuthenticationProtectedRoute>
     ),
   },
-  {
-    path: "attendee",
-    element: (
-      <RegisterContextProvider>
-        <SignUpAttendee />
-      </RegisterContextProvider>
-    ),
-  },
-  {
-    path: "eventorganizer",
-    element: (
-      <RegisterContextProvider>
-        <SignUpOrganizer />
-      </RegisterContextProvider>
-    ),
-  },
+
   {
     path: "*",
     element: <NotFoundPage />,

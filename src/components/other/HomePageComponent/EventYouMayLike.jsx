@@ -1,15 +1,17 @@
-import React from "react";
+import { useState } from "react";
 import { useGetEventMayLike } from "../../../API/HomePageApi";
 import EventCard from "../../cards/EventCard";
-import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery, Button } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/bundle";
 import SwiperButton from "../EventPageComponents/SwiperButton";
 import EventCardLoading from "../../looding/EventCardLoading";
 import { useTheme } from "@emotion/react";
+import InterestDialog from "./InterestDialog";
 
 export default function EventYouMayLike() {
+  const [open, setOpen] = useState(false);
   const { data: EventMayLike, isLoading: MayLikeLoading } =
     useGetEventMayLike();
 
@@ -37,6 +39,13 @@ export default function EventYouMayLike() {
     mb: 1,
   };
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       {EventMayLike?.length === 0 ? (
@@ -54,9 +63,27 @@ export default function EventYouMayLike() {
               gap: 2,
             }}
           >
-            <Typography variant="h6" sx={{ color: "gray" }}>
-              No events available at the moment.
+            <Typography variant="h6" sx={{ color: "gray", m: 0 }}>
+              No events available at the moment. set your interests
+              <Button
+                variant="text"
+                onClick={handleOpen}
+                sx={{
+                  color: "inherit",
+                  textTransform: "none",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  p: 0,
+                  "&:hover": {
+                    bgcolor: "transparent",
+                    color: "#757ce8",
+                  },
+                }}
+              >
+                here
+              </Button>
             </Typography>
+            <InterestDialog open={open} handleClose={handleClose} />
           </Box>
         </Grid>
       ) : (
