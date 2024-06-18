@@ -8,6 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
 import { useChangeLinks } from "../../../API/organizerProfileApi";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
   const initialValues = {
@@ -19,6 +20,7 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
   };
 
   const { mutateAsync } = useChangeLinks(handleClose);
+  const { showSnackBar } = useSnackBar();
 
   const formik = useFormik({
     initialValues,
@@ -31,7 +33,9 @@ export default function SocialMediaLinkDialog({ open, handleClose, profile }) {
         instagram: formik.values.Instagram,
         website: formik.values.Website,
       };
-      await mutateAsync(requestData);
+      await mutateAsync(requestData).then(() => {
+        showSnackBar("Links updated successfully", "success");
+      });
     },
   });
 

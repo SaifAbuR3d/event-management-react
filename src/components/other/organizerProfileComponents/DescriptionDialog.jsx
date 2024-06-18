@@ -8,6 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useFormik } from "formik";
 import { useChangeBio } from "../../../API/organizerProfileApi";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function DescriptionDialog({ open, handleClose, profile }) {
   const initialValues = {
@@ -15,12 +16,15 @@ export default function DescriptionDialog({ open, handleClose, profile }) {
   };
 
   const { mutateAsync } = useChangeBio(handleClose);
+  const { showSnackBar } = useSnackBar();
 
   const formik = useFormik({
     initialValues,
     onSubmit: (values) => {
       const requestData = { ...profile, bio: values.newBio };
-      mutateAsync(requestData);
+      mutateAsync(requestData).then(() => {
+        showSnackBar("Bio updated successfully", "success");
+      });
     },
   });
 
