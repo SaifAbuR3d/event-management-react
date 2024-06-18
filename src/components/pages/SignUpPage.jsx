@@ -33,6 +33,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { LoadingButton } from "@mui/lab";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 
 export default function SignUpPage() {
   const [isAttendee, setIsAttendee] = useState(true);
@@ -86,8 +87,9 @@ export default function SignUpPage() {
     displayName: "",
   };
 
-  const { mutateAsync, isPending, isSuccess, isError, error } =
-    useRegister(isAttendee);
+  const { mutateAsync, isPending, isError, error } = useRegister(isAttendee);
+
+  const { showSnackBar } = useSnackBar();
 
   const onSubmit = (values, actions) => {
     if (isAttendee) {
@@ -98,14 +100,15 @@ export default function SignUpPage() {
     }
     mutateAsync(values).then(() => {
       actions.resetForm();
+      showSnackBar("Register completed successfully!", "success");
       navigate("/login");
     });
   };
 
   const validationSchema = yup.object().shape({
-    firstName: yup.string().required("First Name is required"),
-    lastName: yup.string().required("Last Name is required"),
-    userName: yup.string().required("User Name is required"),
+    firstName: yup.string().required("First Name is required").min(2).max(35),
+    lastName: yup.string().required("Last Name is required").min(2).max(35),
+    userName: yup.string().required("User Name is required").min(2).max(20),
     email: yup.string().email("Invalid email").required("Email is required"),
     password: yup
       .string()
@@ -119,7 +122,7 @@ export default function SignUpPage() {
           .date()
           .typeError("Invalid Date")
           .required("Date of Birth is required")
-          .max(dayjs("2006-6-17"), "Date of Birth must before 2006-6-17 ")
+          .max(dayjs("2006-6-17"), "Date of Birth must before 17-6-2006")
       : yup.date().optional().nullable(),
     displayName: isOrganizer
       ? yup.string().required("Display Name is required")
@@ -235,6 +238,17 @@ export default function SignUpPage() {
     });
   }
 
+  const handelErrors = () => {
+    if (error?.response?.data?.errors) {
+      return Object.values(error?.response?.data?.errors).map((error) => (
+        <p key={error}>{error[0]}</p>
+      ));
+    }
+    if (error?.response?.data?.detail) {
+      return <p>{error?.response?.data?.detail}</p>;
+    }
+  };
+
   const renderFields = fields.map((field, index) => {
     return (
       <TextField
@@ -273,11 +287,7 @@ export default function SignUpPage() {
 
           {isError && (
             <Alert variant="standard" severity="error" sx={{ mb: 2, mt: 2 }}>
-              {Object.values(error?.response?.data?.errors)?.map((item) => (
-                <Typography variant="body1" color="initial" key={item}>
-                  {item}
-                </Typography>
-              ))}
+              {handelErrors()}
             </Alert>
           )}
 

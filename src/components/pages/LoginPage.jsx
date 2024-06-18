@@ -12,9 +12,7 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
-import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
-
-import { useNavigate } from "react-router-dom";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -27,6 +25,7 @@ import Sideimage4 from "../../assets/images/registerImges/Sideimage4.jpg";
 
 import axios from "axios";
 import { UserContext } from "../../contexts/UserContext";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
