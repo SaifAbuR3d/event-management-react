@@ -1,7 +1,8 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useContext, useRef } from "react";
 import { UserContext } from "../contexts/UserContext";
+import { queryClient } from "../main";
 
 export function useGetAllCategories() {
   return useQuery({
@@ -48,9 +49,9 @@ export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
 }
 
 export function useGetEventMayLike() {
-  const { userToken } = useContext(UserContext);
+  const { userToken, user } = useContext(UserContext);
   return useQuery({
-    queryKey: ["eventMayLike"],
+    queryKey: ["eventMayLike", user?.id],
     queryFn: async () => {
       const { data: EventMayLike } = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/events/i-may-like`,
@@ -67,7 +68,7 @@ export function useGetEventMayLike() {
 
 export function useGetEventNearYou(lat, lon, distance, numberOfEvent) {
   return useQuery({
-    queryKey: ["eventNearYou"],
+    queryKey: ["eventNearYou", lat, lon],
     queryFn: async () => {
       const { data: EventNearYou } = await axios.get(
         `${
@@ -126,5 +127,27 @@ export function userGetAllFollowingEvents() {
     queryFn: fetchEventsWithFollowers,
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage.nextPage,
+  });
+}
+
+export function useSetInterests() {
+  const { userToken, user } = useContext(UserContext);
+  return useMutation({
+    mutationFn: (requestData) =>
+      axios.put(
+        `${import.meta.env.VITE_API_URL}/api/Attendees/my/interests`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["eventMayLike", user?.id],
+        exact: true,
+      });
+    },
   });
 }
