@@ -91,6 +91,11 @@ export const Router = createBrowserRouter([
     ),
     children: [
       {
+        path: "",
+        element: <Navigate to="event-reports" />,
+        index: true,
+      },
+      {
         path: "event-reports",
         element: <EventReportTable />,
       },

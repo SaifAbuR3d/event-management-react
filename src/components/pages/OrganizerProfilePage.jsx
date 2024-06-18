@@ -420,43 +420,45 @@ export default function OrganizerProfile() {
           gap={3}
         >
           {/*About Section*/}
-          <Grid
-            item
-            component={Paper}
-            elevation={1}
-            position="relative"
-            width="100%"
-            height={"fit-content"}
-          >
-            {/*Title (About)*/}
-            <Typography color="#283593" component="h1" variant="h4" p={2}>
-              About
-            </Typography>
+          {(currentOrganizer || bio !== "") && (
+            <Grid
+              item
+              component={Paper}
+              elevation={1}
+              position="relative"
+              width="100%"
+              height={"fit-content"}
+            >
+              {/*Title (About)*/}
+              <Typography color="#283593" component="h1" variant="h4" p={2}>
+                About
+              </Typography>
 
-            {/*About Section Content*/}
-            <Typography component="pre" pl={2} pb={2} whiteSpace="pre-wrap">
-              {bio}
-            </Typography>
+              {/*About Section Content*/}
+              <Typography component="pre" pl={2} pb={2} whiteSpace="pre-wrap">
+                {bio}
+              </Typography>
 
-            {/*Edit Icon Button*/}
-            {currentOrganizer && (
-              <IconButton
-                color="secondary"
-                onClick={handleBioClickOpen}
-                sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
-              >
-                <Edit />
-              </IconButton>
-            )}
+              {/*Edit Icon Button*/}
+              {currentOrganizer && (
+                <IconButton
+                  color="secondary"
+                  onClick={handleBioClickOpen}
+                  sx={{ position: "absolute", top: "0", right: "0", p: "1rem" }}
+                >
+                  <Edit />
+                </IconButton>
+              )}
 
-            {/*Description Dialog Component*/}
-            <DescriptionDialog
-              profile={profile}
-              open={openBioDialog}
-              handleClose={handleBioClose}
-            />
-          </Grid>
-
+              {/*Description Dialog Component*/}
+              <DescriptionDialog
+                profile={profile}
+                open={openBioDialog}
+                handleClose={handleBioClose}
+              />
+            </Grid>
+          )}
+          
           {/*Events Section*/}
           <Grid item component={Paper} elevation={1}>
             {/*Events Section Title */}
