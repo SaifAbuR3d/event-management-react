@@ -19,8 +19,10 @@ const SnackBarProvider = ({ children }) => {
 
   const handleClose = () => {
     setOpen(false);
-    setTypeColor("info"); // Reset to default after close
-    setVariant("standard");
+    setTimeout(() => {
+      setTypeColor("info"); // Reset to default after close
+      setVariant("standard");
+    }, "1000");
   };
 
   return (
