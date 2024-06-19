@@ -20,11 +20,13 @@ import {
 } from "../../../API/AdminApi";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function EditOrganizerDialog({ open, handleClose, user }) {
   const { data, isLoading } = useGetSpecificOrganizer(user?.userName);
   const { mutateAsync } = useChangeOrganizersData(user?.userName);
   const { mutateAsync: setPassword } = useSetNewPassword(user?.userName);
+  const { showSnackBar } = useSnackBar();
 
   const [initialValues, setInitialValues] = useState({
     displayName: "",
@@ -38,7 +40,13 @@ export default function EditOrganizerDialog({ open, handleClose, user }) {
     },
     onSubmit: async (values, { setSubmitting }) => {
       if (values.displayName !== initialValues.displayName) {
-        await mutateAsync({ displayName: values.displayName });
+        await mutateAsync({ displayName: values.displayName }).then(() => {
+          showSnackBar(
+            "Display name changed successfully!",
+            "success",
+            "filled"
+          );
+        });
         setInitialValues((prev) => ({
           ...prev,
           displayName: values.displayName,
@@ -66,7 +74,9 @@ export default function EditOrganizerDialog({ open, handleClose, user }) {
 
   const handlePasswordSubmit = async () => {
     if (isPasswordChanged) {
-      await setPassword(password);
+      await setPassword(password).then(() => {
+        showSnackBar("Password changed successfully!", "success", "filled");
+      });
       setIsPasswordChanged(false);
       setPasswordValue("");
     }

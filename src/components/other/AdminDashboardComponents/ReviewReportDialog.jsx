@@ -7,11 +7,13 @@ import { Box, IconButton, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Close, Height } from "@mui/icons-material";
 import { useDeleteReview } from "../../../API/AdminApi";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function ReportDialog({ open, handleClose, report }) {
   const navigate = useNavigate();
 
   const { mutateAsync, isPending } = useDeleteReview();
+  const { showSnackBar } = useSnackBar();
 
   const cuctomStyle = {
     width: "170px",
@@ -38,7 +40,9 @@ export default function ReportDialog({ open, handleClose, report }) {
   };
 
   const handleDeleteReview = async () => {
-    await mutateAsync(report?.eventId, report?.reviewId);
+    await mutateAsync(report?.eventId, report?.reviewId).then(() => {
+      showSnackBar("Review Deleted successfully", "success", "filled");
+    });
     handleClose();
   };
 

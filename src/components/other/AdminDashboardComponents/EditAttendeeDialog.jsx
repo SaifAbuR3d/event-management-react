@@ -21,11 +21,13 @@ import {
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function EditAttendeeDialog({ open, handleClose, user }) {
   const { data, isLoading } = useGetSpecificAttendee(user?.userName);
   const { mutateAsync } = useChangeAttendeeData(user?.userName);
   const { mutateAsync: setPassword } = useSetNewPassword(user?.userName);
+  const { showSnackBar } = useSnackBar();
 
   const [initialValues, setInitialValues] = useState({
     firstName: "",
@@ -41,11 +43,15 @@ export default function EditAttendeeDialog({ open, handleClose, user }) {
     },
     onSubmit: async (values, { setSubmitting }) => {
       if (values.firstName !== initialValues.firstName) {
-        await mutateAsync({ firstName: values.firstName });
+        await mutateAsync({ firstName: values.firstName }).then(() => {
+          showSnackBar("Data updated successfully", "success", "filled");
+        });
         setInitialValues((prev) => ({ ...prev, firstName: values.firstName }));
       }
       if (values.lastName !== initialValues.lastName) {
-        await mutateAsync({ lastName: values.lastName });
+        await mutateAsync({ lastName: values.lastName }).then(() => {
+          showSnackBar("Data updated successfully", "success", "filled");
+        });
         setInitialValues((prev) => ({ ...prev, lastName: values.lastName }));
       }
       setSubmitting(false);
@@ -72,7 +78,9 @@ export default function EditAttendeeDialog({ open, handleClose, user }) {
 
   const handlePasswordSubmit = async () => {
     if (isPasswordChanged) {
-      await setPassword(password);
+      await setPassword(password).then(() => {
+        showSnackBar("Password updated successfully", "success", "filled");
+      });
       setIsPasswordChanged(false);
       setPasswordValue("");
     }

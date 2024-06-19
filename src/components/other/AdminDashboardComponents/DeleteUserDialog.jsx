@@ -1,11 +1,9 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { Box, IconButton, Paper, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { IconButton, Typography } from "@mui/material";
 import { Close } from "@mui/icons-material";
 
 export default function DeleteUserDialog({ open, handleClose }) {
@@ -20,6 +18,7 @@ export default function DeleteUserDialog({ open, handleClose }) {
       boxShadow: "none",
     },
   };
+
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth={"xs"}>
       <DialogTitle
@@ -43,14 +42,14 @@ export default function DeleteUserDialog({ open, handleClose }) {
           justifyContent: "center",
           alignItems: "center",
           gap: 4,
-          mt:1
+          mt: 1,
         }}
       >
         <Typography variant="h6" align="center">
-          Are you sure you want to block this user?
+          Are you sure you want to ban this user?
         </Typography>
 
-        <Button sx={{ ...rejected }}>Block Anyway</Button>
+        <Button sx={{ ...rejected }}>ban Anyway</Button>
       </DialogContent>
     </Dialog>
   );
