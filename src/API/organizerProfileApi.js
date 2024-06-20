@@ -92,6 +92,7 @@ export function useGetProfileOwnerData(userName) {
   return useQuery({
     queryKey: ["profileOwnerData", userName],
     queryFn: () => getProfileOwnersData(userName),
+    enabled: !!userName,
   });
 }
 
