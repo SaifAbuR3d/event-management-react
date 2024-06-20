@@ -10,10 +10,12 @@ import { useFormik } from "formik";
 import { useReportEvent, useReportReview } from "../../../API/eventPageApi";
 import { LoadingButton } from "@mui/lab";
 import { Alert, Snackbar } from "@mui/material";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function ReportDialog({ eventId, reviewId, open, handleClose }) {
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [error, setError] = useState("");
+  const { showSnackBar } = useSnackBar();
+
   const initialValues = {
     content: "",
   };
@@ -28,10 +30,7 @@ export default function ReportDialog({ eventId, reviewId, open, handleClose }) {
     MutateFun(requestData)
       .then(() => {
         handleClose();
-        setSnackbarOpen(true);
-        setTimeout(() => {
-          setSnackbarOpen(false);
-        }, 3000);
+        showSnackBar("The report has been sent successfully", "success");
       })
       .catch((error) => setError(error?.response?.data?.detail));
   };
@@ -96,15 +95,6 @@ export default function ReportDialog({ eventId, reviewId, open, handleClose }) {
           </LoadingButton>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        sx={{ zIndex: "1000000000000000000" }}
-      >
-        <Alert severity="success" variant="standard" sx={{ width: "100%" }}>
-          The report has been sent successfully
-        </Alert>
-      </Snackbar>
     </>
   );
 }
