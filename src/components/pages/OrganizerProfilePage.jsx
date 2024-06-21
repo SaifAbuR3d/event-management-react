@@ -232,7 +232,7 @@ export default function OrganizerProfile() {
             elevation={1}
             onClick={handleClickListItem}
             alt="Profile Image"
-            src={`https://localhost:8080/${imageUrl}`}
+            src={`${import.meta.env.VITE_API_URL}/${imageUrl}`}
             sx={{
               width: {
                 xs: "185px",
@@ -458,7 +458,7 @@ export default function OrganizerProfile() {
               />
             </Grid>
           )}
-          
+
           {/*Events Section*/}
           <Grid item component={Paper} elevation={1}>
             {/*Events Section Title */}

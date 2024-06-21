@@ -6,7 +6,10 @@ import {
 } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
-import { useFollowRequest, useUnFollowRequest } from "../../API/organizerProfileApi";
+import {
+  useFollowRequest,
+  useUnFollowRequest,
+} from "../../API/organizerProfileApi";
 import { useState } from "react";
 import ShareCard from "./ShareCard";
 
@@ -19,7 +22,9 @@ export default function ProfileTitleCard({
   userName,
 }) {
   const [open, setOpen] = useState(false);
+  const location = `${window.location.protocol}//${window.location.host}`;
 
+  location;
   const handleOpen = () => {
     setOpen(true);
   };
@@ -103,7 +108,7 @@ export default function ProfileTitleCard({
         open={open}
         handleClose={handleClose}
         label={"Profile url"}
-        url={`http://localhost:3000/profile/${userName}`}
+        url={`${location}/profile/${userName}`}
       />
     </Box>
   );
