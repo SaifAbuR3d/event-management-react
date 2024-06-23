@@ -56,7 +56,6 @@ export default function VerificationRequest() {
       mutate(formData, {
         onSuccess: (data) => {
           setErrorMessage(null); // Reset error message on success
-          console.log("Form submitted successfully:", data);
         },
         onError: (error) => {
           setErrorMessage(error.response?.data?.detail || "An error occurred");

@@ -61,7 +61,9 @@ export function useDeleteReview() {
     mutationKey: ["DeleteReview"],
     mutationFn: async (eventId, reviewId) => {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/api/events/${eventId}/reviews/${reviewId}`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/events/${eventId}/reviews/${reviewId}`,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -337,5 +339,28 @@ export function useSetNewPassword(userName) {
     onSuccess: (data) => {
       queryClient.invalidateQueries(["attendeeFromAdmin", userName]);
     },
+  });
+}
+
+const fetchUserRole = async (userName) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/Attendees/${userName}`
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      throw new Error("Not Found");
+    }
+    throw error;
+  }
+};
+
+export function useUserRole(userName) {
+  return useQuery({
+    queryKey: ["userRole", userName],
+    queryFn: fetchUserRole,
+    retry: false,
+    enabled: !!userName,
   });
 }
