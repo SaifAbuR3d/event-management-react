@@ -6,12 +6,20 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Box, IconButton, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Close, Height } from "@mui/icons-material";
-import { useDeleteReview } from "../../../API/AdminApi";
+import { useDeleteReview, useUserRole } from "../../../API/AdminApi";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
+import { useEffect } from "react";
+import { useState } from "react";
 
 export default function ReportDialog({ open, handleClose, report }) {
   const navigate = useNavigate();
+  const [link, setLink] = useState("");
 
   const { mutateAsync, isPending } = useDeleteReview();
+
+  const { data, error, isLoading } = useUserRole(report?.reportWriterUserName);
+
+  const { showSnackBar } = useSnackBar();
 
   const cuctomStyle = {
     width: "170px",
@@ -37,8 +45,20 @@ export default function ReportDialog({ open, handleClose, report }) {
     },
   };
 
+  useEffect(() => {
+    if (!isLoading) {
+      if (error && error.message === "Not Found") {
+        setLink(`/attendee-profile/${report?.reportWriterUserName}`);
+      } else if (data) {
+        setLink(`/organizer-profile/${report?.reportWriterUserName}`);
+      }
+    }
+  }, [data, error, isLoading, report]);
+
   const handleDeleteReview = async () => {
-    await mutateAsync(report?.eventId, report?.reviewId);
+    await mutateAsync(report?.eventId, report?.reviewId).then(() => {
+      showSnackBar("Review Deleted successfully", "success", "filled");
+    });
     handleClose();
   };
 
@@ -75,7 +95,7 @@ export default function ReportDialog({ open, handleClose, report }) {
             <Button
               variant="outlined"
               sx={{ ...cuctomStyle }}
-              onClick={() => navigate(`/profile/${report.organizerUserName}`)}
+              onClick={() => navigate(link)}
             >
               Reporter Profile
             </Button>

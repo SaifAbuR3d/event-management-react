@@ -12,6 +12,7 @@ import { useChangeImageRequest } from "../../../API/organizerProfileApi";
 import { CloudUpload } from "@mui/icons-material";
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 function ViewImage({ open, handleClose, image }) {
   return (
@@ -47,6 +48,7 @@ const VisuallyHiddenInput = styled("input")({
 
 function ChangeImage({ open, handleClose }) {
   const { mutateAsync } = useChangeImageRequest(handleClose);
+  const { showSnackBar } = useSnackBar();
 
   const formik = useFormik({
     initialValues: { newImageUrl: null },
@@ -54,7 +56,9 @@ function ChangeImage({ open, handleClose }) {
       if (values.newImageUrl) {
         const formData = new FormData();
         formData.append("image", values.newImageUrl);
-        await mutateAsync(formData);
+        await mutateAsync(formData).then(() => {
+          showSnackBar("Profile image updated successfully", "success");
+        });
       }
     },
   });
@@ -115,7 +119,7 @@ export default function ChangeViewProfileImage({
 }) {
   const [openViewImage, setOpenViewImage] = React.useState(false);
 
-  const {isCurrentOrganizer} = useContext(UserContext);
+  const { isCurrentOrganizer } = useContext(UserContext);
 
   const handleOpenViewImage = () => {
     handleClose();

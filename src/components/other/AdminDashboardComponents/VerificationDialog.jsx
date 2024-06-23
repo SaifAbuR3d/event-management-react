@@ -13,6 +13,7 @@ import {
   GppBadOutlined,
 } from "@mui/icons-material";
 import { useSetApprove, useSetReject } from "../../../API/AdminApi";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function VerificationDialog({ open, handleClose, request }) {
   const [adminMessage, setAdminMessage] = useState("");
@@ -21,14 +22,19 @@ export default function VerificationDialog({ open, handleClose, request }) {
 
   const { mutateAsync: Approve } = useSetApprove(handleClose);
   const { mutateAsync: Reject } = useSetReject(handleClose);
+  const { showSnackBar } = useSnackBar();
 
   const handleApprove = async () => {
-    await Approve(request.id, adminMessage);
+    await Approve(request.id, adminMessage).then(() => {
+      showSnackBar("Request Approved", "success", "filled");
+    });
     setAdminMessage("");
   };
 
   const handleReject = async () => {
-    await Reject(request.id, adminMessage);
+    await Reject(request.id, adminMessage).then(() => {
+      showSnackBar("Request Rejected", "success", "filled");
+    });
     setAdminMessage("");
   };
 

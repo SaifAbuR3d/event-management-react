@@ -29,11 +29,14 @@ import MangedEventStep from "./MangedEventStep";
 import * as yup from "yup";
 import MainLoding from "../../looding/MainLoding";
 import { useGetRegRequestForEvent } from "../../../API/eventPageApi";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 export default function GetTicketDialog({ open, handleClose, data }) {
   const [orders, setOrders] = useState(new Map());
   const [total, setTotal] = useState(0);
   const [tickets, setTickets] = useState([]);
   const [selectedValue, setSelectedValue] = useState("");
+
+  const { showSnackBar } = useSnackBar();
 
   const isFullScreen = useMediaQuery("(max-width: 600px)");
 
@@ -178,6 +181,7 @@ export default function GetTicketDialog({ open, handleClose, data }) {
         exact: true,
       });
       handleCloseDialog();
+      showSnackBar("Your order has been sent successfully", "success");
     },
   });
 
