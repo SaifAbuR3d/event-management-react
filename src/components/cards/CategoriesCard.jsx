@@ -4,9 +4,12 @@ import Bus from "../../assets/images/CategoriesImage/Bus.jpeg";
 import Art from "../../assets/images/CategoriesImage/Art.jpeg";
 import Edu from "../../assets/images/CategoriesImage/Edu.jpeg";
 import Enter from "../../assets/images/CategoriesImage/Enter.jpeg";
-import Helth from "../../assets/images/CategoriesImage/Helth.jpeg";
-import sport from "../../assets/images/CategoriesImage/sport.jpeg";
+import Health from "../../assets/images/CategoriesImage/Health.jpeg";
+import Sport from "../../assets/images/CategoriesImage/Sport.jpeg";
 import Tech from "../../assets/images/CategoriesImage/Tech.jpeg";
+import Social from "../../assets/images/CategoriesImage/Social.jpeg";
+import Travel from "../../assets/images/CategoriesImage/Travel.jpeg";
+
 import { useNavigate } from "react-router-dom";
 
 export default function CategoriesCard({ name, id }) {
@@ -24,12 +27,16 @@ export default function CategoriesCard({ name, id }) {
         return Edu;
       case "Entertainment":
         return Enter;
-      case "Helth":
-        return Helth;
-      case "Sport":
-        return sport;
+      case "Health & Wellbeing":
+        return Health;
+      case "Sports & Fitness":
+        return Sport;
       case "Technology":
         return Tech;
+      case "Social Activities":
+        return Social;
+      case "Travel & Outdoor":
+        return Travel;
       default:
         return Bus;
     }

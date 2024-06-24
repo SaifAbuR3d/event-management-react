@@ -14,6 +14,16 @@ const defaultTheme = createTheme({
     navBarColor: {
       main: "#ffffff",
     },
+    navBarColorSecondary: {
+      main: "#f7f7fa",
+    },
+  },
+  typography: {
+    fontFamily: "DM Sans, sans-serif",
+    fontWeightLight: 400, // DM Sans Regular
+    fontWeightRegular: 500, // DM Sans Medium
+    fontWeightMedium: 500, // DM Sans Medium
+    fontWeightBold: 700, // DM Sans Bold
   },
 });
 

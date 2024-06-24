@@ -54,7 +54,7 @@ export default function TicketsPieChart({ PieChatData }) {
         <Tooltip />
       </PieChart>
       <Stack gap={2}>
-        <Typography variant="h6">Tikits</Typography>
+        <Typography variant="h6">Tickets</Typography>
         <Box sx={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
           {COLORS.map((color, i) => (
             <Stack key={color} alignItems="center" spacing={1}>

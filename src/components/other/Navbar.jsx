@@ -8,19 +8,20 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../../contexts/UserContext.jsx";
-import { Avatar, Stack } from "@mui/material";
+import { Avatar, ButtonBase, Stack } from "@mui/material";
 import {
   Add,
   ConfirmationNumberOutlined,
   Dashboard,
   FavoriteBorder,
+  VerifiedOutlined,
 } from "@mui/icons-material";
+import logo from "../../assets/images/logo/logo.svg";
 
 //--------------------- Search styles --------------------
 
@@ -80,33 +81,8 @@ export default function Navbar() {
     isAttendee,
     isAdmin,
     user,
+    isVerified,
   } = useContext(UserContext);
-
-  const settings = [
-    {
-      name: "Profile",
-      OnClick: () => {
-        navigate(
-          isOrganizer()
-            ? `organizer-profile/${user?.userName}`
-            : `attendee-profile/${user?.userName}`
-        );
-        handleCloseUserMenu();
-      },
-    },
-    {
-      name: "Log out",
-      OnClick: () => {
-        logout();
-        navigate("/login");
-        handleCloseUserMenu();
-      },
-    },
-  ];
-
-  if (isAdmin()) {
-    settings.shift();
-  }
 
   const pages = [];
 
@@ -139,6 +115,14 @@ export default function Navbar() {
     });
   }
 
+  if ((isAttendee() || isOrganizer()) && !isVerified()) {
+    pages.push({
+      name: "Verification",
+      path: "/verification",
+      icon: <VerifiedOutlined fontSize="small" />,
+    });
+  }
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -151,64 +135,76 @@ export default function Navbar() {
     removeCurrentUser();
   };
 
+  const { pathname } = useLocation();
+
   return (
-    <AppBar position="sticky" top="0" color="navBarColor">
+    <AppBar
+      position={pathname != "/search" ? "sticky" : "static"}
+      top="0"
+      color={pathname != "/search" ? "navBarColor" : "navBarColorSecondary"}
+    >
       <Toolbar sx={{ height: "0px" }}>
         {/*----------AdbIcon-------------*/}
-        <AdbIcon sx={{ display: { xs: "flex" }, mr: 1 }} />
-        {/*----------website name-------------*/}
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="#"
+
+        <ButtonBase
           sx={{
-            mr: 3,
-            display: { xs: "none", md: "flex" },
-            fontFamily: "monospace",
-            fontWeight: 700,
-            letterSpacing: ".3rem",
-            color: "#f05537",
-            textDecoration: "none",
+            display: { xs: "flex" },
+            mr: 4,
+            width: "100px",
+            height: "100px",
+            overflow: "hidden",
+            position: "relative",
+            cursor: "pointer",
           }}
+          onClick={() => navigate("/")}
         >
-          Eventbrite
-        </Typography>
+          <img
+            src={logo}
+            alt="logo"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              transform: "scale(1.5)",
+            }}
+          />
+        </ButtonBase>
 
         {/*---------search--------------*/}
         <Box
           sx={{
-            flexGrow: 0,
-            flexBasis: "70%",
+            flexGrow: 1,
+            // flexBasis: "75%",
             m: "auto",
           }}
         >
-          <Search
-            sx={{
-              borderRadius: 5,
-              bgcolor: "#f8f7fa",
-              border: "3px solid #dbdae3",
-              cursor: "pointer",
-            }}
-            onClick={() => navigate("/search")}
-          >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+          {pathname != "/" && pathname != "/search" && (
+            <Search
+              sx={{
+                borderRadius: 5,
+                bgcolor: "#f8f7fa",
+                border: "3px solid #dbdae3",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/search")}
+            >
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+          )}
         </Box>
 
         {/*---------pages (md)--------------*/}
         <Box
           sx={{
-            display: { xs: "none", md: "flex", gap: "10px" },
-            // ml: 3
-            ml: "auto",
-            mr: "15px",
+            display: { xs: "none", md: "flex" },
+            ml: 2,
+            gap: "5px",
           }}
         >
           {pages.map((page) => (
@@ -243,8 +239,8 @@ export default function Navbar() {
             </Button>
           ))}
         </Box>
-        {(isOrganizer() || isAttendee() || isAdmin()) && (
-          <Box sx={{ order: "2", flexGrow: 0, ml: 2 }}>
+        {isAuthenticated() && (
+          <Box sx={{ order: "2", flexGrow: 0, ml: 3 }}>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Avatar
                 alt=""
@@ -272,16 +268,40 @@ export default function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
+              <MenuItem
+                key={"profile"}
+                onClick={() => {
+                  navigate(
+                    isOrganizer()
+                      ? `organizer-profile/${user?.userName}`
+                      : `attendee-profile/${user?.userName}`
+                  );
+                  handleCloseUserMenu();
+                }}
+              >
+                <Typography textAlign="center">Profile</Typography>
+              </MenuItem>
               {pages.map((page, i) => (
-                <MenuItem key={i} onClick={() => navigate(page.path)}>
+                <MenuItem
+                  key={i}
+                  onClick={() => {
+                    navigate(page.path);
+                    handleCloseUserMenu();
+                  }}
+                >
                   <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
-              {settings.map((setting, index) => (
-                <MenuItem key={index} onClick={setting.OnClick}>
-                  <Typography textAlign="center">{setting.name}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem
+                key={"logout"}
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                  handleCloseUserMenu();
+                }}
+              >
+                <Typography textAlign="center">Log out</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         )}
@@ -303,8 +323,8 @@ export default function Navbar() {
                   display: "block",
                   borderRadius: 5,
                   p: 1,
-                  fontSize: "14px",
-                  fontWeight: "500",
+                  fontSize: "15px",
+                  fontWeight: "bold",
                   textTransform: "capitalize",
                   textWrap: "nowrap",
                 }}

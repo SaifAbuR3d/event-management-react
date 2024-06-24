@@ -15,7 +15,7 @@ import {
   StarRateRounded,
 } from "@mui/icons-material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ShareCard from "./ShareCard";
 import { UserContext } from "../../contexts/UserContext";
 import { useAddLike, useRemoveLike } from "../../API/eventPageApi";
@@ -40,13 +40,12 @@ const EventCard = React.memo(function EventCard({
 }) {
   const [open, setOpen] = useState(false);
   const [openTickets, setOpenTickets] = useState(false);
-
   const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
   const navigate = useNavigate();
   const { isOrganizer, isAuthenticated } = useContext(UserContext);
 
   const { mutateAsync: mutateLike, isPending: isPendingLike } = useAddLike(id);
-
+  const location = `${window.location.protocol}//${window.location.host}`;
   const formatNumber = (number) => {
     if (number >= 1000000) {
       return (number / 1000000).toFixed(1) + "M";
@@ -240,7 +239,7 @@ const EventCard = React.memo(function EventCard({
         open={open}
         handleClose={handleClose}
         label={"Event url"}
-        url={`http://localhost:3000/event/${id}`}
+        url={`${location}/event/${id}`}
       />
     </Card>
   );

@@ -164,8 +164,8 @@ export default function SearchPage() {
               }}
             >
               <Button
-                variant="outlined"
-                sx={{ flexBasis: { md: "100%", xs: "40%" } }}
+                variant="contained"
+                sx={{ flexBasis: { md: "80%", xs: "30%" } }}
                 endIcon={<Clear />}
                 onClick={handelClearChoices}
               >

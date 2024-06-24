@@ -105,7 +105,7 @@ export default function TitleAndSubtitleCard({
         )}
         {minAge && (
           <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-            Age : the Age Between {minAge} - {maxAge} is allowed
+            Age : Only Ages Between {minAge} - {maxAge} are allowed
           </Typography>
         )}
       </Box>

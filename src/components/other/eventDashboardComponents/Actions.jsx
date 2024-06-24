@@ -6,21 +6,44 @@ import {
   useRejectRegReq,
 } from "../../../API/eventDahboardApi";
 import { useParams } from "react-router-dom";
+import { useSnackBar } from "../../../contexts/SnackBarContext";
 
 export default function Actions({ params }) {
   const { eventId } = useParams();
-  const { mutateAsync: mutateApprove } = useApproveRegReq(eventId);
-  const { mutateAsync: mutateReject } = useRejectRegReq(eventId);
+  const { mutateAsync: mutateApprove, isPending: pendingApprove } =
+    useApproveRegReq(eventId);
+  const { mutateAsync: mutateReject, isPending: pendingReject } =
+    useRejectRegReq(eventId);
+  const { showSnackBar } = useSnackBar();
+
+  const handelApprove = (id) =>
+    mutateApprove(id).then(() =>
+      showSnackBar(
+        "You Are Approved this Attendee successfully!",
+        "success",
+        "filled"
+      )
+    );
+  const handelReject = (id) =>
+    mutateReject(id).then(() =>
+      showSnackBar(
+        "You Are Reject this Attendee successfully!",
+        "success",
+        "filled"
+      )
+    );
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center", gap: "20px" }}>
       <IconButton
         color="success"
         disabled={
           params?.row?.status === "Approved" ||
-          params?.row?.status === "Rejected"
+          params?.row?.status === "Rejected" ||
+          pendingApprove
         }
         onClick={() => {
-          mutateApprove(params.row.id);
+          handelApprove(params.row.id);
         }}
       >
         <Check />
@@ -28,11 +51,12 @@ export default function Actions({ params }) {
       <IconButton
         disabled={
           params?.row?.status === "Approved" ||
-          params?.row?.status === "Rejected"
+          params?.row?.status === "Rejected" ||
+          pendingReject
         }
         color="error"
         onClick={() => {
-          mutateReject(params.row.id);
+          handelReject(params.row.id);
         }}
       >
         <Clear />

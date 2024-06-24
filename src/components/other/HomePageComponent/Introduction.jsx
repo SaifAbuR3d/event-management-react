@@ -87,9 +87,9 @@ export default function Introduction() {
           <Typography
             sx={{ textShadow: "5px 7px 9px rgba(0, 0, 0, 0.9)" }}
             color="white"
-            fontSize={{ xs: "30px", sm: "45px", md: "70px", lg: "90px" }}
+            fontSize={{ xs: "25px", sm: "35px", md: "60px", lg: "70px" }}
           >
-            Event Aura
+            Event Connect
           </Typography>
           <Box
             height="30%"
@@ -101,7 +101,7 @@ export default function Introduction() {
           >
             {IsOrganizer ? (
               <Typography
-                sx={{ textShadow: "20px 900px 9px rgba(0, 0, 0, 0.9)" }}
+                sx={{ textShadow: "20px 10px 9px rgba(0, 0, 0, 0.9)" }}
                 color="white"
                 fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
                 align="center"
@@ -110,7 +110,7 @@ export default function Introduction() {
               </Typography>
             ) : (
               <Typography
-                sx={{ textShadow: "20px 900px 9px rgba(0, 0, 0, 0.9)" }}
+                sx={{ textShadow: "20px 10px 9px rgba(0, 0, 0, 0.9)" }}
                 color="white"
                 fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
                 align="center"
@@ -118,6 +118,7 @@ export default function Introduction() {
                 Find Your Next Event!
               </Typography>
             )}
+
             <Search
               sx={{
                 borderRadius: 5,

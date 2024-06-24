@@ -73,6 +73,8 @@ export default function EventPage() {
   const { mutateAsync: mutateDislike, isPending: isPendingDisLike } =
     useRemoveLike(eventId);
 
+  const location = `${window.location.protocol}//${window.location.host}`;
+
   const {
     data: reviewsData,
     fetchNextPage,
@@ -93,8 +95,6 @@ export default function EventPage() {
       />
     );
   }
-
-  console.log(data);
 
   const handelMainDateTime = () => {
     const startDate = new Date(`${data.startDate}T${data.startTime}z`);
@@ -258,7 +258,7 @@ export default function EventPage() {
               <ShareCard
                 open={open}
                 handleClose={handleCloseShareDialog}
-                url={`http://localhost:3000/event/${eventId}`}
+                url={`${location}/event/${eventId}`}
                 label={"Event URL"}
               />
             </Box>
