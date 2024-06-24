@@ -37,11 +37,11 @@ const Search = ({ provider, latSetValue, lonSetValue }) => {
   return null;
 };
 
-export default function MapComponent({ name }) {
-  const [, , { setValue: latSetValue }] = useField("lat");
-  const [, , { setValue: lonSetValue }] = useField("lon");
+export default function MapComponent() {
+  const [{ value: latValue }, , { setValue: latSetValue }] = useField("lat");
+  const [{ value: lonValue }, , { setValue: lonSetValue }] = useField("lon");
   const [defaultPosition, setDefaultPosition] = useState([
-    31.900144, 35.206644,
+    31.90359838023908, 35.2035646215093,
   ]);
 
   useEffect(() => {
@@ -50,8 +50,6 @@ export default function MapComponent({ name }) {
         (position) => {
           const { latitude, longitude } = position.coords;
           setDefaultPosition([latitude, longitude]);
-          latSetValue(latitude); // Set initial latitude
-          lonSetValue(longitude); // Set initial longitude
         },
         (error) => {
           console.error("Error getting location:", error);
@@ -73,7 +71,12 @@ export default function MapComponent({ name }) {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <LocationMarker latSetValue={latSetValue} lonSetValue={lonSetValue} />
+      <LocationMarker
+        latSetValue={latSetValue}
+        lonSetValue={lonSetValue}
+        latValue={latValue}
+        lonValue={lonValue}
+      />
       <Search
         provider={new OpenStreetMapProvider()}
         latSetValue={latSetValue}
@@ -83,10 +86,11 @@ export default function MapComponent({ name }) {
   );
 }
 
-function LocationMarker({ latSetValue, lonSetValue }) {
+function LocationMarker({ latSetValue, lonSetValue, latValue, lonValue }) {
   const map = useMap();
-  const [position, setPosition] = useState(null);
-
+  const [position, setPosition] = useState(
+    { lat: latValue, lng: lonValue } || null
+  );
   map.on("click", (e) => {
     setPosition(e.latlng);
     latSetValue(e.latlng.lat);
