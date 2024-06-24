@@ -302,14 +302,14 @@ export default function CreateEvetnPage() {
             </FormStep>
 
             <FormStep
-              stepName={"Event Tikits"}
+              stepName={"Event Tickets"}
               onSubmit={() => console.log("step 2 is submit")}
               validationSchema={validationSchemaStepTwo}
             >
               <TicketsFieldArray name="tickets" />
             </FormStep>
             <FormStep
-              stepName={"Event restrictions"}
+              stepName={"Event Restrictions"}
               onSubmit={() => console.log("step 3 is submit")}
               validationSchema={validationSchemaStepThree}
             >
