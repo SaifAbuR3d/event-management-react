@@ -55,14 +55,14 @@ export const Router = createBrowserRouter([
         ),
       },
       {
+        path: "search",
+        element: <SearchPage />,
+      },
+      {
         path: "verification",
         element: <VerificationRequest />,
       },
     ],
-  },
-  {
-    path: "search",
-    element: <SearchPage />,
   },
   {
     path: "event-dashboard/:eventId",

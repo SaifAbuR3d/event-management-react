@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 
 function handleClick(event) {
   event.preventDefault();
-  console.info("You clicked a breadcrumb.");
 }
 
 export default function BreadcrumbHome() {

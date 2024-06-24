@@ -70,7 +70,6 @@ export default function AllOrganizersTable() {
 
   const { Organizers, totalPages } = data || {};
 
-  console.log(Organizers);
   const StyledTableCell = ({ content, style }) => (
     <TableCell align="center" sx={{ padding: "14px", ...style }}>
       <Typography fontWeight={400}>{content}</Typography>
