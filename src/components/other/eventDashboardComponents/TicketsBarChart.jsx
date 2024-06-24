@@ -13,9 +13,9 @@ export default function TicketsBarChart({ barChartData }) {
   const data = barChartData.map((ticket) => {
     return {
       name: ticket.name,
-      "revenue $": ticket.revenue,
-      "sold Tickets": ticket.soldTickets,
-      "total Quantity": ticket.totalQuantity,
+      "Revenue $": ticket.revenue,
+      "Sold Tickets": ticket.soldTickets,
+      "Total Quantity": ticket.totalQuantity,
     };
   });
 
@@ -36,9 +36,9 @@ export default function TicketsBarChart({ barChartData }) {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="sold Tickets" stackId="a" fill="#8884d8" />
-          <Bar dataKey="total Quantity" stackId="a" fill="#82ca9d" />
-          <Bar dataKey="revenue $" fill="#ffc658" />
+          <Bar dataKey="Sold Tickets" stackId="a" fill="#8884d8" />
+          <Bar dataKey="Total Quantity" stackId="a" fill="#82ca9d" />
+          <Bar dataKey="Revenue $" fill="#ffc658" />
         </BarChart>
       </ResponsiveContainer>
     </div>

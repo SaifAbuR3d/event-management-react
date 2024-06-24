@@ -87,9 +87,9 @@ export default function Introduction() {
           <Typography
             sx={{ textShadow: "5px 7px 9px rgba(0, 0, 0, 0.9)" }}
             color="white"
-            fontSize={{ xs: "30px", sm: "45px", md: "70px", lg: "90px" }}
+            fontSize={{ xs: "25px", sm: "35px", md: "60px", lg: "70px" }}
           >
-            Event Aura
+            Event Connect
           </Typography>
           <Box
             height="30%"
