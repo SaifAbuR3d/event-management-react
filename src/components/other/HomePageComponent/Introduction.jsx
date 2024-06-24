@@ -101,7 +101,7 @@ export default function Introduction() {
           >
             {IsOrganizer ? (
               <Typography
-                sx={{ textShadow: "20px 900px 9px rgba(0, 0, 0, 0.9)" }}
+                sx={{ textShadow: "20px 10px 9px rgba(0, 0, 0, 0.9)" }}
                 color="white"
                 fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
                 align="center"
@@ -110,7 +110,7 @@ export default function Introduction() {
               </Typography>
             ) : (
               <Typography
-                sx={{ textShadow: "20px 900px 9px rgba(0, 0, 0, 0.9)" }}
+                sx={{ textShadow: "20px 10px 9px rgba(0, 0, 0, 0.9)" }}
                 color="white"
                 fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
                 align="center"
