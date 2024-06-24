@@ -119,7 +119,7 @@ export default function OrganizedByCard({ organizer }) {
               }
             />
             <Box>
-              <StyledLink to={`/profile/${userName}`}>{displayName}</StyledLink>
+              <StyledLink to={`/organizer-profile/${userName}`}>{displayName}</StyledLink>
               <Typography
                 variant="body1"
                 color="initial"

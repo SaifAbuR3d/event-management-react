@@ -19,7 +19,7 @@ export default function Actions({ params }) {
   const handelApprove = (id) =>
     mutateApprove(id).then(() =>
       showSnackBar(
-        "You Are Approved this Attendee successfully!",
+        "You Have Approved Attendee Request Successfully!",
         "success",
         "filled"
       )
@@ -27,7 +27,7 @@ export default function Actions({ params }) {
   const handelReject = (id) =>
     mutateReject(id).then(() =>
       showSnackBar(
-        "You Are Reject this Attendee successfully!",
+        "You Have Rejected Attendee Request Successfully!",
         "success",
         "filled"
       )
