@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, IconButton, Avatar } from "@mui/material";
-import logo from "../../assets/images/logo1.png";
+import logo from "../../assets/images/logo/logo.svg";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import InstagramIcon from "@mui/icons-material/Instagram";
@@ -29,7 +29,7 @@ export default function Footer() {
           <Link to={"/"} style={{ textDecoration: "none" }}>
             Home
           </Link>
-           {" | "} 
+          {" | "}
           <Link to={"/search"} style={{ textDecoration: "none" }}>
             Search
           </Link>

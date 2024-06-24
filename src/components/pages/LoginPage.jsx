@@ -26,6 +26,7 @@ import Sideimage4 from "../../assets/images/registerImges/Sideimage4.jpg";
 import axios from "axios";
 import { UserContext } from "../../contexts/UserContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
+import { LoadingButton } from "@mui/lab";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -39,6 +40,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [randomSideImage, setRandomSideImage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { saveCurrentUser } = useContext(UserContext);
 
@@ -68,12 +70,12 @@ export default function LoginPage() {
   };
 
   const onSubmit = async (values) => {
+    setLoading(true);
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/auth/login`,
         values
       );
-
       saveCurrentUser(data.token);
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -87,6 +89,8 @@ export default function LoginPage() {
       } else {
         setErrorMessage("An error occurred. Please try again later.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,9 +187,10 @@ export default function LoginPage() {
             {renderFields}
 
             {/*Continue button*/}
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
+              loading={loading}
               variant="contained"
               color="secondary"
               sx={{ height: "7vh", mt: "2vh" }}
@@ -193,7 +198,7 @@ export default function LoginPage() {
               disabled={!formik.isValid}
             >
               Continue
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
 

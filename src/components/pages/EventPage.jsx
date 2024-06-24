@@ -96,8 +96,6 @@ export default function EventPage() {
     );
   }
 
-  console.log(data);
-
   const handelMainDateTime = () => {
     const startDate = new Date(`${data.startDate}T${data.startTime}z`);
     const endDate = new Date(`${data.endDate}T${data.endTime}z`);

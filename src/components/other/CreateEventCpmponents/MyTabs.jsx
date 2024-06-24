@@ -34,7 +34,6 @@ export default function MyTabs() {
 
     newValue == 1 ? helpers.setValue(true) : helpers.setValue(false);
   };
-  //   console.log(meta);
 
   return (
     <div>

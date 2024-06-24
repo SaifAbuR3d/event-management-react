@@ -7,12 +7,14 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ReportDialog from "./ReportDialog";
+import { UserContext } from "../../../contexts/UserContext";
 
 export default function ReviewCard({ data }) {
   const { id, attendeeName, comment, rating } = data;
   const [openReportDialog, setOpenReportDialog] = useState(false);
+  const { isAttendee } = useContext(UserContext);
 
   const handleOpenReportDialog = () => setOpenReportDialog(true);
   const handleCloseReportDialog = () => setOpenReportDialog(false);
@@ -50,11 +52,13 @@ export default function ReviewCard({ data }) {
           >
             {attendeeName}
           </Typography>
-          <Box className="reportButton" sx={{ visibility: "hidden" }}>
-            <IconButton onClick={handleOpenReportDialog}>
-              <Report />
-            </IconButton>
-          </Box>
+          {isAttendee() && (
+            <Box className="reportButton" sx={{ visibility: "hidden" }}>
+              <IconButton onClick={handleOpenReportDialog}>
+                <Report />
+              </IconButton>
+            </Box>
+          )}
         </Box>
         <Rating name="read-only" value={rating} readOnly />
         <Typography variant="body1" color="initial">
