@@ -118,6 +118,7 @@ export default function Introduction() {
                 Find Your Next Event!
               </Typography>
             )}
+
             <Search
               sx={{
                 borderRadius: 5,
