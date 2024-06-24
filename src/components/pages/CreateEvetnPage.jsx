@@ -23,6 +23,7 @@ import Alert from "@mui/material/Alert";
 import { useState } from "react";
 import MainLoding from "../looding/MainLoding";
 import { useNavigate } from "react-router-dom";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 
 const MainBox = styled("div")(({ theme }) =>
   theme.unstable_sx({
@@ -47,12 +48,14 @@ export default function CreateEvetnPage() {
   const [isManged, setIsManged] = useState(false);
   const navigate = useNavigate();
   const { data, isLoading } = useGetCategories();
+  const { showSnackBar } = useSnackBar();
 
   const { mutateAsync, isPending, isError, error } = useCreateEvent();
 
   const handelMutateAsync = (values) => {
     mutateAsync(values).then(({ eventId }) => {
-      setTimeout(() => navigate(`/event/${eventId}`));
+      showSnackBar("Yor Event Created successfully", "success");
+      navigate(`/event/${eventId}`);
     });
   };
 

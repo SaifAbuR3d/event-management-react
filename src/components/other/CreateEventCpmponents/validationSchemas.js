@@ -78,7 +78,10 @@ export const validationSchemaStepOne = yup.object({
               const startDateString = startDate.toISOString().split("T")[0];
               const endDateString = endDate.toISOString().split("T")[0];
 
-              if (startDateString === endDateString) {
+              if (
+                startDateString === endDateString &&
+                dayjs(startDate).get("day") == tomorrow.get("day")
+              ) {
                 return dayjs(value)
                   .add(1, "day")
                   .isAfter(dayjs().add(1, "day"));
@@ -153,10 +156,6 @@ export const validationSchemaStepTwo = yup.object({
           .min(
             dayjs().subtract(1, "day"),
             "Start Sale date must be in the future"
-          )
-          .min(
-            yup.ref("$startDate"),
-            "start Sale date must be after the main event start date"
           ),
         endSale: yup
           .date()
@@ -166,7 +165,7 @@ export const validationSchemaStepTwo = yup.object({
             dayjs().subtract(1, "day"),
             "End Sale date must be in the future"
           )
-          .min(yup.ref("startSale"), "End Sale date must be after start date"),
+          .min(yup.ref("startSale"), "End Sale date must be after start sale"),
         startSaleTime: yup
           .date()
           .typeError("invalid time")
