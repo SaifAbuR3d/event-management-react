@@ -105,7 +105,7 @@ export default function VerificationDialog({ open, handleClose, request }) {
             variant="outlined"
             startIcon={<AccountCircleOutlined />}
             sx={{ ...customStyle }}
-            onClick={() => navigate(`/profile/${request.userName}`)}
+            onClick={() => navigate(`/attendee-profile/${request.userName}`)}
           >
             View Profile
           </Button>
