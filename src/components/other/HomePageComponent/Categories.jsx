@@ -2,6 +2,7 @@ import React from "react";
 import { useGetAllCategories } from "../../../API/HomePageApi";
 import CategoriesCard from "../../cards/CategoriesCard";
 import { Box, Grid } from "@mui/material";
+import CategoryCardLoading from "../../looding/CategoryCardLoading";
 
 export default function Categories() {
   const { data: Categories, isLoading: CategoryLoading } =
@@ -44,6 +45,14 @@ export default function Categories() {
         sx={{ overflowX: "auto", whiteSpace: "nowrap", ...scrollbarStyles }}
       >
         {renderCategories}
+
+        {CategoryLoading && (
+          <Box display="flex" gap={4}>
+            {Array.from(new Array(7)).map((_, index) => (
+              <CategoryCardLoading key={index} />
+            ))}
+          </Box>
+        )}
       </Box>
     </Grid>
   );
