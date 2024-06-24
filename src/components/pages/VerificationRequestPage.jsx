@@ -9,10 +9,11 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSendVerificationRequest } from "../../API/SharedApi";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,6 +28,7 @@ const VisuallyHiddenInput = styled("input")({
 export default function VerificationRequest() {
   const { mutate } = useSendVerificationRequest();
   const [errorMessage, setErrorMessage] = useState(null);
+  const { showSnackBar } = useSnackBar();
 
   const formik = useFormik({
     initialValues: {
@@ -55,6 +57,7 @@ export default function VerificationRequest() {
 
       mutate(formData, {
         onSuccess: (data) => {
+          showSnackBar("Request sent successfully", "success");
           setErrorMessage(null); // Reset error message on success
         },
         onError: (error) => {
