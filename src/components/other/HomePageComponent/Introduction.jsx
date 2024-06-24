@@ -6,9 +6,14 @@ import { styled } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../../../contexts/UserContext";
 
 export default function Introduction() {
   const navigate = useNavigate();
+  const { isOrganizer } = useContext(UserContext);
+
+  const IsOrganizer = isOrganizer();
 
   const Search = styled("div")(({ theme }) => ({
     position: "relative",
@@ -48,7 +53,7 @@ export default function Introduction() {
     fontSize: "20px",
     cursor: "pointer",
   }));
-  
+
   return (
     <Grid component="section" width="100%">
       <Box
@@ -94,14 +99,26 @@ export default function Introduction() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography
-              sx={{ textShadow: "20px 10px 9px rgba(0, 0, 0, 0.9)" }}
-              color="white"
-              fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
-              align="center"
-            >
-              Start planning your dream event with Event Aura today!
-            </Typography>
+            {IsOrganizer ? (
+              <Typography
+                sx={{ textShadow: "20px 900px 9px rgba(0, 0, 0, 0.9)" }}
+                color="white"
+                fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
+                align="center"
+              >
+                Start planning your dream event with Event Aura today!
+              </Typography>
+            ) : (
+              <Typography
+                sx={{ textShadow: "20px 900px 9px rgba(0, 0, 0, 0.9)" }}
+                color="white"
+                fontSize={{ xs: "11px", sm: "15px", md: "19px", lg: "23px" }}
+                align="center"
+              >
+                Find Your Next Event!
+              </Typography>
+            )}
+
             <Search
               sx={{
                 borderRadius: 5,
