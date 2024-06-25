@@ -489,6 +489,7 @@ export default function EventPage() {
                             md: "24vw",
                             lg: "14vw",
                           },
+                          mb:1
                         }}
                       />
                     </SwiperSlide>

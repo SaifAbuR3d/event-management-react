@@ -24,13 +24,19 @@ const useGetRate = async (eventId) => {
 };
 
 export function useGetTopRatedEvents(numberOfDays, numberOfEvents) {
+  const { userToken } = useContext(UserContext);
   return useQuery({
     queryKey: ["topRatedEvents"],
     queryFn: async () => {
       const { data: TopRatedEvents } = await axios.get(
         `${
           import.meta.env.VITE_API_URL
-        }/api/events/most-rated?days=${numberOfDays}&numberOfEvents=${numberOfEvents}`
+        }/api/events/most-rated?days=${numberOfDays}&numberOfEvents=${numberOfEvents}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
       );
 
       const eventsWithRate = await Promise.all(
@@ -67,13 +73,20 @@ export function useGetEventMayLike() {
 }
 
 export function useGetEventNearYou(lat, lon, distance, numberOfEvent) {
+  const { userToken } = useContext(UserContext);
+
   return useQuery({
     queryKey: ["eventNearYou", lat, lon],
     queryFn: async () => {
       const { data: EventNearYou } = await axios.get(
         `${
           import.meta.env.VITE_API_URL
-        }/api/events/near?Latitude=${lat}&Longitude=${lon}&MaximumDistanceInKM=${distance}&NumberOfEvents=${numberOfEvent}`
+        }/api/events/near?Latitude=${lat}&Longitude=${lon}&MaximumDistanceInKM=${distance}&NumberOfEvents=${numberOfEvent}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
       );
       return EventNearYou;
     },

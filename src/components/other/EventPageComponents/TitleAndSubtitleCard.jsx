@@ -28,6 +28,11 @@ let DefaultIcon = Leaflet.icon({
 
 Leaflet.Marker.prototype.options.icon = DefaultIcon;
 
+const isRTL = (text) => {
+  const rtlChar = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+  return rtlChar.test(text);
+};
+
 export default function TitleAndSubtitleCard({
   title,
   subtitle,
@@ -40,6 +45,8 @@ export default function TitleAndSubtitleCard({
   const handleChange = () => {
     setExpanded((prevExpanded) => !prevExpanded);
   };
+
+  const textAlign = isRTL(subtitle) ? "right" : "left";
 
   const handelLocation = () => (
     <Box>
@@ -143,9 +150,10 @@ export default function TitleAndSubtitleCard({
             handelRestriction()
           ) : (
             <Typography
+              variant="h6"
+              align={textAlign}
               component="pre"
               whiteSpace="pre-wrap"
-              variant="body2"
               sx={{ fontWeight: "bold" }}
             >
               {subtitle}

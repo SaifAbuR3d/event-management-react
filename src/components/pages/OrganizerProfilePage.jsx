@@ -32,6 +32,11 @@ import MainLoding from "../looding/MainLoding";
 import EventCardLoading from "../looding/EventCardLoading";
 import { queryClient } from "../../main";
 
+const isRTL = (text) => {
+  const rtlChar = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+  return rtlChar.test(text);
+};
+
 export default function OrganizerProfile() {
   const [alignment, setAlignment] = useState("upcoming");
   const [openBioDialog, setOpenBioDialog] = useState(false);
@@ -148,7 +153,7 @@ export default function OrganizerProfile() {
     alignItems: "center",
     height: "100%",
     width: "100%",
-    color: "red",
+    color: "gray",
     padding: "10%",
   };
 
@@ -179,6 +184,8 @@ export default function OrganizerProfile() {
       );
     });
   };
+
+  const textAlign = isRTL(bio) ? "right" : "left";
 
   return (
     <Grid container position="relative">
@@ -435,7 +442,15 @@ export default function OrganizerProfile() {
               </Typography>
 
               {/*About Section Content*/}
-              <Typography component="pre" pl={2} pb={2} whiteSpace="pre-wrap">
+              <Typography
+                component="pre"
+                pl={2}
+                pr={2}
+                pb={2}
+                whiteSpace="pre-wrap"
+                align={textAlign}
+                variant="h6"
+              >
                 {bio}
               </Typography>
 
@@ -487,7 +502,9 @@ export default function OrganizerProfile() {
 
             {(alignment === "upcoming" ? upcomingList : previousList)
               ?.length === 0 ? (
-              <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
+              <Typography variant="h6" sx={{ ...noEventsStyle }}>
+                No events available at the moment.
+              </Typography>
             ) : (
               <>
                 <Box

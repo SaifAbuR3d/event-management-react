@@ -54,6 +54,7 @@ export default function ProfileTitleCard({
           variant="h4"
           mr={1}
           sx={{ fontSize: "2rem" }}
+          align="center"
         >
           {displayName}
         </Typography>

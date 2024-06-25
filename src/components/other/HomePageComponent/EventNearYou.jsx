@@ -47,7 +47,7 @@ export default function EventNearYou() {
   }, []);
 
   const { data: EventNearYou, isLoading: EventNearLoading } =
-    useGetEventNearYou(defaultPosition[0], defaultPosition[1], 50, 8);
+    useGetEventNearYou(defaultPosition[0], defaultPosition[1], 100, 8);
 
   const cardStyle = {
     width: {
