@@ -26,7 +26,7 @@ import Select from "@mui/material/Select";
 import { Add, Delete, FileUpload } from "@mui/icons-material";
 import img1 from "../../../assets/images/CreateEventImage/placeholder.webp";
 import { InputAdornment } from "@mui/material";
-export default function InputField({ label, numeric = false, name }) {
+export default function InputField({ label, numeric = false, name , multiline , minRow }) {
   const [field, meta] = useField(name);
 
   const handleKeyPress = (e) => {
@@ -39,11 +39,19 @@ export default function InputField({ label, numeric = false, name }) {
     }
   };
 
+  const description = {};
+  if(multiline){
+    description.multiline = true;
+    description.minRows = minRow;
+  }
+  
+
   return (
     <TextField
       fullWidth
       label={label}
       name={name}
+      {...description}
       {...field}
       onKeyDown={handleKeyPress}
       error={meta.touched && !!meta.error}

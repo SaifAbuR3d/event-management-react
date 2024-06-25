@@ -224,7 +224,12 @@ export default function CreateEvetnPage() {
                         Event Details
                       </Typography>
 
-                      <InputField name="description" label="Description" />
+                      <InputField
+                        name="description"
+                        label="Description"
+                        multiline={"multiline"}
+                        minRow={3}
+                      />
                     </Grid>
                     <Grid item xs={12}>
                       <Typography variant="h6" color="initial" sx={{ mb: 1 }}>
