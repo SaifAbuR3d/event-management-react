@@ -27,8 +27,8 @@ function TabPanel({ children, value, index, ...other }) {
 
 // Main component
 export default function MyTabs() {
-  const [value, setValue] = useState(0); // State to track active tab index
-  const [, , helpers] = useField("isOnline");
+  const [{ value: isOnlineValue }, , helpers] = useField("isOnline");
+  const [value, setValue] = useState(+isOnlineValue);
   const handleChange = (event, newValue) => {
     setValue(newValue);
 
@@ -59,8 +59,9 @@ export default function MyTabs() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <div>
-          Online events have unique event pages where you can add links to
-          livestreams and more
+          {
+            "Online events do not require physical location details. Please include the relevant online meeting link (e.g., Zoom, Teams, Webex) in the event description."
+          }
         </div>
       </TabPanel>
     </div>

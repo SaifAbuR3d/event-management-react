@@ -1,6 +1,19 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Button } from "@mui/material";
 export default function FormNavigation(props) {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handleClick = () => {
+    if (Object.keys(props?.errors).length > 0) {
+      scrollToTop();
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -25,6 +38,7 @@ export default function FormNavigation(props) {
         loading={props.isPending}
         variant="contained"
         type="submit"
+        onClick={handleClick}
         sx={{ flexBasis: "15%" }}
       >
         {props.isLastStep ? "Submit" : "Next"}

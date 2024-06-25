@@ -18,7 +18,7 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { FieldArray, useField, useFormikContext } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -60,9 +60,19 @@ export default function InputField({ label, numeric = false, name }) {
 }
 
 export function ImageField() {
-  const [, meta, { setValue }] = useField("Thumbnail");
+  const [field, meta, { setValue }] = useField("Thumbnail");
+
   const [previewSrc, setPreviewSrc] = useState("");
-  const [type, setType] = useState("");
+
+  useEffect(() => {
+    if (field.value) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewSrc(reader.result);
+      };
+      reader.readAsDataURL(field.value);
+    }
+  }, [field.value]);
 
   return (
     <>
@@ -131,7 +141,7 @@ export function ImageField() {
         </InputLabel>
 
         <img
-          src={previewSrc && type.startsWith("image") ? previewSrc : img1}
+          src={previewSrc ? previewSrc : img1}
           alt="Uploaded Image Preview"
           style={{
             width: "100%",
@@ -150,8 +160,6 @@ export function ImageField() {
         onChange={(event) => {
           const file = event.target.files[0];
           setValue(file);
-          setType(file.type);
-
           if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -215,13 +223,10 @@ export function TimeField({ name, label }) {
 }
 
 export function ControlledOpenSelect({ name, options, label }) {
-  const [age, setAge] = useState("");
   const [open, setOpen] = useState(false);
-  // const { data, isLoading } = useGetCategories();
-  const [, meta, { setValue, setTouched }] = useField(name);
+  const [{ value }, meta, { setValue, setTouched }] = useField(name);
 
   const handleChange = (event) => {
-    setAge(event.target.value);
     setValue(event.target.value);
   };
 
@@ -249,12 +254,12 @@ export function ControlledOpenSelect({ name, options, label }) {
           open={open}
           onClose={handleClose}
           onOpen={handleOpen}
-          value={age}
+          value={value || ""}
           label={label}
           onChange={handleChange}
         >
           {name === "categoryId" &&
-            options.map((option) => (
+            options?.map((option) => (
               <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
