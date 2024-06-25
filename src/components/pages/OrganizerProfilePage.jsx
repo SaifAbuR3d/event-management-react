@@ -148,7 +148,7 @@ export default function OrganizerProfile() {
     alignItems: "center",
     height: "100%",
     width: "100%",
-    color: "red",
+    color: "gray",
     padding: "10%",
   };
 
@@ -487,7 +487,9 @@ export default function OrganizerProfile() {
 
             {(alignment === "upcoming" ? upcomingList : previousList)
               ?.length === 0 ? (
-              <Typography sx={{ ...noEventsStyle }}>No Events</Typography>
+              <Typography variant="h6" sx={{ ...noEventsStyle }}>
+                No events available at the moment.
+              </Typography>
             ) : (
               <>
                 <Box
