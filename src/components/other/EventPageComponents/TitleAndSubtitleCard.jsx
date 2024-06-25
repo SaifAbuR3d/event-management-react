@@ -145,8 +145,10 @@ export default function TitleAndSubtitleCard({
           ) : (
             <Typography
               variant="h6"
-              sx={{ fontWeight: "bold" }}
               align={textAlign}
+              component="pre"
+              whiteSpace="pre-wrap"
+              sx={{ fontWeight: "bold" }}
             >
               {subtitle}
             </Typography>
