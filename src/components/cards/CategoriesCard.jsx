@@ -5,7 +5,7 @@ import Art from "../../assets/images/CategoriesImage/Art.jpeg";
 import Edu from "../../assets/images/CategoriesImage/Edu.jpeg";
 import Enter from "../../assets/images/CategoriesImage/Enter.jpeg";
 import Health from "../../assets/images/CategoriesImage/Health.jpeg";
-import Sport from "../../assets/images/CategoriesImage/Sport.jpeg";
+import Sport from "../../assets/images/CategoriesImage/sport.jpeg";
 import Tech from "../../assets/images/CategoriesImage/Tech.jpeg";
 import Social from "../../assets/images/CategoriesImage/Social.jpeg";
 import Travel from "../../assets/images/CategoriesImage/Travel.jpeg";

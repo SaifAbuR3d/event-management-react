@@ -13,7 +13,7 @@ export default function MultiStepForm({
 }) {
   const [stepNumber, setStepNumber] = useState(0);
   const [snapShot, setSnapShot] = useState(initialValues);
-  const steps = React.Children.toArray(children); //FormStepComponent
+  const steps = React.Children.toArray(children);
 
   const step = steps[stepNumber];
   const totalSteps = steps.length;
@@ -54,17 +54,14 @@ export default function MultiStepForm({
             activeStep={stepNumber}
             sx={{
               "& .MuiStepIcon-root": {
-                // targets the icons in the steps
                 width: "30px",
                 height: "30px",
                 "& .MuiSvgIcon-root": {
-                  // targets the SVG icon itself
-                  fontSize: "15px", // increase the icon size
+                  fontSize: "15px",
                 },
               },
               "& .MuiStepLabel-label": {
-                // targets the step labels
-                fontSize: "20px", // increase label font size
+                fontSize: "20px",
               },
               width: "100%",
               mb: 3,
@@ -85,6 +82,7 @@ export default function MultiStepForm({
             hasPrevious={stepNumber > 0}
             onBackClick={() => previous(formik.values)}
             isPending={isPending}
+            errors={formik.errors}
           />
         </Form>
       )}
@@ -92,15 +90,15 @@ export default function MultiStepForm({
   );
 }
 
-export const FormStep = ({ stepName = "", children }) => children; // FormStepComponent to display {step}
+export const FormStep = ({ stepName = "", children }) => children;
 
 MultiStepForm.propTypes = {
-  children: PropTypes.node.isRequired, // Ensure children is a React node
-  initialValues: PropTypes.object.isRequired, // Ensure initialValues is an object
-  onSubmit: PropTypes.func.isRequired, // Ensure onSubmit is a function
+  children: PropTypes.node.isRequired,
+  initialValues: PropTypes.object.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 FormStep.prototype = {
-  stepName: PropTypes.string.isRequired, // Ensure stepName is a string
-  children: PropTypes.node.isRequired, // Ensure children is a React node
+  stepName: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
 };

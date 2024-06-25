@@ -20,9 +20,11 @@ import {
 import utc from "dayjs/plugin/utc";
 import { styled } from "@mui/system";
 import Alert from "@mui/material/Alert";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import MainLoding from "../looding/MainLoding";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useSnackBar } from "../../contexts/SnackBarContext";
+import { UserContext } from "../../contexts/UserContext";
 
 const MainBox = styled("div")(({ theme }) =>
   theme.unstable_sx({
@@ -47,12 +49,15 @@ export default function CreateEvetnPage() {
   const [isManged, setIsManged] = useState(false);
   const navigate = useNavigate();
   const { data, isLoading } = useGetCategories();
+  const { showSnackBar } = useSnackBar();
+  const { isVerified } = useContext(UserContext);
 
   const { mutateAsync, isPending, isError, error } = useCreateEvent();
 
   const handelMutateAsync = (values) => {
     mutateAsync(values).then(({ eventId }) => {
-      setTimeout(() => navigate(`/event/${eventId}`));
+      showSnackBar("Yor Event Created successfully", "success");
+      navigate(`/event/${eventId}`);
     });
   };
 
@@ -136,7 +141,7 @@ export default function CreateEvetnPage() {
   return (
     <>
       <Container maxWidth="md" sx={{ p: 2 }}>
-        <Box>
+        <Box sx={{ minHeight: "60vh" }}>
           <Typography variant="h4" sx={{ fontWeight: "600", mb: 1 }}>
             Build your event page
           </Typography>
@@ -148,6 +153,7 @@ export default function CreateEvetnPage() {
           >
             Add all of your event details and let attendees know what to expect
           </Typography>
+
           {isError && (
             <Alert variant="standard" severity="error" sx={{ mb: 2 }}>
               {error?.response?.data?.detail}
@@ -158,12 +164,12 @@ export default function CreateEvetnPage() {
               name: "",
               description: "",
               Thumbnail: "",
-              startDate: "",
-              endDate: "",
-              startTime: "",
-              endTime: "",
-              lat: 51.505,
-              lon: -0.09,
+              startDate: dayjs().add(1, "day"),
+              endDate: dayjs().add(1, "day"),
+              startTime: dayjs().add(10, "minute"),
+              endTime: dayjs().add(1, "hour"),
+              lat: "",
+              lon: "",
               street: "",
               isOnline: false,
               categoryId: "",
@@ -173,10 +179,10 @@ export default function CreateEvetnPage() {
                   name: "",
                   price: "",
                   quantity: "",
-                  startSale: "",
-                  endSale: "",
-                  startSaleTime: "",
-                  endSaleTime: "",
+                  startSale: dayjs(),
+                  endSale: dayjs().add(10, "minute"),
+                  startSaleTime: dayjs().add(10, "minute"),
+                  endSaleTime: dayjs().add(60, "minute"),
                 },
               ],
               //----step 3--------
@@ -193,7 +199,6 @@ export default function CreateEvetnPage() {
           >
             <FormStep
               stepName={"Event Overview"}
-              onSubmit={() => console.log("step 1 is submit")}
               validationSchema={validationSchemaStepOne}
             >
               <Grid container rowSpacing={2}>
@@ -300,90 +305,107 @@ export default function CreateEvetnPage() {
 
             <FormStep
               stepName={"Event Tickets"}
-              onSubmit={() => console.log("step 2 is submit")}
               validationSchema={validationSchemaStepTwo}
             >
               <TicketsFieldArray name="tickets" />
             </FormStep>
+
             <FormStep
               stepName={"Event Restrictions"}
-              onSubmit={() => console.log("step 3 is submit")}
               validationSchema={validationSchemaStepThree}
             >
-              <MainBox>
-                <MainTitle variant="h5" color="initial">
-                  Restrictions
-                </MainTitle>
-                <Typography variant="body1" color="initial" sx={{ mb: 1 }}>
-                  When you select &apos;Event is Managed&apos;, you&apos;ll need
-                  to approve attendance manually.Additionally, you can specify
-                  the age and gender of attendees if you wish. For unmanaged
-                  events, you may leave &apos;Event is Managed&apos; unchecked.
-                </Typography>
-                <CheckboxField
-                  label="Event is Managed"
-                  name="isManaged"
-                  setIsManged={setIsManged}
-                  isManged={isManged}
-                />
-                {isManged && (
-                  <Grid
-                    container
-                    rowSpacing={1}
-                    columnSpacing={2}
-                    justifyContent={"space-between"}
-                  >
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
-                        Age
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="#585163"
-                        sx={{ mb: 2 }}
-                      >
-                        You can specify the age of the attendee
-                      </Typography>
+              {isVerified() ? (
+                <MainBox>
+                  <MainTitle variant="h5" color="initial">
+                    Restrictions
+                  </MainTitle>
+                  <Typography variant="body1" color="initial" sx={{ mb: 1 }}>
+                    When you select &apos;Event is Managed&apos;, you&apos;ll
+                    need to approve attendance manually.Additionally, you can
+                    specify the age and gender of attendees if you wish. For
+                    unmanaged events, you may leave &apos;Event is Managed&apos;
+                    unchecked.
+                  </Typography>
+                  <CheckboxField
+                    label="Event is Managed"
+                    name="isManaged"
+                    setIsManged={setIsManged}
+                    isManged={isManged}
+                  />
+                  {isManged && (
+                    <Grid
+                      container
+                      rowSpacing={1}
+                      columnSpacing={2}
+                      justifyContent={"space-between"}
+                    >
+                      <Grid item xs={12}>
+                        <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
+                          Age
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="#585163"
+                          sx={{ mb: 2 }}
+                        >
+                          You can specify the age of the attendee
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={5.8}>
+                        <InputField
+                          name="minAge"
+                          label="Min Age"
+                          numeric={true}
+                        />
+                      </Grid>
+                      <Grid item xs={5.8}>
+                        <InputField
+                          name="maxAge"
+                          label="Max Age"
+                          numeric={true}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
+                          Gender
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="#585163"
+                          sx={{ mb: 2 }}
+                        >
+                          You can specify the Gender of the attendee
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <ControlledOpenSelect
+                          name="allowedGender"
+                          label="Gender"
+                          options={[
+                            { id: 1, value: "Male" },
+                            { id: 2, value: "Female" },
+                          ]}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={5.8}>
-                      <InputField
-                        name="minAge"
-                        label="Min Age"
-                        numeric={true}
-                      />
-                    </Grid>
-                    <Grid item xs={5.8}>
-                      <InputField
-                        name="maxAge"
-                        label="Max Age"
-                        numeric={true}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="h6" color="initial" sx={{ mb: 2 }}>
-                        Gender
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="#585163"
-                        sx={{ mb: 2 }}
-                      >
-                        You can specify the Gender of the attendee
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <ControlledOpenSelect
-                        name="allowedGender"
-                        label="Gender"
-                        options={[
-                          { id: 1, value: "Male" },
-                          { id: 2, value: "Female" },
-                        ]}
-                      />
-                    </Grid>
-                  </Grid>
-                )}
-              </MainBox>
+                  )}
+                </MainBox>
+              ) : (
+                <MainBox>
+                  <MainTitle variant="h5" color="initial">
+                    Restrictions
+                  </MainTitle>
+                  <Typography variant="body1" color="initial" sx={{ mb: 1 }}>
+                    To create a managed event and apply restrictions, account
+                    verification is required. Normal events, however, can be
+                    created without this prerequisite. Verify your account
+                    <Link to="/verification" style={{ textDecoration: "none" }}>
+                      {" here"}
+                    </Link>
+                    .
+                  </Typography>
+                </MainBox>
+              )}
             </FormStep>
           </MultiStepForm>
         </Box>
