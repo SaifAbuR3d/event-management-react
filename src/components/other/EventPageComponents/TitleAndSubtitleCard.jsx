@@ -18,6 +18,11 @@ import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
 import "leaflet/dist/leaflet.css";
 
+const isRTL = (text) => {
+  const rtlChar = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+  return rtlChar.test(text);
+};
+
 export default function TitleAndSubtitleCard({
   title,
   subtitle,
@@ -30,6 +35,8 @@ export default function TitleAndSubtitleCard({
   const handleChange = () => {
     setExpanded((prevExpanded) => !prevExpanded);
   };
+
+  const textAlign = isRTL(subtitle) ? "right" : "left";
 
   const handelLocation = () => (
     <Box>
@@ -136,7 +143,11 @@ export default function TitleAndSubtitleCard({
           {forWhat == "restriction" ? (
             handelRestriction()
           ) : (
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold" }}
+              align={textAlign}
+            >
               {subtitle}
             </Typography>
           )}
