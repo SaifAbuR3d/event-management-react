@@ -136,7 +136,12 @@ export default function TitleAndSubtitleCard({
           {forWhat == "restriction" ? (
             handelRestriction()
           ) : (
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+            <Typography
+              component="pre"
+              whiteSpace="pre-wrap"
+              variant="body2"
+              sx={{ fontWeight: "bold" }}
+            >
               {subtitle}
             </Typography>
           )}
