@@ -42,7 +42,7 @@ const EventCard = React.memo(function EventCard({
   const [openTickets, setOpenTickets] = useState(false);
   const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
   const navigate = useNavigate();
-  const { isOrganizer, isAuthenticated } = useContext(UserContext);
+  const { isAttendee, isAuthenticated } = useContext(UserContext);
 
   const { mutateAsync: mutateLike, isPending: isPendingLike } = useAddLike(id);
   const location = `${window.location.protocol}//${window.location.host}`;
@@ -175,7 +175,7 @@ const EventCard = React.memo(function EventCard({
               </>
             ) : (
               <>
-                {!isOrganizer() && (
+                {(isAttendee() || !isAuthenticated()) && (
                   <IconButton
                     disabled={isPendingLike || isPendingDisLike}
                     onClick={(event) => {
