@@ -717,7 +717,7 @@ export default function GetTicketDialog({ open, handleClose, data }) {
               ></img>
             </div>
 
-            {total === 0 ? (
+            {orders?.size <= 0 ? (
               <Box
                 height="60%"
                 display="flex"
