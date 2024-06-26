@@ -34,7 +34,6 @@ const SnackBarProvider = ({ children }) => {
         onClose={handleClose}
       >
         <Alert onClose={handleClose} severity={typeColor} variant={variant}>
-          <AlertTitle>{typeColor}</AlertTitle>
           {message}
         </Alert>
       </Snackbar>
