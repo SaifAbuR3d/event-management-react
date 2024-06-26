@@ -172,7 +172,7 @@ export default function RegistrationRequest() {
   };
 
   return (
-    <Box sx={{ width: "80%", minHeight: "100%", m: "auto", mt: "100px" }}>
+    <Box sx={{ width: "80%", m: "auto", mt: "100px" }}>
       <Box
         display="flex"
         alignItems="center"
