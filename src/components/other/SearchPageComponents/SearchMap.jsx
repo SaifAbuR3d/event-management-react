@@ -1,15 +1,6 @@
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import Leaflet from "leaflet";
-let DefaultIcon = Leaflet.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-});
-
-Leaflet.Marker.prototype.options.icon = DefaultIcon;
 
 export default function SearchMap({ handleEventLocations }) {
   const [defaultPosition, setDefaultPosition] = useState([31.900692, 35.20387]); // Default position before geolocation

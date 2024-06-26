@@ -1,6 +1,17 @@
 import { RouterProvider } from "react-router-dom";
 import { Router } from "./Routes";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import "leaflet/dist/leaflet.css";
+import "leaflet-geosearch/dist/geosearch.css";
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import Leaflet from "leaflet";
+let DefaultIcon = Leaflet.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+});
+
+Leaflet.Marker.prototype.options.icon = DefaultIcon;
 
 const defaultTheme = createTheme({
   palette: {
