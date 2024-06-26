@@ -85,8 +85,13 @@ export default function EventPage() {
 
   /* get data api*/
 
-  const { isOrganizer, isAttendee, isAuthenticated, isCurrentOrganizer } =
-    useContext(UserContext);
+  const {
+    isOrganizer,
+    isAdmin,
+    isAttendee,
+    isAuthenticated,
+    isCurrentOrganizer,
+  } = useContext(UserContext);
 
   if (isLoading || eventsMayLikeLoading || status === "loading") {
     return (
@@ -229,11 +234,13 @@ export default function EventPage() {
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
-                flexDirection: `${isOrganizer() ? "row-reverse" : "row"}`,
+                flexDirection: `${
+                  isOrganizer() || isAdmin() ? "row-reverse" : "row"
+                }`,
                 width: "85px",
               }}
             >
-              {!isOrganizer() && (
+              {(isAttendee() || !isAuthenticated()) && (
                 <IconButton
                   disabled={isPendingLike || isPendingDisLike}
                   onClick={
@@ -429,7 +436,7 @@ export default function EventPage() {
               display: { xs: "none", md: "flex" },
             }}
           >
-            {!isOrganizer() && (
+            {(isAttendee() || !isAuthenticated()) && (
               <GetTicketsCard ticketsData={data.tickets} data={data} />
             )}
             {isCurrentOrganizer(data.organizer.userName) && (
@@ -489,7 +496,7 @@ export default function EventPage() {
                             md: "24vw",
                             lg: "14vw",
                           },
-                          mb:1
+                          mb: 1,
                         }}
                       />
                     </SwiperSlide>
@@ -513,7 +520,7 @@ export default function EventPage() {
           zIndex: "1000",
         }}
       >
-        {!isOrganizer() && (
+        {(isAttendee() || !isAuthenticated()) && (
           <GetTicketsCard ticketsData={data.tickets} data={data} />
         )}
         {isCurrentOrganizer(data.organizer.userName) && (
