@@ -1,4 +1,4 @@
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, AlertTitle, Snackbar } from "@mui/material";
 import { useContext, useState } from "react";
 import { createContext } from "react";
 
@@ -34,6 +34,7 @@ const SnackBarProvider = ({ children }) => {
         onClose={handleClose}
       >
         <Alert onClose={handleClose} severity={typeColor} variant={variant}>
+          <AlertTitle>{typeColor}</AlertTitle>
           {message}
         </Alert>
       </Snackbar>
