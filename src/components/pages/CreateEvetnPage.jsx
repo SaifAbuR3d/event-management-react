@@ -156,7 +156,9 @@ export default function CreateEvetnPage() {
 
           {isError && (
             <Alert variant="standard" severity="error" sx={{ mb: 2 }}>
-              {error?.response?.data?.detail}
+              <Typography variant="body1" color="initial">
+                {error?.response?.data?.detail}
+              </Typography>
             </Alert>
           )}
           <MultiStepForm

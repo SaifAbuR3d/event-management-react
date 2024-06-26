@@ -41,7 +41,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
 
 export default function OrganizedByCard({ organizer }) {
   const [open, setOpen] = useState(false);
-  const { isOrganizer, isAuthenticated, user } = useContext(UserContext);
+  const { isOrganizer, isAdmin, isAuthenticated } = useContext(UserContext);
   const { displayName, id, profile, imageUrl, userName } = organizer;
 
   const { data: followersData, isLoading: followersLoading } =
@@ -119,7 +119,9 @@ export default function OrganizedByCard({ organizer }) {
               }
             />
             <Box>
-              <StyledLink to={`/organizer-profile/${userName}`}>{displayName}</StyledLink>
+              <StyledLink to={`/organizer-profile/${userName}`}>
+                {displayName}
+              </StyledLink>
               <Typography
                 variant="body1"
                 color="initial"
@@ -144,7 +146,7 @@ export default function OrganizedByCard({ organizer }) {
               variant="Text"
               color="primary"
               sx={{ height: "42px" }}
-              disabled={isOrganizer()}
+              disabled={isAdmin() || isOrganizer()}
             >
               Contact
             </Button>
@@ -160,7 +162,7 @@ export default function OrganizedByCard({ organizer }) {
                     : mutateUnFollow
                   : handleOpenGuestDialog
               }
-              disabled={isOrganizer()}
+              disabled={isAdmin() || isOrganizer()}
             >
               {!checkFlag ? "Follow" : "Unfollow"}
             </LoadingButton>

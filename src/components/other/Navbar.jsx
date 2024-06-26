@@ -155,6 +155,21 @@ export default function Navbar() {
             overflow: "hidden",
             position: "relative",
             cursor: "pointer",
+            "&.Mui-focusVisible": {
+              outline: "none",
+              boxShadow: "none",
+            },
+            "&.Mui-disabled": {
+              opacity: 0.5, 
+            },
+            "&:focus": {
+              outline: "none",
+              boxShadow: "none",
+            },
+            "&:active": {
+              backgroundColor: "transparent",
+            },
+            outline: "none", 
           }}
           onClick={() => navigate("/")}
         >
@@ -268,19 +283,22 @@ export default function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem
-                key={"profile"}
-                onClick={() => {
-                  navigate(
-                    isOrganizer()
-                      ? `organizer-profile/${user?.userName}`
-                      : `attendee-profile/${user?.userName}`
-                  );
-                  handleCloseUserMenu();
-                }}
-              >
-                <Typography textAlign="center">Profile</Typography>
-              </MenuItem>
+              {!isAdmin() && (
+                <MenuItem
+                  key={"profile"}
+                  onClick={() => {
+                    navigate(
+                      isOrganizer()
+                        ? `organizer-profile/${user?.userName}`
+                        : `attendee-profile/${user?.userName}`
+                    );
+                    handleCloseUserMenu();
+                  }}
+                >
+                  <Typography textAlign="center">Profile</Typography>
+                </MenuItem>
+              )}
+
               {pages.map((page, i) => (
                 <MenuItem
                   key={i}

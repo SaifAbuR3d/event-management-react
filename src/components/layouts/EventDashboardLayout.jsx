@@ -9,6 +9,8 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import SideListWithContent from "../other/eventDashboardComponents/SideListWithContent";
+import { Home } from "@mui/icons-material";
+import { Button } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -62,7 +64,10 @@ export default function EventDashboardLayout() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <IconButton sx={{ mr: 1 }} onClick={() => navigate("/")}>
+            <Home />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div" flexGrow={1}>
             Event Dashboard
           </Typography>
         </Toolbar>

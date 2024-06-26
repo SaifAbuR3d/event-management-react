@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useField } from "formik";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { OpenStreetMapProvider, GeoSearchControl } from "leaflet-geosearch";
-import "leaflet-geosearch/dist/geosearch.css";
+
 
 const Search = ({ provider, latSetValue, lonSetValue }) => {
   const map = useMap();
