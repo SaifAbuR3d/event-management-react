@@ -12,12 +12,16 @@ import ReportDialog from "./ReportDialog";
 import { UserContext } from "../../../contexts/UserContext";
 
 export default function ReviewCard({ data }) {
-  const { id, attendeeName, comment, rating } = data;
+  const { id, attendeeName, comment, rating, attendeeImageUrl } = data;
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const { isAttendee } = useContext(UserContext);
 
   const handleOpenReportDialog = () => setOpenReportDialog(true);
   const handleCloseReportDialog = () => setOpenReportDialog(false);
+
+  const image = attendeeImageUrl
+    ? `${import.meta.env.VITE_API_URL}/${attendeeImageUrl}`
+    : "/static/images/avatar/1.jpg";
 
   return (
     <>
@@ -44,7 +48,7 @@ export default function ReviewCard({ data }) {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ mr: 2 }}>H</Avatar>
+          <Avatar src={image} sx={{ mr: 2 }} />
           <Typography
             variant="body1"
             color="initial"

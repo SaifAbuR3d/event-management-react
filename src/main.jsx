@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+//import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { UserContextProvider } from "./contexts/UserContext.jsx";
 import { SnackBarProvider } from "./contexts/SnackBarContext.jsx";
 
@@ -29,6 +29,6 @@ root.render(
         <App />
       </SnackBarProvider>
     </UserContextProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
+   
   </QueryClientProvider>
 );
