@@ -59,7 +59,7 @@ export default function FormNavigation(props) {
         <Button
           variant="contained"
           disabled={
-            (props.isPenultimateStep && props.totalAmount === 0) ||
+            (props.isPenultimateStep && props.order.size === 0) ||
             props.submitPending
           }
           type="submit"

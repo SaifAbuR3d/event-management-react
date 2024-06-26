@@ -48,7 +48,7 @@ export default function EventDashboardLayout() {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", bgcolor: "#f5f5f5", minHeight: "99.5vh" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open} sx={{ bgcolor: "#283593" }}>
         <Toolbar>

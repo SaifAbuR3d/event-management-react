@@ -189,7 +189,7 @@ export default function SideListWithContent({
         </Box>
         <Box sx={{ textAlign: "center" }}>
           {open && (
-            <Typography variant="body1">
+            <Typography variant="body1" sx={{ textWrap: "wrap" }}>
               {ProfileOwnerData?.displayName}
             </Typography>
           )}

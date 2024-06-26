@@ -59,7 +59,7 @@ export function useDeleteReview() {
   const { userToken } = useContext(UserContext);
   return useMutation({
     mutationKey: ["DeleteReview"],
-    mutationFn: async (eventId, reviewId) => {
+    mutationFn: async ({ eventId, reviewId }) => {
       await axios.delete(
         `${
           import.meta.env.VITE_API_URL

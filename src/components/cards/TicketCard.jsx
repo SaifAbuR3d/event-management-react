@@ -112,14 +112,31 @@ export default function TicketCard({
         alignItems="end"
         pb={isEnded() && 1}
       >
-        <Typography variant="h6" fontWeight={500} pl={{ xs: 2, sm: 3 }} pt={2}>
-          ${price}
-        </Typography>
+        {price <= 0 ? (
+          <Typography
+            variant="h5"
+            fontWeight={600}
+            pl={{ xs: 2, sm: 3 }}
+            pt={2}
+            sx={{ color: "green" }}
+          >
+            Free
+          </Typography>
+        ) : (
+          <Typography
+            variant="h6"
+            fontWeight={500}
+            pl={{ xs: 2, sm: 3 }}
+            pt={2}
+          >
+            ${price}
+          </Typography>
+        )}
 
         {isStarted() ? (
           !isEnded() ? (
             <Paper
-              sx={{ mr: 1, bgcolor: "#f5f5f5", width: "114px" }}
+              sx={{ mr: 1, bgcolor: "#f5f5f5", width: "120px" }}
               elevation={0}
             >
               <Typography

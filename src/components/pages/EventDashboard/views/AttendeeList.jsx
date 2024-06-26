@@ -145,7 +145,6 @@ export default function AttendeeList() {
     <Box
       sx={{
         width: "80%",
-        minHeight: "100%",
         m: "auto",
         mt: "100px",
       }}
