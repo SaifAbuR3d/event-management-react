@@ -55,8 +55,10 @@ export default function ReportDialog({ open, handleClose, report }) {
     }
   }, [data, error, isLoading, report]);
 
+  const { eventId, reviewId } = report || {};
+
   const handleDeleteReview = async () => {
-    await mutateAsync(report?.eventId, report?.reviewId).then(() => {
+    await mutateAsync({eventId, reviewId}).then(() => {
       showSnackBar("Review Deleted successfully", "success", "filled");
     });
     handleClose();
