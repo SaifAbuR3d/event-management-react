@@ -45,8 +45,8 @@ export default function OrganizerCard({
             bottom: "-40%",
           }}
         />
-        <Box display="flex" position="absolute" bottom="-77%">
-          <Typography>{displayName}</Typography>
+        <Box display="flex" position="absolute" bottom="-90%">
+          <Typography align="center">{displayName}</Typography>
           {isVerified && <Verified color="secondary" fontSize="inherit" />}
         </Box>
       </Grid>

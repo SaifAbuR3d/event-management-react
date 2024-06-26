@@ -71,7 +71,7 @@ export default function Footer() {
         </Box>
 
         <Typography mt={3} variant="body2" color="text.secondary">
-          © {new Date().getFullYear()} Event Aura. All rights reserved.
+          © {new Date().getFullYear()} Event Connect. All rights reserved.
         </Typography>
       </Box>
     </Box>
