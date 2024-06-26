@@ -103,7 +103,7 @@ export const validationSchemaStepOne = yup.object({
           .date()
           .test(
             "is-after-start-time",
-            "End time must be after start time on the same day, or equal/greater on different days.",
+            "End time must be after start time.",
             function (endTime) {
               const { startDate, endDate, startTime } = this.parent;
 

@@ -16,17 +16,6 @@ import { useState } from "react";
 import { Marker } from "react-leaflet";
 import { MapContainer } from "react-leaflet/MapContainer";
 import { TileLayer } from "react-leaflet/TileLayer";
-import "leaflet/dist/leaflet.css";
-import Leaflet from "leaflet";
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
-let DefaultIcon = Leaflet.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-});
-
-Leaflet.Marker.prototype.options.icon = DefaultIcon;
 
 export default function TitleAndSubtitleCard({
   title,

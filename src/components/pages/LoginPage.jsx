@@ -27,6 +27,7 @@ import axios from "axios";
 import { UserContext } from "../../contexts/UserContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import { LoadingButton } from "@mui/lab";
+import { Link } from "react-router-dom";
 
 const validationSchema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -199,6 +200,9 @@ export default function LoginPage() {
             >
               Continue
             </LoadingButton>
+            <Typography color={"secondary"} mt={2} ml={"auto"} mr={"auto"}>
+              Don&apos;t have an account? <Link to="/register">Sign up</Link>
+            </Typography>
           </Box>
         </Box>
 

@@ -115,7 +115,7 @@ export default function SerchEventCard({ eventData }) {
           From ${handelPrice()}
         </Typography>
       </Box>
-      <Box sx={{ alignSelf: "flex-end" }}>
+      <Box sx={{ alignSelf: "flex-end", display: "flex" }}>
         <IconButton onClick={handleOpenShareDialog}>
           <IosShare />
         </IconButton>

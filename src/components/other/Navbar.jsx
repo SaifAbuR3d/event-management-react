@@ -155,6 +155,9 @@ export default function Navbar() {
             overflow: "hidden",
             position: "relative",
             cursor: "pointer",
+            "&:click": {
+              backgroundColor: "transparent",
+            },
           }}
           onClick={() => navigate("/")}
         >
