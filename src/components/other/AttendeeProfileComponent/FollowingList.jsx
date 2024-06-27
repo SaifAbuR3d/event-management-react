@@ -2,13 +2,14 @@ import React, { Fragment } from "react";
 import { useGetFollowing } from "../../../API/AttendeeProfileApi";
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import OrganizerCard from "../../cards/OrganizerCard";
 import OrganizerCardLoading from "../../looding/OrganizerCardLoading";
 
 export default function FollowingList({ id }) {
   const {
     data: following,
+    isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -44,10 +45,16 @@ export default function FollowingList({ id }) {
               </Fragment>
             ))}
 
-            {isFetchingNextPage &&
-              Array.from(new Array(8)).map((_, index) => (
+            {(isFetchingNextPage || isLoading) &&
+              Array.from(new Array(6)).map((_, index) => (
                 <OrganizerCardLoading key={index} />
               ))}
+
+            {following?.pages?.[0]?.data.length === 0 && (
+              <Typography variant="h6" sx={{ color: "gray", p: 10 }}>
+                Not followed anyone yet.
+              </Typography>
+            )}
           </>
         }
       </Box>

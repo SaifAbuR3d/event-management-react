@@ -1,19 +1,17 @@
 import React, { Fragment } from "react";
 import { useState } from "react";
 import { queryClient } from "../../../main";
-import {
-  useGetFavoritess,
-} from "../../../API/AttendeeProfileApi";
+import { useGetFavoritess } from "../../../API/AttendeeProfileApi";
 import EventCard from "../../cards/EventCard";
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import EventCardLoading from "../../looding/EventCardLoading";
 
-export default function FavorietesList({id}) {
-
+export default function FavorietesList({ id }) {
   const {
     data: Favorietes,
+    isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -61,10 +59,16 @@ export default function FavorietesList({id}) {
           </Fragment>
         ))}
 
-        {isFetchingNextPage &&
-          Array.from(new Array(8)).map((_, index) => (
+        {(isFetchingNextPage || isLoading) &&
+          Array.from(new Array(4)).map((_, index) => (
             <EventCardLoading key={index} customStyle={cardStyle} />
           ))}
+
+        {Favorietes?.pages?.[0]?.data.length === 0 && (
+          <Typography variant="h6" sx={{ color: "gray", p: 10 }}>
+            No events available at the moment.
+          </Typography>
+        )}
       </Box>
 
       {hasNextPage && (
