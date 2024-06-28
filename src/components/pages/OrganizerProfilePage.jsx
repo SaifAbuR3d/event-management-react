@@ -334,7 +334,7 @@ export default function OrganizerProfile() {
                 }}
               >
                 <Typography variant="h6" color="#283593">
-                  {totalEventCount}
+                  {eventsLoading ? 0 : totalEventCount}
                 </Typography>
                 <Typography variant="body1" color="#283593">
                   events
@@ -500,8 +500,24 @@ export default function OrganizerProfile() {
               <ToggleButton value="previous">Previous</ToggleButton>
             </ToggleButtonGroup>
 
-            {(alignment === "upcoming" ? upcomingList : previousList)
-              ?.length === 0 ? (
+            {eventsLoading ? (
+              <Box
+                component="div"
+                display="flex"
+                justifyContent="center"
+                flexDirection="row"
+                flexWrap="wrap"
+                mb={3}
+                sx={{
+                  gap: 2,
+                }}
+              >
+                {Array.from(new Array(6)).map((_, index) => (
+                  <EventCardLoading key={index} customStyle={cardStyle} />
+                ))}
+              </Box>
+            ) : (alignment === "upcoming" ? upcomingList : previousList)
+                ?.length === 0 ? (
               <Typography variant="h6" sx={{ ...noEventsStyle }}>
                 No events available at the moment.
               </Typography>
@@ -523,42 +539,24 @@ export default function OrganizerProfile() {
                   )}
                 </Box>
 
-                {eventsLoading ? (
+                {6 * page < currentEventCount && (
                   <Box
-                    component="div"
+                    width="100%"
                     display="flex"
                     justifyContent="center"
-                    flexDirection="row"
-                    flexWrap="wrap"
-                    mb={3}
-                    sx={{
-                      gap: 2,
-                    }}
+                    mb={2}
                   >
-                    {Array.from(new Array(6)).map((_, index) => (
-                      <EventCardLoading key={index} customStyle={cardStyle} />
-                    ))}
-                  </Box>
-                ) : (
-                  6 * page < currentEventCount && (
-                    <Box
-                      width="100%"
-                      display="flex"
-                      justifyContent="center"
-                      mb={2}
+                    <Button
+                      sx={{ ml: "auto", mr: "auto" }}
+                      variant="outlined"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setPage(page + 1);
+                      }}
                     >
-                      <Button
-                        sx={{ ml: "auto", mr: "auto" }}
-                        variant="outlined"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setPage(page + 1);
-                        }}
-                      >
-                        Show More
-                      </Button>
-                    </Box>
-                  )
+                      Show More
+                    </Button>
+                  </Box>
                 )}
               </>
             )}
