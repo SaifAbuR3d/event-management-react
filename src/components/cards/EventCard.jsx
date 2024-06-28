@@ -211,28 +211,21 @@ const EventCard = React.memo(function EventCard({
         </Typography>
 
         {isHome && (
-          <>
-            <Box
-              mt={2}
-              display="flex"
-              justifyContent="start"
-              alignItems="center"
-            >
-              <Avatar
-                src={`${import.meta.env.VITE_API_URL}/${organizerImageUrl}`}
-                sx={{ mr: 1, width: "50px", height: "50px" }}
-              />
-              <Box>
-                <Typography variant="h6" color="#283593">
-                  {organizerName}
-                </Typography>
-                <Typography variant="body2" color="#283593" display="flex">
-                  <PeopleOutlineTwoTone fontSize="small" />
-                  {formatNumber(numberOfFollers)} Followers
-                </Typography>
-              </Box>
+          <Box mt={2} display="flex" justifyContent="start" alignItems="start">
+            <Avatar
+              src={`${import.meta.env.VITE_API_URL}/${organizerImageUrl}`}
+              sx={{ mr: 1, width: "50px", height: "50px" }}
+            />
+            <Box>
+              <Typography sx={{ fontSize: "18px" }} color="#283593">
+                {organizerName}
+              </Typography>
+              <Typography variant="body2" color="#283593" display="flex">
+                <PeopleOutlineTwoTone fontSize="small" />
+                {formatNumber(numberOfFollers)} Followers
+              </Typography>
             </Box>
-          </>
+          </Box>
         )}
       </CardContent>
       <ShareCard

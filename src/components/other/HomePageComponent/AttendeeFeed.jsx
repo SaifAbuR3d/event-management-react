@@ -10,6 +10,7 @@ import feed from "../../../assets/images/feed.jpg";
 export default function AttendeeFeed() {
   const {
     data: FollowingEvents,
+    isLoading,
     fetchNextPage,
     isFetchingNextPage,
     hasNextPage,
@@ -27,10 +28,10 @@ export default function AttendeeFeed() {
 
   const cardStyle = {
     width: {
-      xs: "70vw",
-      sm: "40vw",
-      md: "28vw",
-      lg: "21vw",
+      xs: "85vw",
+      sm: "42vw",
+      md: "40vw",
+      lg: "28vw",
     },
   };
 
@@ -110,8 +111,8 @@ export default function AttendeeFeed() {
           >
             {renderFollowingEvents}
 
-            {isFetchingNextPage &&
-              Array.from(new Array(8)).map((_, index) => (
+            {(isFetchingNextPage || isLoading) &&
+              Array.from(new Array(6)).map((_, index) => (
                 <EventCardLoading key={index} customStyle={cardStyle} />
               ))}
             <div ref={ref}></div>

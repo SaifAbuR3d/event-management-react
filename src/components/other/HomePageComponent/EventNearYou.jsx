@@ -51,7 +51,7 @@ export default function EventNearYou() {
 
   const cardStyle = {
     width: {
-      xs: "70vw",
+      xs: "81vw",
       sm: "32vw",
       md: "30vw",
       lg: "23vw",

@@ -3,7 +3,7 @@ import { useGetUpcomingBookings } from "../../../API/AttendeeProfileApi";
 import EventCard from "../../cards/EventCard";
 import { useContext } from "react";
 import { UserContext } from "../../../contexts/UserContext";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import EventCardLoading from "../../looding/EventCardLoading";
 
 export default function UpcomingBookingsList() {
@@ -11,6 +11,7 @@ export default function UpcomingBookingsList() {
 
   const {
     data: UpcomingsBookings,
+    isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -58,10 +59,16 @@ export default function UpcomingBookingsList() {
           </Fragment>
         ))}
 
-        {isFetchingNextPage &&
-          Array.from(new Array(8)).map((_, index) => (
+        {(isFetchingNextPage || isLoading) &&
+          Array.from(new Array(4)).map((_, index) => (
             <EventCardLoading key={index} customStyle={cardStyle} />
           ))}
+
+        {UpcomingsBookings?.pages?.[0]?.data.length === 0 && (
+          <Typography variant="h6" sx={{ color: "gray", p: 10 }}>
+            No events available at the moment.
+          </Typography>
+        )}
       </Box>
 
       {hasNextPage && (
