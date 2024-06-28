@@ -97,7 +97,7 @@ export default function ProfileTitleCard({
           <Button
             onClick={handleOpen}
             variant="contained"
-            sx={{ width: { xs: "70%", md: "23%" } }}
+            sx={{ width: "130px" }}
             startIcon={<IosShareOutlined />}
           >
             Share
