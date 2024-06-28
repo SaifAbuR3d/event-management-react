@@ -4,7 +4,7 @@ import { Avatar, Box, Button, Grid } from "@mui/material";
 import { PersonRemoveOutlined, Verified } from "@mui/icons-material";
 import { useUnFollowRequest } from "../../API/organizerProfileApi";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { LoadingButton } from "@mui/lab";
 
 export default function OrganizerCard({
   displayName,
@@ -13,15 +13,20 @@ export default function OrganizerCard({
   imageUrl,
   userName,
 }) {
-  const unFollow = useUnFollowRequest();
+  const { mutateAsync: unFollow, isPending } = useUnFollowRequest();
   const navigate = useNavigate();
   const image = imageUrl
     ? `${import.meta.env.VITE_API_URL}/${imageUrl}`
     : "/static/images/avatar/1.jpg";
 
+  const handleUnFollowClick = async (event) => {
+    event.stopPropagation();
+    await unFollow(organizerId);
+  };
+
   return (
     <Grid
-      height={270}
+      height={280}
       border={1}
       borderColor="divider"
       position="relative"
@@ -36,18 +41,26 @@ export default function OrganizerCard({
         display="flex"
         justifyContent="center"
       >
-        <Avatar
-          src={image}
-          sx={{
-            width: "90px",
-            height: "90px",
-            position: "absolute",
-            bottom: "-40%",
-          }}
-        />
-        <Box display="flex" position="absolute" bottom="-90%">
-          <Typography align="center">{displayName}</Typography>
-          {isVerified && <Verified color="secondary" fontSize="inherit" />}
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          position="absolute"
+          top="40%"
+        >
+          <Avatar
+            src={image}
+            sx={{
+              width: "100px",
+              height: "100px",
+            }}
+          />
+          <Box display="flex" mt={1}>
+            <Typography align="center">
+              {displayName}{" "}
+              {isVerified && <Verified color="secondary" fontSize="inherit" />}
+            </Typography>
+          </Box>
         </Box>
       </Grid>
       <Grid
@@ -59,13 +72,14 @@ export default function OrganizerCard({
         justifyContent="center"
         alignItems="center"
       >
-        <Button
-          onClick={() => unFollow.mutate(organizerId)}
+        <LoadingButton
+          onClick={handleUnFollowClick}
           variant="outlined"
           startIcon={<PersonRemoveOutlined />}
+          loading={isPending}
         >
           Unfollow
-        </Button>
+        </LoadingButton>
       </Grid>
     </Grid>
   );
