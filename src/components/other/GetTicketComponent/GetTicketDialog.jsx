@@ -30,6 +30,7 @@ import * as yup from "yup";
 import MainLoding from "../../looding/MainLoding";
 import { useGetRegRequestForEvent } from "../../../API/eventPageApi";
 import { useSnackBar } from "../../../contexts/SnackBarContext";
+import dayjs from "dayjs";
 export default function GetTicketDialog({ open, handleClose, data }) {
   const [orders, setOrders] = useState(new Map());
   const [total, setTotal] = useState(0);
@@ -225,7 +226,7 @@ export default function GetTicketDialog({ open, handleClose, data }) {
       minute: "2-digit",
     });
 
-    if (start_Date.getDay() === end_Date.getDay()) {
+    if (dayjs(start_Date).isSame(dayjs(end_Date), "day") ) {
       return formattedStartDate.concat(
         " - ",
         end_Date.toLocaleTimeString("en-US", {

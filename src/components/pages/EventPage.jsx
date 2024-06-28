@@ -37,6 +37,7 @@ import ReviewCard from "../other/EventPageComponents/ReviewCard.jsx";
 import { LoadingButton } from "@mui/lab";
 import AddReviewDialog from "../other/EventPageComponents/AddReviewDialog.jsx";
 import GetOrganizerDashboard from "../other/EventPageComponents/GetOrganizerDashboard.jsx";
+import dayjs from "dayjs";
 
 export default function EventPage() {
   const [open, setOpen] = useState(false);
@@ -126,10 +127,7 @@ export default function EventPage() {
       minute: "2-digit",
     });
 
-    if (
-      startDate.getDay() === endDate.getDay() &&
-      startDate.getMonth() === endDate.getMonth()
-    ) {
+    if (dayjs(startDate).isSame(dayjs(endDate), "day")) {
       return formattedStartDate.concat(
         " - ",
         endDate.toLocaleTimeString("en-US", {
