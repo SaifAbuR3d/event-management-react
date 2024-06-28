@@ -27,7 +27,7 @@ export default function AttendeeFeed() {
 
   const cardStyle = {
     width: {
-      xs: "70vw",
+      xs: "85vw",
       sm: "40vw",
       md: "28vw",
       lg: "21vw",

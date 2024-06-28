@@ -45,13 +45,14 @@ export default function Introduction() {
       paddingLeft: `calc(1em + ${theme.spacing(4)})`,
       transition: theme.transitions.create("width"),
       width: "100%",
-      [theme.breakpoints.up("md")]: {
-        width: "20ch",
-      },
       cursor: "pointer",
+      [theme.breakpoints.up("xs")]: {
+        fontSize: "13px",
+      },
+      [theme.breakpoints.up("sm")]: {
+        fontSize: "20px",
+      }
     },
-    fontSize: "20px",
-    cursor: "pointer",
   }));
 
   return (
@@ -87,7 +88,7 @@ export default function Introduction() {
           <Typography
             sx={{ textShadow: "5px 7px 9px rgba(0, 0, 0, 0.9)" }}
             color="white"
-            fontSize={{ xs: "25px", sm: "35px", md: "60px", lg: "70px" }}
+            fontSize={{ xs: "23px", sm: "35px", md: "55px", lg: "70px" }}
           >
             Event Connect
           </Typography>
