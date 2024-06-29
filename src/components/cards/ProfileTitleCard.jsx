@@ -12,6 +12,7 @@ import {
 } from "../../API/organizerProfileApi";
 import { useState } from "react";
 import ShareCard from "./ShareCard";
+import { LoadingButton } from "@mui/lab";
 
 export default function ProfileTitleCard({
   displayName,
@@ -37,9 +38,10 @@ export default function ProfileTitleCard({
     organizerId: organizerId,
   };
 
-  const { mutateAsync: follow } = useFollowRequest(fakeAttendee);
+  const { mutateAsync: follow, isPending } = useFollowRequest(fakeAttendee);
 
-  const unFollow = useUnFollowRequest();
+  const { mutateAsync: unFollow, isPending: unFollowPending } =
+    useUnFollowRequest();
 
   return (
     <Box
@@ -56,31 +58,31 @@ export default function ProfileTitleCard({
           sx={{ fontSize: "2rem" }}
           align="center"
         >
-          {displayName}
+          {displayName} {isVerified && <Verified color="secondary" />}
         </Typography>
-
-        {isVerified && <Verified color="secondary" />}
       </Box>
       {isAttendee ? (
         <Box display="flex" gap={1} justifyContent="center">
           {isFollowing ? (
-            <Button
-              onClick={() => unFollow.mutate(organizerId)}
+            <LoadingButton
+              onClick={() => unFollow(organizerId)}
               variant="outlined"
               sx={{ width: { xs: "90%", sm: "110%" } }}
               startIcon={<PersonRemoveOutlined />}
+              loading={unFollowPending}
             >
               Unfollow
-            </Button>
+            </LoadingButton>
           ) : (
-            <Button
+            <LoadingButton
               onClick={follow}
               variant="contained"
               sx={{ width: { xs: "90%", sm: "110%" } }}
               startIcon={<PersonAddAltOutlined />}
+              loading={isPending}
             >
               Follow
-            </Button>
+            </LoadingButton>
           )}
 
           <Button
