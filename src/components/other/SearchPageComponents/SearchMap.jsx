@@ -31,7 +31,7 @@ export default function SearchMap({ handleEventLocations }) {
       <MapContainer
         key={defaultPosition.toString()}
         center={defaultPosition}
-        zoom={3}
+        zoom={8}
         style={{ height: "100vh", width: "100%" }}
       >
         <TileLayer

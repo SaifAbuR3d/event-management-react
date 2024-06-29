@@ -144,8 +144,8 @@ export default function FiltersComponents({
             value={priceFilter || [0, 0]}
             onChange={handlePriceFilterChange}
             getAriaValueText={valuetext}
-            max={2000}
-            step={50}
+            max={500}
+            step={10}
             // marks
             valueLabelDisplay={"auto"}
             sx={{
