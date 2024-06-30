@@ -12,7 +12,7 @@ import React, { useEffect, useMemo } from "react";
 import { useState } from "react";
 import FavorietesList from "../other/AttendeeProfileComponent/FavorietesList";
 import FollowingList from "../other/AttendeeProfileComponent/FollowingList";
-import { Favorite, LocalActivity, People } from "@mui/icons-material";
+import { Favorite, LocalActivity, People, Verified } from "@mui/icons-material";
 import UpcomingBookingsList from "../other/AttendeeProfileComponent/UpcomingBookingsList";
 import PreviousBookingsList from "../other/AttendeeProfileComponent/PreviousBookingsList";
 import { useGetAttendeeData } from "../../API/AttendeeProfileApi";
@@ -54,7 +54,7 @@ export default function AttendeeProfilePage() {
     return <MainLoding isLoading={isLoading} />;
   }
 
-  const { fullName, imageUrl, id } = data;
+  const { fullName, imageUrl, id, isVerified } = data;
 
   const currentAttendee = isCurrentAttendee(userName);
 
@@ -101,7 +101,7 @@ export default function AttendeeProfilePage() {
           ownerData={data}
         />
         <Typography position="absolute" bottom="-52%" variant="h4">
-          {fullName}
+          {fullName} {isVerified && <Verified color="secondary" />}
         </Typography>
       </Grid>
 
