@@ -39,25 +39,19 @@ const StyledLink = styled(Link)(({ theme }) => ({
   },
 }));
 
-export default function OrganizedByCard({ organizer }) {
+export default function OrganizedByCard({
+  organizer,
+  followersData,
+  checkFlag,
+}) {
   const [open, setOpen] = useState(false);
   const { isOrganizer, isAdmin, isAuthenticated } = useContext(UserContext);
   const { displayName, id, profile, imageUrl, userName } = organizer;
-
-  const { data: followersData, isLoading: followersLoading } =
-    useGetOrganizerFollowers(id);
-
-  const { data: checkFlag, isLoading: isLoadingCheck } =
-    useCheckIsFollowingOrganizer(id);
 
   const { mutateAsync: mutateFollow, isPending: isPendingFollow } =
     useAddFollow(id);
   const { mutateAsync: mutateUnFollow, isPending: isPendingUnFollow } =
     useRemoveFollow(id);
-
-  if (followersLoading || isLoadingCheck) {
-    return <MainLoding isLoading={followersLoading || isLoadingCheck} />;
-  }
 
   const { totalCount } = followersData;
 

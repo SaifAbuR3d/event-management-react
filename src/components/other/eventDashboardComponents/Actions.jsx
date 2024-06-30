@@ -1,5 +1,5 @@
 import { Check, Clear } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import React from "react";
 import {
   useApproveRegReq,
@@ -35,32 +35,36 @@ export default function Actions({ params }) {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", gap: "20px" }}>
-      <IconButton
-        color="success"
-        disabled={
-          params?.row?.status === "Approved" ||
-          params?.row?.status === "Rejected" ||
-          pendingApprove
-        }
-        onClick={() => {
-          handelApprove(params.row.id);
-        }}
-      >
-        <Check />
-      </IconButton>
-      <IconButton
-        disabled={
-          params?.row?.status === "Approved" ||
-          params?.row?.status === "Rejected" ||
-          pendingReject
-        }
-        color="error"
-        onClick={() => {
-          handelReject(params.row.id);
-        }}
-      >
-        <Clear />
-      </IconButton>
+      <Tooltip title="Approve">
+        <IconButton
+          color="success"
+          disabled={
+            params?.row?.status === "Approved" ||
+            params?.row?.status === "Rejected" ||
+            pendingApprove
+          }
+          onClick={() => {
+            handelApprove(params.row.id);
+          }}
+        >
+          <Check />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Reject">
+        <IconButton
+          disabled={
+            params?.row?.status === "Approved" ||
+            params?.row?.status === "Rejected" ||
+            pendingReject
+          }
+          color="error"
+          onClick={() => {
+            handelReject(params.row.id);
+          }}
+        >
+          <Clear />
+        </IconButton>
+      </Tooltip>
     </Box>
   );
 }

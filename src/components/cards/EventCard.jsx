@@ -4,7 +4,7 @@ import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { Avatar, Box, Paper, Rating } from "@mui/material";
+import { Avatar, Box, Paper, Rating, Tooltip } from "@mui/material";
 import {
   ConfirmationNumberOutlined,
   ConfirmationNumberSharp,
@@ -176,27 +176,31 @@ const EventCard = React.memo(function EventCard({
             ) : (
               <>
                 {(isAttendee() || !isAuthenticated()) && (
-                  <IconButton
-                    disabled={isPendingLike || isPendingDisLike}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      if (isAuthenticated()) {
-                        if (isLiked) {
-                          handelMutateDislike();
+                  <Tooltip title="Like">
+                    <IconButton
+                      disabled={isPendingLike || isPendingDisLike}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if (isAuthenticated()) {
+                          if (isLiked) {
+                            handelMutateDislike();
+                          } else {
+                            handelMutateLike();
+                          }
                         } else {
-                          handelMutateLike();
+                          navigate("/login");
                         }
-                      } else {
-                        navigate("/login");
-                      }
-                    }}
-                  >
-                    {isLiked ? <Favorite /> : <FavoriteBorder />}
-                  </IconButton>
+                      }}
+                    >
+                      {isLiked ? <Favorite /> : <FavoriteBorder />}
+                    </IconButton>
+                  </Tooltip>
                 )}
-                <IconButton onClick={handleOpen}>
-                  <IosShare />
-                </IconButton>
+                <Tooltip title="Share">
+                  <IconButton onClick={handleOpen}>
+                    <IosShare />
+                  </IconButton>
+                </Tooltip>
               </>
             )}
           </Box>

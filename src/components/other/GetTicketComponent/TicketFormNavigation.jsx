@@ -46,7 +46,12 @@ export default function FormNavigation(props) {
         }
       >
         {props.hasPrevious && (
-          <Button variant="outlined" type="button" onClick={handleOpenBack}>
+          <Button
+            variant="outlined"
+            type="button"
+            onClick={handleOpenBack}
+            sx={{ p: 1, width: "150px" }}
+          >
             Back
           </Button>
         )}

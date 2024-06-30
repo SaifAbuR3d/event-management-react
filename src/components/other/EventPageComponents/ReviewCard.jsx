@@ -6,6 +6,7 @@ import {
   Rating,
   Typography,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import { useContext, useState } from "react";
 import ReportDialog from "./ReportDialog";
@@ -58,9 +59,11 @@ export default function ReviewCard({ data }) {
           </Typography>
           {isAttendee() && (
             <Box className="reportButton" sx={{ visibility: "hidden" }}>
-              <IconButton onClick={handleOpenReportDialog}>
-                <Report />
-              </IconButton>
+              <Tooltip title="Report">
+                <IconButton onClick={handleOpenReportDialog}>
+                  <Report />
+                </IconButton>
+              </Tooltip>
             </Box>
           )}
         </Box>

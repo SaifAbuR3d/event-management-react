@@ -19,6 +19,7 @@ import {
   ConfirmationNumberOutlined,
   Dashboard,
   FavoriteBorder,
+  Verified,
   VerifiedOutlined,
 } from "@mui/icons-material";
 import logo from "../../assets/images/logo/logo.svg";
@@ -146,7 +147,7 @@ export default function Navbar() {
       <Toolbar sx={{ height: "0px" }}>
         {/*----------AdbIcon-------------*/}
 
-        <ButtonBase
+        <IconButton
           sx={{
             display: { xs: "flex" },
             mr: 4,
@@ -160,7 +161,7 @@ export default function Navbar() {
               boxShadow: "none",
             },
             "&.Mui-disabled": {
-              opacity: 0.5, 
+              opacity: 0.5,
             },
             "&:focus": {
               outline: "none",
@@ -169,7 +170,10 @@ export default function Navbar() {
             "&:active": {
               backgroundColor: "transparent",
             },
-            outline: "none", 
+            "&:hover": {
+              backgroundColor: "transparent",
+            },
+            outline: "none",
           }}
           onClick={() => navigate("/")}
         >
@@ -183,7 +187,7 @@ export default function Navbar() {
               transform: "scale(1.5)",
             }}
           />
-        </ButtonBase>
+        </IconButton>
 
         {/*---------search--------------*/}
         <Box
@@ -256,7 +260,10 @@ export default function Navbar() {
         </Box>
         {isAuthenticated() && (
           <Box sx={{ order: "2", flexGrow: 0, ml: 3 }}>
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+            <IconButton
+              onClick={handleOpenUserMenu}
+              sx={{ p: 1, position: "relative" }}
+            >
               <Avatar
                 alt=""
                 src={
@@ -265,6 +272,13 @@ export default function Navbar() {
                     : null
                 }
               />
+              {isVerified() && (
+                <Verified
+                  fontSize="small"
+                  color="secondary"
+                  sx={{ position: "absolute", bottom: "4px", right: "0" }}
+                />
+              )}
             </IconButton>
 
             <Menu

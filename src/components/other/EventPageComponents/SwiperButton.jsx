@@ -12,13 +12,24 @@ export default function SwiperButton() {
     >
       <IconButton
         onClick={() => swiper.slidePrev()}
-        sx={{ bgcolor: "#dbdae3", borderRadius: "0", color: "#6f7287" }}
+        sx={{
+          bgcolor: "#dbdae3",
+          borderRadius: "0",
+          color: "#6f7287",
+          "&:hover": { bgcolor: "#dbdae3" },
+        }}
       >
         <ArrowBack />
       </IconButton>
       <IconButton
         onClick={() => swiper.slideNext()}
-        sx={{ bgcolor: "#4b4d63", borderRadius: "0", color: "#ffffff", ml: 1 }}
+        sx={{
+          bgcolor: "#3f51b5",
+          borderRadius: "0",
+          color: "#ffffff",
+          ml: 1,
+          "&:hover": { bgcolor: "#3f51b5" },
+        }}
       >
         <ArrowForward />
       </IconButton>
