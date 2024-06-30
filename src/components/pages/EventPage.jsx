@@ -7,6 +7,7 @@ import {
   IconButton,
   Button,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import { Favorite, Flag } from "@mui/icons-material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -24,7 +25,9 @@ import { Fragment, useContext, useState } from "react";
 import {
   GetOtherEventsMayLike,
   useAddLike,
+  useCheckIsFollowingOrganizer,
   useGetEventData,
+  useGetOrganizerFollowers,
   useGetReviews,
   useRemoveLike,
 } from "../../API/eventPageApi.js";
@@ -58,9 +61,7 @@ export default function EventPage() {
     }
   };
 
-  {
-    /* get data api*/
-  }
+  /* get data api*/
   const { data, isLoading } = useGetEventData(eventId);
 
   const { data: eventsMayLikeData, isLoading: eventsMayLikeLoading } =
@@ -68,11 +69,11 @@ export default function EventPage() {
 
   const organizerId = data?.organizer.id;
 
-  const { mutateAsync: mutateLike, isPending: isPendingLike } =
-    useAddLike(eventId);
+  const { data: followersData, isLoading: followersLoading } =
+    useGetOrganizerFollowers(organizerId);
 
-  const { mutateAsync: mutateDislike, isPending: isPendingDisLike } =
-    useRemoveLike(eventId);
+  const { data: checkFlag, isLoading: isLoadingCheck } =
+    useCheckIsFollowingOrganizer(organizerId);
 
   const location = `${window.location.protocol}//${window.location.host}`;
 
@@ -86,6 +87,14 @@ export default function EventPage() {
 
   /* get data api*/
 
+  /* Post data api*/
+  const { mutateAsync: mutateLike, isPending: isPendingLike } =
+    useAddLike(eventId);
+
+  const { mutateAsync: mutateDislike, isPending: isPendingDisLike } =
+    useRemoveLike(eventId);
+  /* Post data api*/
+
   const {
     isOrganizer,
     isAdmin,
@@ -94,10 +103,22 @@ export default function EventPage() {
     isCurrentOrganizer,
   } = useContext(UserContext);
 
-  if (isLoading || eventsMayLikeLoading || status === "loading") {
+  if (
+    isLoading ||
+    eventsMayLikeLoading ||
+    status === "loading" ||
+    followersLoading ||
+    isLoadingCheck
+  ) {
     return (
       <MainLoding
-        isLoading={isLoading || eventsMayLikeLoading || status === "loading"}
+        isLoading={
+          isLoading ||
+          eventsMayLikeLoading ||
+          status === "loading" ||
+          followersLoading ||
+          isLoadingCheck
+        }
       />
     );
   }
@@ -239,27 +260,31 @@ export default function EventPage() {
               }}
             >
               {(isAttendee() || !isAuthenticated()) && (
-                <IconButton
-                  disabled={isPendingLike || isPendingDisLike}
-                  onClick={
-                    isAuthenticated()
-                      ? data.isLikedByCurrentUser
-                        ? mutateDislike
-                        : mutateLike
-                      : () => navigate("/login")
-                  }
-                >
-                  {data.isLikedByCurrentUser ? (
-                    <Favorite />
-                  ) : (
-                    <FavoriteBorderIcon />
-                  )}
-                </IconButton>
+                <Tooltip title="Like">
+                  <IconButton
+                    disabled={isPendingLike || isPendingDisLike}
+                    onClick={
+                      isAuthenticated()
+                        ? data.isLikedByCurrentUser
+                          ? mutateDislike
+                          : mutateLike
+                        : () => navigate("/login")
+                    }
+                  >
+                    {data.isLikedByCurrentUser ? (
+                      <Favorite />
+                    ) : (
+                      <FavoriteBorderIcon />
+                    )}
+                  </IconButton>
+                </Tooltip>
               )}
+              <Tooltip title="Share">
+                <IconButton onClick={handleOpenShareDialog}>
+                  <IosShareIcon />
+                </IconButton>
+              </Tooltip>
 
-              <IconButton onClick={handleOpenShareDialog}>
-                <IosShareIcon />
-              </IconButton>
               <ShareCard
                 open={open}
                 handleClose={handleCloseShareDialog}
@@ -390,6 +415,8 @@ export default function EventPage() {
             <OrganizedByCard
               organizerId={organizerId}
               organizer={data.organizer}
+              followersData={followersData}
+              checkFlag={checkFlag}
             />
 
             {/* Report this event   */}

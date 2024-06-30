@@ -14,6 +14,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSendVerificationRequest } from "../../API/SharedApi";
 import { useSnackBar } from "../../contexts/SnackBarContext";
+import { LoadingButton } from "@mui/lab";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -26,7 +27,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function VerificationRequest() {
-  const { mutate } = useSendVerificationRequest();
+  const { mutate, isPending } = useSendVerificationRequest();
   const [errorMessage, setErrorMessage] = useState(null);
   const { showSnackBar } = useSnackBar();
 
@@ -140,6 +141,7 @@ export default function VerificationRequest() {
           </Typography>
 
           <Button
+            loading={isPending}
             sx={{ width: "60%", mt: 4 }}
             component="label"
             variant="contained"
@@ -157,9 +159,13 @@ export default function VerificationRequest() {
             />
           </Button>
           <Box pt={4} pr={2} width="100%" display="flex" justifyContent="end">
-            <Button type="submit" variant="contained">
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              loading={isPending}
+            >
               Submit
-            </Button>
+            </LoadingButton>
           </Box>
         </Box>
       </Box>
