@@ -74,7 +74,7 @@ export default function SerchEventCard({ eventData }) {
       }}
       onClick={() => navigate(`/event/${eventData.id}`)}
     >
-      <Box sx={{ height: "150px", flexBasis: "30%" }}>
+      <Box sx={{ height: "150px", flexBasis: "30%", alignSelf: "center" }}>
         <img
           src={`${import.meta.env.VITE_API_URL}/${eventData.thumbnailUrl}`}
           alt="a"
