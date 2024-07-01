@@ -204,6 +204,7 @@ export default function SearchPage() {
               sx={{
                 display: "flex",
                 justifyContent: "center",
+                mt: "50px",
               }}
             >
               {searchResult?.TotalCount > 5 && (
@@ -231,7 +232,7 @@ export default function SearchPage() {
               mt: 2,
               pt: 1,
               borderRadius: "15px",
-              bgcolor: "#f7f7fa",
+              // bgcolor: "#f7f7fa",
             }}
           >
             <SearchMap handleEventLocations={handleEventLocations} />

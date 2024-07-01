@@ -24,15 +24,14 @@ export default function SearchMap({ handleEventLocations }) {
     <Box
       sx={{
         width: "100%",
-        position: "sticky",
-        top: "2px",
+        height: "98%",
       }}
     >
       <MapContainer
         key={defaultPosition.toString()}
         center={defaultPosition}
         zoom={8}
-        style={{ height: "100vh", width: "100%" }}
+        style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
